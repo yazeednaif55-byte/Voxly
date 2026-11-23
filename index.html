@@ -22,6 +22,7 @@
             --upvote: #ff4500;
             --downvote: #6366f1;
             --success: #10b981;
+            --short-accent: #f43f5e;
             --font-size-base: 15px;
         }
 
@@ -205,6 +206,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            flex-wrap: wrap;
         }
 
         .live-pill {
@@ -226,6 +228,20 @@
             border-radius: 999px;
             background: var(--success);
             animation: pulseDot 1.6s infinite ease-in-out;
+        }
+
+        .active-tag-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--accent-soft);
+            color: var(--accent);
+            border: 1px solid rgba(29, 155, 240, 0.35);
+            padding: 2px 10px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            cursor: pointer;
         }
 
         .header-actions {
@@ -476,6 +492,23 @@
             transition: 0.14s ease;
         }
 
+        .short-toggle-chip {
+            background: rgba(244, 63, 94, 0.12);
+            color: var(--short-accent);
+            border: 1px solid rgba(244, 63, 94, 0.35);
+            padding: 5px 11px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .short-toggle-chip.active {
+            background: var(--short-accent);
+            color: #ffffff;
+            border-color: var(--short-accent);
+        }
+
         .btn-publish {
             background: linear-gradient(135deg, var(--accent), #2563eb);
             color: #ffffff;
@@ -607,12 +640,37 @@
             white-space: nowrap;
         }
 
+        .short-badge {
+            background: rgba(244, 63, 94, 0.14);
+            color: var(--short-accent);
+            border: 1px solid rgba(244, 63, 94, 0.35);
+            padding: 2px 9px;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
         .post-text {
             line-height: 1.62;
             margin-bottom: 10px;
             white-space: pre-wrap;
             word-wrap: break-word;
             font-size: 0.94rem;
+        }
+
+        .hashtag-link {
+            color: var(--accent);
+            font-weight: 800;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: inherit;
+            padding: 0 1px;
+        }
+
+        .hashtag-link:hover {
+            text-decoration: underline;
         }
 
         .post-media {
@@ -629,6 +687,11 @@
             width: 100%;
             max-height: 380px;
             object-fit: cover;
+        }
+
+        .post-media.short-media video {
+            max-height: 470px;
+            background: #000000;
         }
 
         .ai-box {
@@ -742,6 +805,49 @@
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
         }
 
+        .ad-card {
+            background: linear-gradient(145deg, rgba(29, 155, 240, 0.16), rgba(99, 102, 241, 0.14));
+            border: 1px solid rgba(29, 155, 240, 0.35);
+            border-radius: 18px;
+            padding: 16px;
+        }
+
+        .ad-pill {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: var(--accent);
+            background: var(--accent-soft);
+            padding: 2px 8px;
+            border-radius: 999px;
+            margin-bottom: 8px;
+        }
+
+        .hashtag-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .trend-tag-btn {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.14s ease;
+        }
+
+        .trend-tag-btn:hover, .trend-tag-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #ffffff;
+        }
+
         .widget-title {
             font-size: 0.96rem;
             font-weight: 800;
@@ -811,6 +917,31 @@
             justify-content: center;
             font-size: 1.45rem;
             font-weight: 800;
+        }
+
+        .profile-tabs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin: 12px 0;
+        }
+
+        .profile-tab-btn {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.14s ease;
+        }
+
+        .profile-tab-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #ffffff;
         }
 
         .follow-btn {
@@ -1045,7 +1176,14 @@
             <span class="nav-text">الرئيسية</span>
         </button>
 
-        <button class="nav-item" onclick="openUserProfile(userSettings.handle)">
+        <button class="nav-item" onclick="switchView('shorts', this)">
+            <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="6" y="3" width="12" height="18" rx="3"/><polygon points="10 9 15 12 10 15 10 9"/>
+            </svg>
+            <span class="nav-text">Short</span>
+        </button>
+
+        <button class="nav-item" onclick="openUserProfile(getCurrentUserHandle(), 'tweets')">
             <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
             </svg>
@@ -1099,6 +1237,7 @@
         <div class="top-header">
             <div class="title-row">
                 <h2 style="font-size: 1.08rem; font-weight: 800;" id="viewTitle">الرئيسية</h2>
+                <span id="activeHashtagChip" class="active-tag-chip" style="display:none;" onclick="clearActiveHashtag()"></span>
                 <span class="live-pill" title="تحديث فوري">
                     <span class="live-dot"></span>
                     <span>مباشر</span>
@@ -1110,7 +1249,7 @@
                     <svg class="icon-svg" style="width:15px;height:15px;color:var(--muted);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
                     </svg>
-                    <input type="text" id="searchInput" placeholder="بحث..." oninput="renderPosts(true)">
+                    <input type="text" id="searchInput" placeholder="بحث أو #هاشتاق..." oninput="renderPosts(true)">
                 </div>
 
                 <button class="icon-btn" onclick="openAIModal()" title="الذكاء الاصطناعي">
@@ -1147,7 +1286,7 @@
         <div class="composer" id="composerBox">
             <div class="composer-top">
                 <div id="composerAvatarSlot"></div>
-                <textarea id="postContent" placeholder="اكتب تغريدتك هنا..." onkeydown="handleComposerKey(event)"></textarea>
+                <textarea id="postContent" placeholder="اكتب تغريدتك أو #هاشتاق هنا..." onkeydown="handleComposerKey(event)"></textarea>
             </div>
 
             <div class="media-preview" id="mediaPreview">
@@ -1161,6 +1300,10 @@
             <div class="composer-tools">
                 <div class="tool-group">
                     <button type="button" class="plus-trigger-btn" onclick="openCreatePicker()" title="تغريدة / صورة / فيديو">+</button>
+
+                    <button type="button" id="shortModeBtn" class="short-toggle-chip" onclick="toggleShortComposer()"> Short</button>
+
+                    <button type="button" class="media-upload-btn" onclick="insertHashtagTemplate()"># هاشتاق</button>
 
                     <select id="postCommunity" class="select-clean">
                         <option value="عام">r/عام</option>
@@ -1186,7 +1329,7 @@
     </main>
 
     <aside class="sidebar-right">
-        <div class="widget-card" style="cursor:pointer;" onclick="openUserProfile(userSettings.handle)">
+        <div class="widget-card" style="cursor:pointer;" onclick="openUserProfile(getCurrentUserHandle(), 'tweets')">
             <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
                 <div id="sidebarAvatarSlot"></div>
                 <div style="min-width:0;">
@@ -1198,6 +1341,23 @@
                 </div>
             </div>
             <div style="font-size:0.82rem;color:var(--accent);font-weight:700;" id="sidebarFollowersDisplay"></div>
+        </div>
+
+        <div class="ad-card">
+            <span class="ad-pill">إعلان · أنشئ محتواك</span>
+            <div style="font-weight:800;font-size:0.98rem;margin-bottom:6px;">انشر محتواك أكثر عبر الهاشتاقات و Short</div>
+            <p style="font-size:0.83rem;color:var(--muted);line-height:1.55;margin-bottom:10px;">
+                استخدم هاشتاق واضح في تغريداتك أو مقاطعك القصيرة؛ أي فيديو يحمل نفس الهاشتاق يُحفظ تلقائياً عند مشاركة أي شخص بنفس الوسم.
+            </p>
+            <button type="button" class="btn-publish" style="width:100%;" onclick="startPromoteContent()">أنشئ وانشر الآن</button>
+        </div>
+
+        <div class="widget-card">
+            <div class="widget-title">
+                <span># الهاشتاقات</span>
+            </div>
+            <p style="font-size: 0.8rem; color: var(--muted);">اضغط على أي هاشتاق لعرض المنشورات والفيديوهات المرتبطة به:</p>
+            <div id="trendingHashtagsBox" class="hashtag-cloud"></div>
         </div>
 
         <div class="widget-card">
@@ -1212,21 +1372,6 @@
             </p>
             <button class="btn-publish" style="width: 100%;" onclick="openNexus()">فتح المحادثات</button>
         </div>
-
-        <div class="widget-card">
-            <div class="widget-title">
-                <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9L12 3z"/>
-                </svg>
-                <span>الذكاء الاصطناعي</span>
-            </div>
-            <p style="font-size: 0.84rem; color: var(--muted); margin-bottom: 8px; line-height: 1.5;">
-                يتطلب مفتاح API:
-            </p>
-            <a href="https://aistudio.google.com/apps" target="_blank" class="api-help-link">
-                https://aistudio.google.com/apps
-            </a>
-        </div>
     </aside>
 </div>
 
@@ -1238,16 +1383,16 @@
         <span>الرئيسية</span>
     </button>
 
-    <button class="mobile-bar-btn" onclick="openAIModal()">
+    <button class="mobile-bar-btn" onclick="switchView('shorts', this)">
         <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9L12 3z"/>
+            <rect x="6" y="3" width="12" height="18" rx="3"/><polygon points="10 9 15 12 10 15 10 9"/>
         </svg>
-        <span>AI</span>
+        <span>Short</span>
     </button>
 
     <button class="mobile-plus-btn" onclick="openCreatePicker()" aria-label="إنشاء تغريدة أو صورة أو فيديو">+</button>
 
-    <button class="mobile-bar-btn" onclick="openUserProfile(userSettings.handle)">
+    <button class="mobile-bar-btn" onclick="openUserProfile(getCurrentUserHandle(), 'tweets')">
         <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
         </svg>
@@ -1288,11 +1433,11 @@
                 <span>صورة</span>
             </button>
 
-            <button class="picker-option-btn" onclick="chooseCreateType('video')">
+            <button class="picker-option-btn" onclick="chooseCreateType('short')">
                 <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/>
+                    <rect x="6" y="3" width="12" height="18" rx="3"/><polygon points="10 9 15 12 10 15 10 9"/>
                 </svg>
-                <span>فيديو</span>
+                <span>Short فيديو</span>
             </button>
         </div>
     </div>
@@ -1440,12 +1585,15 @@
     let posts = [];
     let currentCommunity = 'الكل';
     let currentView = 'all';
+    let activeHashtag = '';
+    let isShortComposerMode = false;
     let bookmarks = JSON.parse(localStorage.getItem('vloxy_bookmarks') || '[]');
     let heartedPosts = JSON.parse(localStorage.getItem('vloxy_hearted') || '[]').map(String);
     let followedHandles = JSON.parse(localStorage.getItem('vloxy_followed') || '[]');
     let notifiedHandles = JSON.parse(localStorage.getItem('vloxy_notified') || '[]');
     let selectedMedia = null;
     let activeProfileHandle = null;
+    let activeProfileTab = 'tweets';
     let lastFeedSignature = '';
     let isFetchingPosts = false;
 
@@ -1478,19 +1626,26 @@
         return normalizeExactHandle(userSettings.handle) || '@user';
     }
 
+    function extractHashtags(text) {
+        const matches = String(text || '').match(/#[\p{L}\p{N}_]+/gu) || [];
+        return Array.from(new Set(matches.map(tag => tag.trim())));
+    }
+
+    function isShortPost(post) {
+        return Boolean(post.isShort || post.mediaType === 'video');
+    }
+
     function isHandleTakenByAnotherUser(candidateHandle) {
         const target = normalizeExactHandle(candidateHandle);
         if (!target) return false;
         const ownHandle = normalizeExactHandle(userSettings.handle);
         if (userSettings.handleLocked && ownHandle === target) return false;
 
-        const takenInPosts = posts.some(p => {
+        return posts.some(p => {
             const pHandle = normalizePostHandle(p.handle);
             if (pHandle !== target) return false;
             return !ownHandle || pHandle !== ownHandle;
         });
-
-        return takenInPosts;
     }
 
     function isVerifiedCount(followers) {
@@ -1719,6 +1874,33 @@
         localStorage.setItem('vloxy_settings', JSON.stringify(userSettings));
     }
 
+    function toggleShortComposer(forceValue) {
+        isShortComposerMode = typeof forceValue === 'boolean' ? forceValue : !isShortComposerMode;
+        const btn = document.getElementById('shortModeBtn');
+        btn.classList.toggle('active', isShortComposerMode);
+        document.getElementById('postContent').placeholder = isShortComposerMode
+            ? 'اكتب عنوان الـ Short مع #هاشتاق...'
+            : 'اكتب تغريدتك أو #هاشتاق هنا...';
+    }
+
+    function insertHashtagTemplate() {
+        const ta = document.getElementById('postContent');
+        const current = ta.value;
+        const suffix = current.endsWith(' ') || !current ? '#محتوى' : ' #محتوى';
+        ta.value = current + suffix;
+        ta.focus();
+    }
+
+    function startPromoteContent() {
+        toggleShortComposer(true);
+        const ta = document.getElementById('postContent');
+        if (!ta.value.includes('#')) {
+            ta.value = (ta.value ? ta.value + ' ' : '') + '#ترند_فلوكسي';
+        }
+        document.getElementById('composerBox').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        ta.focus();
+    }
+
     function openCreatePicker() {
         document.getElementById('createPickerModal').classList.add('open');
     }
@@ -1726,13 +1908,16 @@
     function chooseCreateType(type) {
         closeModal('createPickerModal');
         if (type === 'tweet') {
+            toggleShortComposer(false);
             const box = document.getElementById('composerBox');
             const textarea = document.getElementById('postContent');
             box.scrollIntoView({ behavior: 'smooth', block: 'center' });
             setTimeout(() => textarea.focus(), 100);
         } else if (type === 'image') {
+            toggleShortComposer(false);
             document.getElementById('imageFileInput').click();
-        } else if (type === 'video') {
+        } else if (type === 'short') {
+            toggleShortComposer(true);
             document.getElementById('videoFileInput').click();
         }
     }
@@ -1752,6 +1937,10 @@
             alert('حجم الملف كبير جداً. يرجى اختيار ملف أصغر من 25MB.');
             event.target.value = '';
             return;
+        }
+
+        if (type === 'video') {
+            toggleShortComposer(true);
         }
 
         const reader = new FileReader();
@@ -1778,10 +1967,30 @@
         document.getElementById('mediaPreview').classList.remove('active');
     }
 
+    function autoSaveMatchingHashtagVideos(newPost) {
+        const tags = extractHashtags(newPost.content);
+        if (!tags.length) return;
+
+        let changed = false;
+        posts.forEach(p => {
+            if (String(p.id) === String(newPost.id)) return;
+            const pTags = extractHashtags(p.content);
+            const shared = tags.some(t => pTags.includes(t));
+            if (shared && isShortPost(p) && !bookmarks.includes(p.id)) {
+                bookmarks.push(p.id);
+                changed = true;
+            }
+        });
+
+        if (changed) {
+            localStorage.setItem('vloxy_bookmarks', JSON.stringify(bookmarks));
+        }
+    }
+
     function computeFeedSignature(list) {
         return list.map(p => {
             const r = p.reactions || {};
-            return `${p.id}:${p.votes}:${p.hearts || 0}:${p.reposts || 0}:${(p.comments || []).length}:${r.like || 0}:${r.fire || 0}:${r.haha || 0}:${p.followers || 0}:${p.verified ? 1 : 0}:${p.author || ''}`;
+            return `${p.id}:${p.votes}:${p.hearts || 0}:${p.reposts || 0}:${(p.comments || []).length}:${r.like || 0}:${r.fire || 0}:${r.haha || 0}:${p.followers || 0}:${p.verified ? 1 : 0}:${p.author || ''}:${p.isShort ? 1 : 0}`;
         }).join('|');
     }
 
@@ -1849,6 +2058,7 @@
                         ? msg.post : p
                     ));
                 }
+                autoSaveMatchingHashtagVideos(msg.post);
                 posts.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
                 lastFeedSignature = computeFeedSignature(posts);
                 renderPosts(true);
@@ -1915,8 +2125,13 @@
         currentView = view;
         document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
         if (btn && btn.classList.contains('nav-item')) btn.classList.add('active');
-        const titles = { all: 'الرئيسية', trending: 'الأكثر تصويتاً', bookmarks: 'المحفوظات' };
-        document.getElementById('viewTitle').textContent = titles[view];
+        const titles = {
+            all: 'الرئيسية',
+            shorts: 'Short',
+            trending: 'الأكثر تصويتاً',
+            bookmarks: 'المحفوظات'
+        };
+        document.getElementById('viewTitle').textContent = titles[view] || 'الرئيسية';
         renderPosts(true);
     }
 
@@ -1925,6 +2140,53 @@
         document.querySelectorAll('.comm-pill').forEach(el => el.classList.remove('active'));
         btn.classList.add('active');
         renderPosts(true);
+    }
+
+    function selectHashtag(tag) {
+        activeHashtag = activeHashtag === tag ? '' : tag;
+        renderPosts(true);
+    }
+
+    function clearActiveHashtag() {
+        activeHashtag = '';
+        renderPosts(true);
+    }
+
+    function formatPostContentWithHashtags(text) {
+        const raw = String(text || '');
+        const parts = raw.split(/(#[\p{L}\p{N}_]+)/gu);
+        return parts.map(part => {
+            if (/^#[\p{L}\p{N}_]+$/u.test(part)) {
+                return `<button type="button" class="hashtag-link" onclick="selectHashtag('${escapeHtml(part)}')">${escapeHtml(part)}</button>`;
+            }
+            return escapeHtml(part);
+        }).join('');
+    }
+
+    function renderTrendingHashtags() {
+        const box = document.getElementById('trendingHashtagsBox');
+        if (!box) return;
+        const counts = new Map();
+        posts.forEach(p => {
+            extractHashtags(p.content).forEach(tag => {
+                counts.set(tag, (counts.get(tag) || 0) + 1);
+            });
+        });
+
+        const sorted = Array.from(counts.entries())
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 12);
+
+        if (!sorted.length) {
+            box.innerHTML = `<span style="font-size:0.8rem;color:var(--muted);">اكتب هاشتاق مثل #برمجة أو #ألعاب ليظهر هنا.</span>`;
+            return;
+        }
+
+        box.innerHTML = sorted.map(([tag, count]) => `
+            <button type="button" class="trend-tag-btn ${activeHashtag === tag ? 'active' : ''}" onclick="selectHashtag('${escapeHtml(tag)}')">
+                ${escapeHtml(tag)} (${count})
+            </button>
+        `).join('');
     }
 
     function buildPostCardHtml(post) {
@@ -1939,12 +2201,13 @@
         const followers = isOwner ? (Number(userSettings.followers) || 0) : (Number(post.followers) || 0);
         const displayAuthor = isOwner ? userSettings.author : (post.author || 'مستخدم');
         const displayAvatar = isOwner ? userSettings.avatar : (post.avatar || '');
+        const shortItem = isShortPost(post);
 
         let mediaHtml = '';
         if (post.mediaType === 'image' && post.mediaData) {
             mediaHtml = `<div class="post-media"><img src="${post.mediaData}" alt="صورة المنشور"></div>`;
         } else if (post.mediaType === 'video' && post.mediaData) {
-            mediaHtml = `<div class="post-media"><video src="${post.mediaData}" controls></video></div>`;
+            mediaHtml = `<div class="post-media ${shortItem ? 'short-media' : ''}"><video src="${post.mediaData}" controls playsinline></video></div>`;
         }
 
         const commentsHtml = (post.comments || []).map(c => `
@@ -1964,7 +2227,7 @@
             <div class="post-main">
                 <div class="post-meta">
                     <div class="author-info">
-                        <button type="button" class="author-trigger" onclick="openUserProfile('${escapeHtml(postHandle)}')">
+                        <button type="button" class="author-trigger" onclick="openUserProfile('${escapeHtml(postHandle)}', '${shortItem ? 'shorts' : 'tweets'}')">
                             ${renderAvatar(displayAuthor, displayAvatar)}
                             <span style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
                                 <strong class="author-name-text">${escapeHtml(displayAuthor)}</strong>
@@ -1975,11 +2238,12 @@
                         <span class="followers-chip">${followers} متابع</span>
                         <span style="color: var(--muted); font-size: 0.8rem;">· ${timeStr}</span>
                         <span class="comm-tag">r/${escapeHtml(post.community)}</span>
+                        ${shortItem ? `<span class="short-badge">Short</span>` : ''}
                     </div>
                     ${isOwner ? `<button type="button" class="vote-btn" onclick="deletePost(${post.id})" title="حذف التغريدة">✕</button>` : ''}
                 </div>
 
-                ${post.content ? `<div class="post-text">${escapeHtml(post.content)}</div>` : ''}
+                ${post.content ? `<div class="post-text">${formatPostContentWithHashtags(post.content)}</div>` : ''}
                 ${mediaHtml}
                 <div id="ai-box-${post.id}" class="ai-box" style="display:none;"></div>
 
@@ -2017,6 +2281,16 @@
     }
 
     function renderPosts(force = false) {
+        renderTrendingHashtags();
+
+        const tagChip = document.getElementById('activeHashtagChip');
+        if (activeHashtag) {
+            tagChip.style.display = 'inline-flex';
+            tagChip.textContent = `${activeHashtag} ✕`;
+        } else {
+            tagChip.style.display = 'none';
+        }
+
         const activeEl = document.activeElement;
         const isTypingComment = activeEl && activeEl.id && activeEl.id.startsWith('c-input-');
         if (isTypingComment && !force) return;
@@ -2029,7 +2303,7 @@
         });
 
         const container = document.getElementById('feedContainer');
-        const query = document.getElementById('searchInput').value.toLowerCase();
+        const query = document.getElementById('searchInput').value.toLowerCase().trim();
 
         let list = [...posts];
 
@@ -2037,10 +2311,16 @@
             list = list.filter(p => p.community === currentCommunity);
         }
 
-        if (currentView === 'trending') {
+        if (currentView === 'shorts') {
+            list = list.filter(p => isShortPost(p));
+        } else if (currentView === 'trending') {
             list.sort((a, b) => b.votes - a.votes);
         } else if (currentView === 'bookmarks') {
             list = list.filter(p => bookmarks.includes(p.id));
+        }
+
+        if (activeHashtag) {
+            list = list.filter(p => extractHashtags(p.content).includes(activeHashtag));
         }
 
         if (query) {
@@ -2101,6 +2381,9 @@
         const activeHandle = getCurrentUserHandle();
         const tempId = Date.now();
         const payloadMedia = selectedMedia ? { ...selectedMedia } : null;
+        const isShortItem = Boolean(isShortComposerMode || (payloadMedia && payloadMedia.type === 'video'));
+        const tags = extractHashtags(content.trim());
+
         const optimisticPost = {
             id: tempId,
             _pending: true,
@@ -2113,6 +2396,8 @@
             content: content.trim(),
             mediaType: payloadMedia ? payloadMedia.type : null,
             mediaData: payloadMedia ? payloadMedia.data : null,
+            isShort: isShortItem,
+            hashtags: tags,
             votes: 1,
             hearts: 0,
             reposts: 0,
@@ -2122,8 +2407,10 @@
         };
 
         posts.unshift(optimisticPost);
+        autoSaveMatchingHashtagVideos(optimisticPost);
         lastFeedSignature = computeFeedSignature(posts);
         textarea.value = '';
+        toggleShortComposer(false);
         clearMedia();
         renderPosts(true);
 
@@ -2138,12 +2425,14 @@
                     community,
                     content: optimisticPost.content,
                     mediaType: payloadMedia ? payloadMedia.type : null,
-                    mediaData: payloadMedia ? payloadMedia.data : null
+                    mediaData: payloadMedia ? payloadMedia.data : null,
+                    isShort: isShortItem
                 })
             });
             if (res.ok) {
                 const saved = await res.json();
                 posts = posts.map(p => (String(p.id) === String(tempId) ? saved : p));
+                autoSaveMatchingHashtagVideos(saved);
                 lastFeedSignature = computeFeedSignature(posts);
                 renderPosts(true);
             }
@@ -2290,6 +2579,13 @@
         renderPosts(true);
     }
 
+    function switchProfileTab(tab) {
+        activeProfileTab = tab;
+        if (activeProfileHandle) {
+            openUserProfile(activeProfileHandle, tab);
+        }
+    }
+
     function renderProfileModalView(h, userInfo, userPosts) {
         const container = document.getElementById('profileModalContent');
         const followersNum = Math.max(0, Number(userInfo.followers) || 0);
@@ -2301,14 +2597,19 @@
             : (h === activeHandle ? userSettings.author : (posts.find(p => normalizePostHandle(p.handle) === h)?.author || userInfo.author || 'مستخدم'));
         const displayAvatar = userInfo.avatar || (h === activeHandle ? userSettings.avatar : (posts.find(p => normalizePostHandle(p.handle) === h)?.avatar || ''));
 
-        const postsListHtml = userPosts.length
-            ? userPosts.map(p => `
+        const tweetItems = userPosts.filter(p => !isShortPost(p));
+        const shortItems = userPosts.filter(p => isShortPost(p));
+        const shownItems = activeProfileTab === 'shorts' ? shortItems : tweetItems;
+
+        const postsListHtml = shownItems.length
+            ? shownItems.map(p => `
                 <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:8px;">
                     <div style="font-size:0.78rem;color:var(--muted);margin-bottom:4px;">r/${escapeHtml(p.community)} · ♥ ${Number(p.hearts) || 0}</div>
-                    <div style="font-size:0.9rem;line-height:1.55;white-space:pre-wrap;">${escapeHtml(p.content || 'منشور وسائط')}</div>
+                    <div style="font-size:0.9rem;line-height:1.55;white-space:pre-wrap;">${escapeHtml(p.content || (isShortPost(p) ? 'مقطع Short' : 'منشور وسائط'))}</div>
+                    ${p.mediaType === 'video' && p.mediaData ? `<video src="${p.mediaData}" controls style="width:100%;max-height:240px;border-radius:10px;margin-top:8px;"></video>` : ''}
                 </div>
             `).join('')
-            : `<div style="text-align:center;color:var(--muted);padding:20px;font-size:0.88rem;">لا توجد تغريدات لهذا الحساب بعد.</div>`;
+            : `<div style="text-align:center;color:var(--muted);padding:20px;font-size:0.88rem;">${activeProfileTab === 'shorts' ? 'لا توجد مقاطع Short لهذا الحساب بعد.' : 'لا توجد تغريدات لهذا الحساب بعد.'}</div>`;
 
         container.innerHTML = `
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
@@ -2346,23 +2647,29 @@
 
             <div style="display:flex;gap:14px;padding:0 8px 12px;border-bottom:1px solid var(--border);font-size:0.84rem;flex-wrap:wrap;">
                 <div><strong>${followersNum}</strong> <span style="color:var(--muted);">متابع</span></div>
-                <div><strong>${userPosts.length}</strong> <span style="color:var(--muted);">تغريدة</span></div>
+                <div><strong>${tweetItems.length}</strong> <span style="color:var(--muted);">تغريدة</span></div>
+                <div><strong>${shortItems.length}</strong> <span style="color:var(--muted);">Short</span></div>
                 <div style="color:${isVerifiedCount(followersNum) ? 'var(--accent)' : 'var(--muted)'};font-weight:700;">
                     ${isVerifiedCount(followersNum) ? 'حساب موثق (3000+ متابع)' : 'الصح الأزرق عند 3000 متابع'}
                 </div>
             </div>
 
-            <div style="margin-top:14px;">
-                <div style="font-weight:800;font-size:0.9rem;margin-bottom:8px;">التغريدات</div>
+            <div class="profile-tabs">
+                <button type="button" class="profile-tab-btn ${activeProfileTab === 'tweets' ? 'active' : ''}" onclick="switchProfileTab('tweets')">التغريدات (${tweetItems.length})</button>
+                <button type="button" class="profile-tab-btn ${activeProfileTab === 'shorts' ? 'active' : ''}" onclick="switchProfileTab('shorts')">Short (${shortItems.length})</button>
+            </div>
+
+            <div style="margin-top:8px;">
                 ${postsListHtml}
             </div>
         `;
     }
 
-    async function openUserProfile(rawHandle) {
+    async function openUserProfile(rawHandle, tab = 'tweets') {
         const h = normalizePostHandle(rawHandle);
         const activeHandle = getCurrentUserHandle();
         activeProfileHandle = h;
+        activeProfileTab = tab === 'shorts' ? 'shorts' : 'tweets';
         const modal = document.getElementById('profileModal');
         modal.classList.add('open');
 
@@ -2488,7 +2795,7 @@
             notifiedHandles.push(h);
         }
         localStorage.setItem('vloxy_notified', JSON.stringify(notifiedHandles));
-        openUserProfile(h);
+        openUserProfile(h, activeProfileTab);
     }
 
     async function callAI(action, text) {
