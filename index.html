@@ -527,6 +527,169 @@
             transform: translateY(-1px);
         }
 
+        /* واجهة Short بأسلوب يوتيوب */
+        .shorts-stage {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .shorts-player-shell {
+            position: relative;
+            width: 100%;
+            max-width: 420px;
+            height: 620px;
+            max-height: 76vh;
+            border-radius: 22px;
+            overflow: hidden;
+            background: #04060a;
+            border: 1px solid var(--border-strong);
+            box-shadow: 0 18px 42px rgba(0, 0, 0, 0.45);
+            touch-action: pan-y;
+            user-select: none;
+        }
+
+        .shorts-media-el {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            background: #000000;
+        }
+
+        .shorts-placeholder-art {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            text-align: center;
+            background: radial-gradient(circle at 50% 25%, rgba(244, 63, 94, 0.25), rgba(29, 155, 240, 0.12), #070b12 75%);
+        }
+
+        .shorts-top-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 12px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.72), transparent);
+            z-index: 4;
+        }
+
+        .shorts-counter-pill {
+            background: rgba(0, 0, 0, 0.65);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 800;
+        }
+
+        .shorts-side-actions {
+            position: absolute;
+            left: 12px;
+            bottom: 92px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 4;
+        }
+
+        .short-rail-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            background: rgba(15, 23, 42, 0.76);
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.72rem;
+            font-weight: 800;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+            transition: transform 0.14s ease, background-color 0.14s ease;
+        }
+
+        .short-rail-btn:hover {
+            transform: scale(1.06);
+            background: rgba(29, 155, 240, 0.85);
+        }
+
+        .short-rail-btn.active-heart {
+            background: var(--heart);
+            border-color: var(--heart);
+        }
+
+        .shorts-bottom-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 64px;
+            padding: 16px 14px 14px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.88), rgba(0, 0, 0, 0.35) 70%, transparent);
+            color: #ffffff;
+            z-index: 4;
+        }
+
+        .shorts-nav-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .shorts-nav-btn {
+            flex: 1;
+            background: var(--surface);
+            border: 1px solid var(--border-strong);
+            color: var(--text);
+            padding: 9px 14px;
+            border-radius: 14px;
+            font-size: 0.86rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.14s ease;
+        }
+
+        .shorts-nav-btn:hover:not(:disabled) {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--accent-soft);
+        }
+
+        .shorts-nav-btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .no-more-shorts-card {
+            width: 100%;
+            max-width: 420px;
+            padding: 36px 20px;
+            border-radius: 22px;
+            background: var(--surface);
+            border: 1px solid var(--border-strong);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
         .post-card {
             display: flex;
             gap: 10px;
@@ -687,11 +850,6 @@
             width: 100%;
             max-height: 380px;
             object-fit: cover;
-        }
-
-        .post-media.short-media video {
-            max-height: 470px;
-            background: #000000;
         }
 
         .ai-box {
@@ -1095,6 +1253,7 @@
             .composer { padding: 11px 10px; }
             .avatar-img, .avatar-fallback { width: 34px; height: 34px; font-size: 0.88rem; }
             .composer textarea { font-size: 0.92rem; min-height: 54px; }
+            .shorts-player-shell { height: 540px; max-height: 70vh; }
             .post-card { padding: 11px 10px; gap: 7px; }
             .vote-col { padding: 4px; }
             .vote-score { font-size: 0.76rem; }
@@ -1587,6 +1746,10 @@
     let currentView = 'all';
     let activeHashtag = '';
     let isShortComposerMode = false;
+    let shortIndex = 0;
+    let reachedEndOfShorts = false;
+    let shortTouchStartY = null;
+    let shortWheelLock = false;
     let bookmarks = JSON.parse(localStorage.getItem('vloxy_bookmarks') || '[]');
     let heartedPosts = JSON.parse(localStorage.getItem('vloxy_hearted') || '[]').map(String);
     let followedHandles = JSON.parse(localStorage.getItem('vloxy_followed') || '[]');
@@ -1633,6 +1796,177 @@
 
     function isShortPost(post) {
         return Boolean(post.isShort || post.mediaType === 'video');
+    }
+
+    function getFilteredShortsList() {
+        const query = document.getElementById('searchInput').value.toLowerCase().trim();
+        let list = posts.filter(p => isShortPost(p));
+        if (currentCommunity !== 'الكل') {
+            list = list.filter(p => p.community === currentCommunity);
+        }
+        if (activeHashtag) {
+            list = list.filter(p => extractHashtags(p.content).includes(activeHashtag));
+        }
+        if (query) {
+            list = list.filter(p =>
+                (p.content || '').toLowerCase().includes(query) ||
+                (p.author || '').toLowerCase().includes(query) ||
+                (p.handle || '').toLowerCase().includes(query)
+            );
+        }
+        return list;
+    }
+
+    function stepShort(delta) {
+        const list = getFilteredShortsList();
+        if (!list.length) {
+            shortIndex = 0;
+            reachedEndOfShorts = true;
+            renderPosts(true);
+            return;
+        }
+
+        if (delta > 0) {
+            if (reachedEndOfShorts) return;
+            if (shortIndex + 1 < list.length) {
+                shortIndex += 1;
+                reachedEndOfShorts = false;
+            } else {
+                reachedEndOfShorts = true;
+            }
+        } else {
+            if (reachedEndOfShorts) {
+                reachedEndOfShorts = false;
+            } else if (shortIndex > 0) {
+                shortIndex -= 1;
+            }
+        }
+        renderPosts(true);
+    }
+
+    function resetShortsToStart() {
+        shortIndex = 0;
+        reachedEndOfShorts = false;
+        renderPosts(true);
+    }
+
+    function handleShortTouchStart(ev) {
+        if (ev.touches && ev.touches.length) {
+            shortTouchStartY = ev.touches[0].clientY;
+        }
+    }
+
+    function handleShortTouchEnd(ev) {
+        if (shortTouchStartY === null || !ev.changedTouches || !ev.changedTouches.length) return;
+        const dy = shortTouchStartY - ev.changedTouches[0].clientY;
+        shortTouchStartY = null;
+        if (Math.abs(dy) > 45) {
+            stepShort(dy > 0 ? 1 : -1);
+        }
+    }
+
+    function handleShortWheel(ev) {
+        if (shortWheelLock) return;
+        if (Math.abs(ev.deltaY) > 28) {
+            shortWheelLock = true;
+            stepShort(ev.deltaY > 0 ? 1 : -1);
+            setTimeout(() => { shortWheelLock = false; }, 260);
+        }
+    }
+
+    function renderShortsStage(container) {
+        const list = getFilteredShortsList();
+
+        if (!list.length) {
+            container.innerHTML = `
+                <div class="shorts-stage">
+                    <div class="no-more-shorts-card">
+                        <div style="font-size:1.1rem;font-weight:800;">لا يوجد شورت جديد</div>
+                        <p style="font-size:0.86rem;color:var(--muted);">لم يتم نشر أي مقطع Short مطابق بعد. أنشئ أول Short الآن!</p>
+                        <button type="button" class="btn-publish" onclick="chooseCreateType('short')">إنشاء Short جديد</button>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        if (reachedEndOfShorts || shortIndex >= list.length) {
+            container.innerHTML = `
+                <div class="shorts-stage">
+                    <div class="no-more-shorts-card">
+                        <div style="font-size:1.1rem;font-weight:800;">لا يوجد شورت جديد</div>
+                        <p style="font-size:0.86rem;color:var(--muted);">لقد شاهدت جميع مقاطع Short المتاحة حالياً.</p>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;">
+                            <button type="button" class="btn-publish" onclick="resetShortsToStart()">العودة لأول Short</button>
+                            <button type="button" class="media-upload-btn" onclick="chooseCreateType('short')">+ نشر Short</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        const item = list[shortIndex];
+        const itemIdStr = String(item.id);
+        const isHearted = heartedPosts.includes(itemIdStr);
+        const postHandle = normalizePostHandle(item.handle);
+        const activeHandle = getCurrentUserHandle();
+        const isOwner = postHandle === activeHandle;
+        const followers = isOwner ? (Number(userSettings.followers) || 0) : (Number(item.followers) || 0);
+        const displayAuthor = isOwner ? userSettings.author : (item.author || 'مستخدم');
+        const displayAvatar = isOwner ? userSettings.avatar : (item.avatar || '');
+
+        const mediaVisual = (item.mediaType === 'video' && item.mediaData)
+            ? `<video src="${item.mediaData}" class="shorts-media-el" controls autoplay loop playsinline></video>`
+            : (item.mediaType === 'image' && item.mediaData)
+                ? `<img src="${item.mediaData}" alt="Short" class="shorts-media-el">`
+                : `<div class="shorts-placeholder-art">
+                    <div style="font-size:1.25rem;font-weight:800;color:#ffffff;line-height:1.6;">${formatPostContentWithHashtags(item.content || 'مقطع Short')}</div>
+                   </div>`;
+
+        container.innerHTML = `
+            <div class="shorts-stage">
+                <div class="shorts-player-shell" ontouchstart="handleShortTouchStart(event)" ontouchend="handleShortTouchEnd(event)" onwheel="handleShortWheel(event)">
+                    ${mediaVisual}
+
+                    <div class="shorts-top-overlay">
+                        <span class="short-badge">Short</span>
+                        <span class="shorts-counter-pill">${shortIndex + 1} / ${list.length}</span>
+                    </div>
+
+                    <div class="shorts-side-actions">
+                        <button type="button" class="short-rail-btn ${isHearted ? 'active-heart' : ''}" onclick="toggleHeartPost(${item.id})" title="إعجاب">
+                            <span>♥</span>
+                            <span>${Number(item.hearts) || 0}</span>
+                        </button>
+                        <button type="button" class="short-rail-btn" onclick="repost(${item.id})" title="إعادة نشر">
+                            <span></span>
+                            <span>${Number(item.reposts) || 0}</span>
+                        </button>
+                        <button type="button" class="short-rail-btn" onclick="toggleBookmark(${item.id})" title="حفظ">
+                            <span>${bookmarks.includes(item.id) ? '' : ''}</span>
+                        </button>
+                    </div>
+
+                    <div class="shorts-bottom-overlay">
+                        <button type="button" class="author-trigger" style="color:#ffffff;margin-bottom:6px;" onclick="openUserProfile('${escapeHtml(postHandle)}', 'shorts')">
+                            ${renderAvatar(displayAuthor, displayAvatar)}
+                            <span style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
+                                <strong class="author-name-text" style="color:#ffffff;">${escapeHtml(displayAuthor)}</strong>
+                                ${renderVerifiedBadge(followers)}
+                                <span style="font-size:0.78rem;opacity:0.85;">${escapeHtml(postHandle)}</span>
+                            </span>
+                        </button>
+                        ${item.content ? `<div style="font-size:0.9rem;line-height:1.5;white-space:pre-wrap;">${formatPostContentWithHashtags(item.content)}</div>` : ''}
+                    </div>
+                </div>
+
+                <div class="shorts-nav-bar">
+                    <button type="button" class="shorts-nav-btn" onclick="stepShort(-1)" ${shortIndex === 0 && !reachedEndOfShorts ? 'disabled' : ''}>▲ السابق</button>
+                    <button type="button" class="shorts-nav-btn" onclick="stepShort(1)">▼ التالي (شورت جديد)</button>
+                </div>
+            </div>
+        `;
     }
 
     function isHandleTakenByAnotherUser(candidateHandle) {
@@ -2123,6 +2457,10 @@
 
     function switchView(view, btn) {
         currentView = view;
+        if (view === 'shorts') {
+            shortIndex = 0;
+            reachedEndOfShorts = false;
+        }
         document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
         if (btn && btn.classList.contains('nav-item')) btn.classList.add('active');
         const titles = {
@@ -2137,6 +2475,8 @@
 
     function setCommunity(comm, btn) {
         currentCommunity = comm;
+        shortIndex = 0;
+        reachedEndOfShorts = false;
         document.querySelectorAll('.comm-pill').forEach(el => el.classList.remove('active'));
         btn.classList.add('active');
         renderPosts(true);
@@ -2144,11 +2484,15 @@
 
     function selectHashtag(tag) {
         activeHashtag = activeHashtag === tag ? '' : tag;
+        shortIndex = 0;
+        reachedEndOfShorts = false;
         renderPosts(true);
     }
 
     function clearActiveHashtag() {
         activeHashtag = '';
+        shortIndex = 0;
+        reachedEndOfShorts = false;
         renderPosts(true);
     }
 
@@ -2207,7 +2551,7 @@
         if (post.mediaType === 'image' && post.mediaData) {
             mediaHtml = `<div class="post-media"><img src="${post.mediaData}" alt="صورة المنشور"></div>`;
         } else if (post.mediaType === 'video' && post.mediaData) {
-            mediaHtml = `<div class="post-media ${shortItem ? 'short-media' : ''}"><video src="${post.mediaData}" controls playsinline></video></div>`;
+            mediaHtml = `<div class="post-media"><video src="${post.mediaData}" controls playsinline></video></div>`;
         }
 
         const commentsHtml = (post.comments || []).map(c => `
@@ -2295,6 +2639,13 @@
         const isTypingComment = activeEl && activeEl.id && activeEl.id.startsWith('c-input-');
         if (isTypingComment && !force) return;
 
+        const container = document.getElementById('feedContainer');
+
+        if (currentView === 'shorts') {
+            renderShortsStage(container);
+            return;
+        }
+
         const openCommentIds = Array.from(document.querySelectorAll('.comments-box.open'))
             .map(el => el.id.replace('comments-', ''));
         const draftComments = {};
@@ -2302,7 +2653,6 @@
             if (inp.value) draftComments[inp.id.replace('c-input-', '')] = inp.value;
         });
 
-        const container = document.getElementById('feedContainer');
         const query = document.getElementById('searchInput').value.toLowerCase().trim();
 
         let list = [...posts];
@@ -2311,9 +2661,7 @@
             list = list.filter(p => p.community === currentCommunity);
         }
 
-        if (currentView === 'shorts') {
-            list = list.filter(p => isShortPost(p));
-        } else if (currentView === 'trending') {
+        if (currentView === 'trending') {
             list.sort((a, b) => b.votes - a.votes);
         } else if (currentView === 'bookmarks') {
             list = list.filter(p => bookmarks.includes(p.id));
@@ -2408,6 +2756,8 @@
 
         posts.unshift(optimisticPost);
         autoSaveMatchingHashtagVideos(optimisticPost);
+        shortIndex = 0;
+        reachedEndOfShorts = false;
         lastFeedSignature = computeFeedSignature(posts);
         textarea.value = '';
         toggleShortComposer(false);
