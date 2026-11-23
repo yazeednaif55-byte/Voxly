@@ -13,14 +13,18 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(express.static(__dirname));
 
 if (!fs.existsSync(DB_FILE)) {
-    fs.writeFileSync(DB_FILE, JSON.stringify({ posts: [] }, null, 2));
+    fs.writeFileSync(DB_FILE, JSON.stringify({ posts: [], users: {} }, null, 2));
 }
 
 function readDB() {
     try {
-        return JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
+        const parsed = JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
+        return {
+            posts: Array.isArray(parsed.posts) ? parsed.posts : [],
+            users: parsed.users && typeof parsed.users === 'object' ? parsed.users : {}
+        };
     } catch (e) {
-        return { posts: [] };
+        return { posts: [], users: {} };
     }
 }
 
@@ -28,13 +32,97 @@ function writeDB(data) {
     fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
 }
 
+function normalizeHandle(h) {
+    const clean = (h || '@user').trim();
+    if (!clean) return '@user';
+    return clean.startsWith('@') ? clean : '@' + clean;
+}
+
+function ensureUserRecord(db, handle, fallbackAuthor = 'مستخدم', fallbackAvatar = '') {
+    const h = normalizeHandle(handle);
+    if (!db.users[h]) {
+        db.users[h] = {
+            handle: h,
+            author: fallbackAuthor || 'مستخدم',
+            avatar: fallbackAvatar || '',
+            followers: 0,
+            bio: ''
+        };
+    } else {
+        if (fallbackAuthor) db.users[h].author = fallbackAuthor;
+        if (fallbackAvatar) db.users[h].avatar = fallbackAvatar;
+    }
+    return db.users[h];
+}
+
 app.get('/api/posts', (req, res) => {
     const db = readDB();
-    res.json((db.posts || []).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)));
+    const sorted = [...db.posts].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    res.json(sorted);
+});
+
+app.get('/api/users/:handle', (req, res) => {
+    const db = readDB();
+    const h = normalizeHandle(decodeURIComponent(req.params.handle));
+    const userPosts = db.posts.filter(p => normalizeHandle(p.handle) === h);
+    const firstPost = userPosts[0];
+    const user = ensureUserRecord(
+        db,
+        h,
+        firstPost ? firstPost.author : 'مستخدم',
+        firstPost ? firstPost.avatar : ''
+    );
+    writeDB(db);
+    res.json({
+        user,
+        verified: (user.followers || 0) >= 3000,
+        posts: userPosts.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+    });
+});
+
+app.post('/api/users/profile', (req, res) => {
+    const { handle, author, avatar, bio } = req.body;
+    const h = normalizeHandle(handle);
+    const db = readDB();
+    const existing = ensureUserRecord(db, h, author, avatar);
+    if (typeof author === 'string' && author.trim()) existing.author = author.trim();
+    if (typeof avatar === 'string') existing.avatar = avatar;
+    if (typeof bio === 'string') existing.bio = bio.trim();
+
+    db.posts.forEach(p => {
+        if (normalizeHandle(p.handle) === h) {
+            p.author = existing.author;
+            p.avatar = existing.avatar;
+            p.followers = existing.followers;
+        }
+    });
+
+    writeDB(db);
+    res.json({ user: existing, verified: (existing.followers || 0) >= 3000 });
+});
+
+app.post('/api/users/:handle/follow', (req, res) => {
+    const { delta } = req.body; // 1 for follow, -1 for unfollow
+    const h = normalizeHandle(decodeURIComponent(req.params.handle));
+    const db = readDB();
+    const user = ensureUserRecord(db, h);
+    const step = Number(delta) === -1 ? -1 : 1;
+    user.followers = Math.max(0, (Number(user.followers) || 0) + step);
+
+    const isVerified = user.followers >= 3000;
+    db.posts.forEach(p => {
+        if (normalizeHandle(p.handle) === h) {
+            p.followers = user.followers;
+            p.verified = isVerified;
+        }
+    });
+
+    writeDB(db);
+    res.json({ user, verified: isVerified });
 });
 
 app.post('/api/posts', (req, res) => {
-    const { author, handle, community, content, verified, mediaType, mediaData } = req.body;
+    const { author, handle, avatar, community, content, mediaType, mediaData } = req.body;
     const hasText = !!(content && content.trim());
     const hasMedia = !!(mediaType && mediaData);
 
@@ -43,18 +131,25 @@ app.post('/api/posts', (req, res) => {
     }
 
     const db = readDB();
+    const h = normalizeHandle(handle);
+    const user = ensureUserRecord(db, h, author, avatar);
+    const followers = Number(user.followers) || 0;
+
     const newPost = {
         id: Date.now(),
-        author: author || 'مستخدم',
-        handle: handle || '@user',
-        verified: !!verified,
+        author: user.author || 'مستخدم',
+        handle: h,
+        avatar: user.avatar || '',
+        followers,
+        verified: followers >= 3000,
         community: community || 'عام',
         content: hasText ? content.trim() : '',
         mediaType: hasMedia ? mediaType : null,
         mediaData: hasMedia ? mediaData : null,
         votes: 1,
+        hearts: 0,
         reposts: 0,
-        reactions: { like: 0, love: 0, fire: 0, haha: 0 },
+        reactions: { like: 0, fire: 0, haha: 0 },
         comments: [],
         timestamp: new Date().toISOString()
     };
@@ -77,13 +172,23 @@ app.post('/api/posts/:id/vote', (req, res) => {
     res.json(post);
 });
 
+app.post('/api/posts/:id/heart', (req, res) => {
+    const db = readDB();
+    const post = db.posts.find(p => p.id == req.params.id);
+    if (!post) return res.status(404).json({ error: 'غير موجود' });
+
+    post.hearts = (Number(post.hearts) || 0) + 1;
+    writeDB(db);
+    res.json(post);
+});
+
 app.post('/api/posts/:id/react', (req, res) => {
     const { type } = req.body;
     const db = readDB();
     const post = db.posts.find(p => p.id == req.params.id);
     if (!post) return res.status(404).json({ error: 'غير موجود' });
 
-    if (!post.reactions) post.reactions = { like: 0, love: 0, fire: 0, haha: 0 };
+    if (!post.reactions) post.reactions = { like: 0, fire: 0, haha: 0 };
     if (post.reactions[type] !== undefined) {
         post.reactions[type] += 1;
     }
@@ -97,7 +202,7 @@ app.post('/api/posts/:id/repost', (req, res) => {
     const post = db.posts.find(p => p.id == req.params.id);
     if (!post) return res.status(404).json({ error: 'غير موجود' });
 
-    post.reposts = (post.reposts || 0) + 1;
+    post.reposts = (Number(post.reposts) || 0) + 1;
     writeDB(db);
     res.json(post);
 });
