@@ -10,7 +10,7 @@
             --bg: #05070c;
             --surface: #0d121c;
             --surface-elevated: #141b29;
-            --surface-glass: rgba(13, 18, 28, 0.84);
+            --surface-glass: rgba(13, 18, 28, 0.88);
             --border: rgba(255, 255, 255, 0.08);
             --border-strong: rgba(255, 255, 255, 0.15);
             --text: #f5f8fc;
@@ -30,7 +30,7 @@
             --bg: #f1f5f9;
             --surface: #ffffff;
             --surface-elevated: #f8fafc;
-            --surface-glass: rgba(255, 255, 255, 0.88);
+            --surface-glass: rgba(255, 255, 255, 0.92);
             --border: rgba(15, 23, 42, 0.09);
             --border-strong: rgba(15, 23, 42, 0.16);
             --text: #0f172a;
@@ -43,6 +43,7 @@
             font-family: 'Cairo', sans-serif;
             margin: 0;
             padding: 0;
+            animation: none !important;
         }
 
         html {
@@ -56,32 +57,15 @@
                 var(--bg);
             color: var(--text);
             min-height: 100vh;
-            transition: background-color 0.2s ease, color 0.2s ease;
             overflow-x: hidden;
-        }
-
-        @keyframes heartBurst {
-            0% { transform: scale(1); }
-            45% { transform: scale(1.28); }
-            100% { transform: scale(1); }
-        }
-
-        @keyframes pulseDot {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.55; transform: scale(0.88); }
-        }
-
-        .no-anim * {
-            animation: none !important;
-            transition: none !important;
         }
 
         .app-layout {
             display: grid;
-            grid-template-columns: 248px minmax(0, 680px) 315px;
+            grid-template-columns: 248px minmax(0, 740px) 305px;
             justify-content: center;
             gap: 20px;
-            max-width: 1320px;
+            max-width: 1360px;
             margin: 0 auto;
             padding: 0 14px;
         }
@@ -115,7 +99,6 @@
             font-weight: 800;
             font-size: 1.35rem;
             color: #ffffff;
-            box-shadow: 0 8px 20px var(--accent-glow);
         }
 
         .brand-title {
@@ -135,7 +118,6 @@
             font-size: 0.98rem;
             font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.15s ease, border-color 0.15s ease;
             text-align: right;
         }
 
@@ -159,13 +141,6 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            box-shadow: 0 8px 22px var(--accent-glow);
-            transition: opacity 0.15s ease, transform 0.15s ease;
-        }
-
-        .plus-desktop-btn:hover {
-            opacity: 0.95;
-            transform: translateY(-1px);
         }
 
         .icon-svg {
@@ -180,19 +155,14 @@
             min-height: 100vh;
             width: 100%;
             min-width: 0;
-            background: rgba(13, 18, 28, 0.35);
-        }
-
-        [data-theme="light"] .main-feed {
-            background: rgba(255, 255, 255, 0.55);
+            background: var(--surface);
         }
 
         .top-header {
             position: sticky;
             top: 0;
             background: var(--surface-glass);
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
+            backdrop-filter: blur(14px);
             padding: 11px 16px;
             border-bottom: 1px solid var(--border);
             z-index: 20;
@@ -207,6 +177,42 @@
             align-items: center;
             gap: 8px;
             flex-wrap: wrap;
+        }
+
+        .mode-switch-bar {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            padding: 10px 16px;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .mode-tab-btn {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 9px 12px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .mode-tab-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #ffffff;
+        }
+
+        .mode-tab-btn.short-tab.active {
+            background: var(--short-accent);
+            border-color: var(--short-accent);
+            color: #ffffff;
         }
 
         .live-pill {
@@ -227,7 +233,6 @@
             height: 7px;
             border-radius: 999px;
             background: var(--success);
-            animation: pulseDot 1.6s infinite ease-in-out;
         }
 
         .active-tag-chip {
@@ -262,7 +267,6 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: 0.14s ease;
             flex-shrink: 0;
         }
 
@@ -273,19 +277,15 @@
         }
 
         .search-box {
-            background: var(--surface);
+            background: var(--bg);
             border: 1px solid var(--border);
             border-radius: 999px;
             padding: 5px 12px;
             display: flex;
             align-items: center;
             gap: 6px;
-            width: 175px;
+            width: 170px;
             min-width: 0;
-        }
-
-        .search-box:focus-within {
-            border-color: var(--accent);
         }
 
         .search-box input {
@@ -304,7 +304,6 @@
             padding: 9px 16px;
             border-bottom: 1px solid var(--border);
             overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
             background: var(--surface);
         }
 
@@ -318,14 +317,12 @@
             font-weight: 700;
             cursor: pointer;
             white-space: nowrap;
-            transition: all 0.14s ease;
         }
 
         .comm-pill.active, .comm-pill:hover {
             background: var(--accent);
             border-color: var(--accent);
             color: #ffffff;
-            box-shadow: 0 4px 12px var(--accent-glow);
         }
 
         .composer {
@@ -441,10 +438,6 @@
             cursor: not-allowed;
         }
 
-        .input-clean:focus, .select-clean:focus {
-            border-color: var(--accent);
-        }
-
         .media-upload-btn {
             background: var(--bg);
             border: 1px solid var(--border);
@@ -469,12 +462,6 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: 0.14s ease;
-        }
-
-        .plus-trigger-btn:hover {
-            background: var(--accent);
-            color: #ffffff;
         }
 
         .ai-btn {
@@ -489,7 +476,6 @@
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            transition: 0.14s ease;
         }
 
         .short-toggle-chip {
@@ -518,16 +504,9 @@
             font-weight: 700;
             font-size: 0.86rem;
             cursor: pointer;
-            box-shadow: 0 4px 14px var(--accent-glow);
-            transition: transform 0.12s ease, opacity 0.12s ease;
         }
 
-        .btn-publish:hover {
-            opacity: 0.94;
-            transform: translateY(-1px);
-        }
-
-        /* واجهة Short بأسلوب يوتيوب */
+        /* واجهة Short بأبعاد 9:12 + قائمة تعليقات كبيرة بأسلوب يوتيوب وتيك توك */
         .shorts-stage {
             padding: 16px;
             display: flex;
@@ -536,17 +515,22 @@
             gap: 14px;
         }
 
+        .shorts-workspace {
+            display: grid;
+            grid-template-columns: minmax(0, 360px) minmax(0, 1fr);
+            gap: 14px;
+            width: 100%;
+            align-items: start;
+        }
+
         .shorts-player-shell {
             position: relative;
             width: 100%;
-            max-width: 420px;
-            height: 620px;
-            max-height: 76vh;
-            border-radius: 22px;
+            aspect-ratio: 9 / 12;
+            border-radius: 20px;
             overflow: hidden;
             background: #04060a;
             border: 1px solid var(--border-strong);
-            box-shadow: 0 18px 42px rgba(0, 0, 0, 0.45);
             touch-action: pan-y;
             user-select: none;
         }
@@ -566,9 +550,9 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 24px;
+            padding: 20px;
             text-align: center;
-            background: radial-gradient(circle at 50% 25%, rgba(244, 63, 94, 0.25), rgba(29, 155, 240, 0.12), #070b12 75%);
+            background: linear-gradient(160deg, rgba(244, 63, 94, 0.24), rgba(29, 155, 240, 0.14), #070b12 80%);
         }
 
         .shorts-top-overlay {
@@ -576,40 +560,42 @@
             top: 0;
             left: 0;
             right: 0;
-            padding: 12px 14px;
+            padding: 10px 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 6px;
             background: linear-gradient(to bottom, rgba(0, 0, 0, 0.72), transparent);
             z-index: 4;
         }
 
         .shorts-counter-pill {
-            background: rgba(0, 0, 0, 0.65);
+            background: rgba(0, 0, 0, 0.7);
             color: #ffffff;
             border: 1px solid rgba(255, 255, 255, 0.18);
             padding: 3px 10px;
             border-radius: 999px;
-            font-size: 0.75rem;
+            font-size: 0.74rem;
             font-weight: 800;
         }
 
         .shorts-side-actions {
             position: absolute;
-            left: 12px;
-            bottom: 92px;
+            left: 10px;
+            bottom: 84px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
             z-index: 4;
         }
 
         .short-rail-btn {
-            width: 44px;
+            min-width: 44px;
             height: 44px;
+            padding: 0 8px;
             border-radius: 999px;
             border: 1px solid rgba(255, 255, 255, 0.22);
-            background: rgba(15, 23, 42, 0.76);
+            background: rgba(15, 23, 42, 0.82);
             color: #ffffff;
             display: flex;
             flex-direction: column;
@@ -618,13 +604,6 @@
             font-size: 0.72rem;
             font-weight: 800;
             cursor: pointer;
-            backdrop-filter: blur(8px);
-            transition: transform 0.14s ease, background-color 0.14s ease;
-        }
-
-        .short-rail-btn:hover {
-            transform: scale(1.06);
-            background: rgba(29, 155, 240, 0.85);
         }
 
         .short-rail-btn.active-heart {
@@ -636,11 +615,51 @@
             position: absolute;
             bottom: 0;
             left: 0;
-            right: 64px;
-            padding: 16px 14px 14px;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.88), rgba(0, 0, 0, 0.35) 70%, transparent);
+            right: 60px;
+            padding: 14px 12px 12px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.35) 75%, transparent);
             color: #ffffff;
             z-index: 4;
+        }
+
+        .short-comments-panel {
+            background: var(--bg);
+            border: 1px solid var(--border-strong);
+            border-radius: 20px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            min-height: 440px;
+            max-height: 540px;
+        }
+
+        .short-comments-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 10px;
+            font-weight: 800;
+            font-size: 0.95rem;
+        }
+
+        .short-comments-list {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding-left: 4px;
+            margin-bottom: 10px;
+        }
+
+        .short-comment-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 9px 11px;
+            font-size: 0.85rem;
         }
 
         .shorts-nav-bar {
@@ -649,12 +668,12 @@
             justify-content: center;
             gap: 10px;
             width: 100%;
-            max-width: 420px;
         }
 
         .shorts-nav-btn {
             flex: 1;
-            background: var(--surface);
+            max-width: 240px;
+            background: var(--bg);
             border: 1px solid var(--border-strong);
             color: var(--text);
             padding: 9px 14px;
@@ -662,7 +681,6 @@
             font-size: 0.86rem;
             font-weight: 800;
             cursor: pointer;
-            transition: 0.14s ease;
         }
 
         .shorts-nav-btn:hover:not(:disabled) {
@@ -678,10 +696,10 @@
 
         .no-more-shorts-card {
             width: 100%;
-            max-width: 420px;
+            max-width: 440px;
             padding: 36px 20px;
             border-radius: 22px;
-            background: var(--surface);
+            background: var(--bg);
             border: 1px solid var(--border-strong);
             text-align: center;
             display: flex;
@@ -696,7 +714,6 @@
             padding: 15px 16px;
             border-bottom: 1px solid var(--border);
             background: var(--surface);
-            transition: background-color 0.14s ease;
         }
 
         .post-card:hover {
@@ -722,12 +739,11 @@
             color: var(--muted);
             cursor: pointer;
             font-size: 0.9rem;
-            transition: 0.12s ease;
             line-height: 1.2;
         }
 
-        .vote-btn.up:hover { color: var(--upvote); transform: scale(1.15); }
-        .vote-btn.down:hover { color: var(--downvote); transform: scale(1.15); }
+        .vote-btn.up:hover { color: var(--upvote); }
+        .vote-btn.down:hover { color: var(--downvote); }
         .vote-score { font-weight: 800; font-size: 0.82rem; }
 
         .post-main {
@@ -780,10 +796,9 @@
             font-size: 0.72rem;
             font-weight: 800;
             flex-shrink: 0;
-            box-shadow: 0 2px 8px rgba(29, 155, 240, 0.45);
         }
 
-        .followers-chip {
+        .followers-chip, .views-chip {
             font-size: 0.73rem;
             font-weight: 700;
             color: var(--muted);
@@ -804,7 +819,7 @@
         }
 
         .short-badge {
-            background: rgba(244, 63, 94, 0.14);
+            background: rgba(244, 63, 94, 0.16);
             color: var(--short-accent);
             border: 1px solid rgba(244, 63, 94, 0.35);
             padding: 2px 9px;
@@ -892,7 +907,6 @@
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            transition: 0.14s ease;
         }
 
         .react-pill:hover {
@@ -912,18 +926,12 @@
             display: inline-flex;
             align-items: center;
             gap: 5px;
-            transition: 0.14s ease;
-        }
-
-        .heart-pill:hover {
-            background: rgba(249, 24, 128, 0.22);
         }
 
         .heart-pill.active {
             background: var(--heart);
             color: #ffffff;
             border-color: var(--heart);
-            animation: heartBurst 0.22s ease;
         }
 
         .comments-box {
@@ -938,7 +946,7 @@
         .comment-bubble {
             background: var(--bg);
             border: 1px solid var(--border);
-            padding: 7px 11px;
+            padding: 8px 11px;
             border-radius: 10px;
             margin-bottom: 6px;
             font-size: 0.84rem;
@@ -960,7 +968,6 @@
             border: 1px solid var(--border);
             border-radius: 18px;
             padding: 16px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
         }
 
         .ad-card {
@@ -997,7 +1004,6 @@
             font-size: 0.78rem;
             font-weight: 700;
             cursor: pointer;
-            transition: 0.14s ease;
         }
 
         .trend-tag-btn:hover, .trend-tag-btn.active {
@@ -1023,7 +1029,7 @@
             position: fixed;
             inset: 0;
             background: rgba(0, 0, 0, 0.78);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(8px);
             display: none;
             align-items: center;
             justify-content: center;
@@ -1042,7 +1048,6 @@
             max-height: 90vh;
             overflow-y: auto;
             padding: 18px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
         }
 
         .profile-banner {
@@ -1093,7 +1098,6 @@
             font-size: 0.85rem;
             font-weight: 800;
             cursor: pointer;
-            transition: 0.14s ease;
         }
 
         .profile-tab-btn.active {
@@ -1111,19 +1115,12 @@
             font-weight: 800;
             font-size: 0.85rem;
             cursor: pointer;
-            box-shadow: 0 4px 14px var(--accent-glow);
-            transition: transform 0.12s ease, background-color 0.15s ease;
-        }
-
-        .follow-btn:hover {
-            transform: translateY(-1px);
         }
 
         .follow-btn.following {
             background: var(--bg);
             color: var(--text);
             border: 1px solid var(--border-strong);
-            box-shadow: none;
         }
 
         .create-picker-grid {
@@ -1146,7 +1143,6 @@
             font-weight: 700;
             font-size: 0.85rem;
             cursor: pointer;
-            transition: 0.14s ease;
         }
 
         .picker-option-btn:hover {
@@ -1212,7 +1208,6 @@
             inset: 0;
             background-color: rgba(148, 163, 184, 0.35);
             border-radius: 24px;
-            transition: 0.2s;
         }
 
         .slider:before {
@@ -1224,16 +1219,21 @@
             bottom: 3px;
             background-color: #ffffff;
             border-radius: 50%;
-            transition: 0.2s;
         }
 
         input:checked + .slider { background-color: var(--accent); }
         input:checked + .slider:before { transform: translateX(20px); }
 
         @media (max-width: 1050px) {
-            .app-layout { grid-template-columns: 76px minmax(0, 680px); }
+            .app-layout { grid-template-columns: 76px minmax(0, 740px); }
             .sidebar-right { display: none; }
             .nav-text, .brand-title { display: none; }
+        }
+
+        @media (max-width: 780px) {
+            .shorts-workspace { grid-template-columns: 1fr; }
+            .shorts-player-shell { max-width: 360px; margin: 0 auto; }
+            .short-comments-panel { min-height: 280px; max-height: 360px; }
         }
 
         @media (max-width: 680px) {
@@ -1253,7 +1253,6 @@
             .composer { padding: 11px 10px; }
             .avatar-img, .avatar-fallback { width: 34px; height: 34px; font-size: 0.88rem; }
             .composer textarea { font-size: 0.92rem; min-height: 54px; }
-            .shorts-player-shell { height: 540px; max-height: 70vh; }
             .post-card { padding: 11px 10px; gap: 7px; }
             .vote-col { padding: 4px; }
             .vote-score { font-size: 0.76rem; }
@@ -1269,7 +1268,7 @@
                 right: 0;
                 height: 56px;
                 background: var(--surface-glass);
-                backdrop-filter: blur(16px);
+                backdrop-filter: blur(14px);
                 border-top: 1px solid var(--border);
                 justify-content: space-around;
                 align-items: center;
@@ -1314,7 +1313,6 @@
                 cursor: pointer;
                 line-height: 1;
                 flex-shrink: 0;
-                box-shadow: 0 4px 14px var(--accent-glow);
             }
         }
     </style>
@@ -1328,14 +1326,14 @@
             <span class="brand-title">Vloxy</span>
         </div>
 
-        <button class="nav-item active" onclick="switchView('all', this)">
+        <button class="nav-item active" data-nav="all" onclick="switchView('all', this)">
             <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-9.5z"/>
             </svg>
-            <span class="nav-text">الرئيسية</span>
+            <span class="nav-text">التغريدات</span>
         </button>
 
-        <button class="nav-item" onclick="switchView('shorts', this)">
+        <button class="nav-item" data-nav="shorts" onclick="switchView('shorts', this)">
             <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="6" y="3" width="12" height="18" rx="3"/><polygon points="10 9 15 12 10 15 10 9"/>
             </svg>
@@ -1349,14 +1347,14 @@
             <span class="nav-text">حسابي</span>
         </button>
 
-        <button class="nav-item" onclick="switchView('trending', this)">
+        <button class="nav-item" data-nav="trending" onclick="switchView('trending', this)">
             <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
             </svg>
             <span class="nav-text">الأكثر تصويتاً</span>
         </button>
 
-        <button class="nav-item" onclick="switchView('bookmarks', this)">
+        <button class="nav-item" data-nav="bookmarks" onclick="switchView('bookmarks', this)">
             <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
             </svg>
@@ -1395,7 +1393,7 @@
     <main class="main-feed">
         <div class="top-header">
             <div class="title-row">
-                <h2 style="font-size: 1.08rem; font-weight: 800;" id="viewTitle">الرئيسية</h2>
+                <h2 style="font-size: 1.08rem; font-weight: 800;" id="viewTitle">التغريدات</h2>
                 <span id="activeHashtagChip" class="active-tag-chip" style="display:none;" onclick="clearActiveHashtag()"></span>
                 <span class="live-pill" title="تحديث فوري">
                     <span class="live-dot"></span>
@@ -1433,6 +1431,15 @@
             </div>
         </div>
 
+        <div class="mode-switch-bar">
+            <button type="button" id="modeTweetsBtn" class="mode-tab-btn active" onclick="switchView('all')">
+                <span> قائمة التغريدات</span>
+            </button>
+            <button type="button" id="modeShortsBtn" class="mode-tab-btn short-tab" onclick="switchView('shorts')">
+                <span> قائمة Short (9:12)</span>
+            </button>
+        </div>
+
         <div class="communities-bar">
             <button class="comm-pill active" onclick="setCommunity('الكل', this)">الكل</button>
             <button class="comm-pill" onclick="setCommunity('عام', this)">r/عام</button>
@@ -1445,7 +1452,11 @@
         <div class="composer" id="composerBox">
             <div class="composer-top">
                 <div id="composerAvatarSlot"></div>
-                <textarea id="postContent" placeholder="اكتب تغريدتك أو #هاشتاق هنا..." onkeydown="handleComposerKey(event)"></textarea>
+                <textarea id="postContent" placeholder="اكتب تغريدتك أو #هاشتاق هنا..." oninput="updateHashtagPreview()" onkeydown="handleComposerKey(event)"></textarea>
+            </div>
+
+            <div style="font-size:0.78rem;color:var(--accent);font-weight:700;margin-bottom:8px;" id="hashtagBoostPreview">
+                كل هاشتاق تضيفه يزيد مشاهدات الـ Short تلقائياً.
             </div>
 
             <div class="media-preview" id="mediaPreview">
@@ -1503,19 +1514,19 @@
         </div>
 
         <div class="ad-card">
-            <span class="ad-pill">إعلان · أنشئ محتواك</span>
-            <div style="font-weight:800;font-size:0.98rem;margin-bottom:6px;">انشر محتواك أكثر عبر الهاشتاقات و Short</div>
+            <span class="ad-pill">إعلان · زيادة المشاهدات</span>
+            <div style="font-weight:800;font-size:0.98rem;margin-bottom:6px;">كل هاشتاق = مشاهدات أكثر في Short</div>
             <p style="font-size:0.83rem;color:var(--muted);line-height:1.55;margin-bottom:10px;">
-                استخدم هاشتاق واضح في تغريداتك أو مقاطعك القصيرة؛ أي فيديو يحمل نفس الهاشتاق يُحفظ تلقائياً عند مشاركة أي شخص بنفس الوسم.
+                أضف هاشتاقات أكثر لمقاطع Short لرفع عداد المشاهدات تلقائياً، وتصفح التعليقات الكبيرة مباشرة بجانب الفيديو.
             </p>
-            <button type="button" class="btn-publish" style="width:100%;" onclick="startPromoteContent()">أنشئ وانشر الآن</button>
+            <button type="button" class="btn-publish" style="width:100%;" onclick="startPromoteContent()">أنشئ Short بهاشتاقات</button>
         </div>
 
         <div class="widget-card">
             <div class="widget-title">
                 <span># الهاشتاقات</span>
             </div>
-            <p style="font-size: 0.8rem; color: var(--muted);">اضغط على أي هاشتاق لعرض المنشورات والفيديوهات المرتبطة به:</p>
+            <p style="font-size: 0.8rem; color: var(--muted);">اضغط على أي هاشتاق للتصفية حسبه:</p>
             <div id="trendingHashtagsBox" class="hashtag-cloud"></div>
         </div>
 
@@ -1539,7 +1550,7 @@
         <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-9.5z"/>
         </svg>
-        <span>الرئيسية</span>
+        <span>التغريدات</span>
     </button>
 
     <button class="mobile-bar-btn" onclick="switchView('shorts', this)">
@@ -1717,22 +1728,12 @@
             </select>
         </div>
 
-        <div class="setting-row">
+        <div class="setting-row" style="border: none;">
             <div>
                 <div style="font-weight: 700;">صوت التشغيل (أسلوب Windows 7 / 11)</div>
             </div>
             <label class="switch">
                 <input type="checkbox" id="setBootSound" onchange="saveSettings()">
-                <span class="slider"></span>
-            </label>
-        </div>
-
-        <div class="setting-row" style="border: none;">
-            <div>
-                <div style="font-weight: 700;">الحركات والأنيميشن</div>
-            </div>
-            <label class="switch">
-                <input type="checkbox" id="setAnimations" onchange="saveSettings()">
                 <span class="slider"></span>
             </label>
         </div>
@@ -1769,8 +1770,7 @@
         apiKey: '',
         theme: 'system',
         fontSize: '15px',
-        bootSound: true,
-        animations: true
+        bootSound: true
     }));
 
     function normalizeExactHandle(h) {
@@ -1792,6 +1792,24 @@
     function extractHashtags(text) {
         const matches = String(text || '').match(/#[\p{L}\p{N}_]+/gu) || [];
         return Array.from(new Set(matches.map(tag => tag.trim())));
+    }
+
+    function getHashtagBoostViews(text) {
+        const count = extractHashtags(text).length;
+        return count * (count + 1) * 45;
+    }
+
+    function updateHashtagPreview() {
+        const val = document.getElementById('postContent').value;
+        const tags = extractHashtags(val);
+        const boost = getHashtagBoostViews(val);
+        const el = document.getElementById('hashtagBoostPreview');
+        if (!el) return;
+        if (tags.length > 0) {
+            el.textContent = `عدد الهاشتاقات: ${tags.length} → زيادة مشاهدات متوقعة: +${boost} مشاهدة`;
+        } else {
+            el.textContent = 'كل هاشتاق تضيفه يزيد مشاهدات الـ Short تلقائياً.';
+        }
     }
 
     function isShortPost(post) {
@@ -1870,8 +1888,34 @@
         if (Math.abs(ev.deltaY) > 28) {
             shortWheelLock = true;
             stepShort(ev.deltaY > 0 ? 1 : -1);
-            setTimeout(() => { shortWheelLock = false; }, 260);
+            setTimeout(() => { shortWheelLock = false; }, 240);
         }
+    }
+
+    function renderShortCommentsOnly(postId) {
+        const post = posts.find(p => String(p.id) === String(postId));
+        if (!post) return;
+        const listEl = document.getElementById(`shortCommentsList-${post.id}`);
+        const countEl = document.getElementById(`shortCommentsCount-${post.id}`);
+        const comments = Array.isArray(post.comments) ? post.comments : [];
+        if (countEl) countEl.textContent = String(comments.length);
+        if (!listEl) return;
+
+        if (!comments.length) {
+            listEl.innerHTML = `<div style="text-align:center;color:var(--muted);padding:24px 10px;font-size:0.84rem;">لا توجد تعليقات بعد. كن أول من يعلق على هذا الـ Short!</div>`;
+            return;
+        }
+
+        listEl.innerHTML = comments.map(c => `
+            <div class="short-comment-item">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
+                    <strong style="color:var(--accent);font-size:0.82rem;">${escapeHtml(c.author || 'مستخدم')}</strong>
+                    <span style="font-size:0.7rem;color:var(--muted);">${new Date(c.timestamp || Date.now()).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })}</span>
+                </div>
+                <div style="line-height:1.5;word-break:break-word;">${escapeHtml(c.text)}</div>
+            </div>
+        `).join('');
+        listEl.scrollTop = listEl.scrollHeight;
     }
 
     function renderShortsStage(container) {
@@ -1915,49 +1959,72 @@
         const followers = isOwner ? (Number(userSettings.followers) || 0) : (Number(item.followers) || 0);
         const displayAuthor = isOwner ? userSettings.author : (item.author || 'مستخدم');
         const displayAvatar = isOwner ? userSettings.avatar : (item.avatar || '');
+        const totalViews = Number(item.views) || (150 + getHashtagBoostViews(item.content));
+        const commentsCount = Array.isArray(item.comments) ? item.comments.length : 0;
 
         const mediaVisual = (item.mediaType === 'video' && item.mediaData)
             ? `<video src="${item.mediaData}" class="shorts-media-el" controls autoplay loop playsinline></video>`
             : (item.mediaType === 'image' && item.mediaData)
                 ? `<img src="${item.mediaData}" alt="Short" class="shorts-media-el">`
                 : `<div class="shorts-placeholder-art">
-                    <div style="font-size:1.25rem;font-weight:800;color:#ffffff;line-height:1.6;">${formatPostContentWithHashtags(item.content || 'مقطع Short')}</div>
+                    <div style="font-size:1.15rem;font-weight:800;color:#ffffff;line-height:1.6;">${formatPostContentWithHashtags(item.content || 'مقطع Short')}</div>
                    </div>`;
 
         container.innerHTML = `
             <div class="shorts-stage">
-                <div class="shorts-player-shell" ontouchstart="handleShortTouchStart(event)" ontouchend="handleShortTouchEnd(event)" onwheel="handleShortWheel(event)">
-                    ${mediaVisual}
+                <div class="shorts-workspace">
+                    <div class="shorts-player-shell" ontouchstart="handleShortTouchStart(event)" ontouchend="handleShortTouchEnd(event)" onwheel="handleShortWheel(event)">
+                        ${mediaVisual}
 
-                    <div class="shorts-top-overlay">
-                        <span class="short-badge">Short</span>
-                        <span class="shorts-counter-pill">${shortIndex + 1} / ${list.length}</span>
+                        <div class="shorts-top-overlay">
+                            <span class="short-badge">Short 9:12</span>
+                            <span class="shorts-counter-pill">👁 ${totalViews}</span>
+                            <span class="shorts-counter-pill">${shortIndex + 1}/${list.length}</span>
+                        </div>
+
+                        <div class="shorts-side-actions">
+                            <button type="button" class="short-rail-btn ${isHearted ? 'active-heart' : ''}" onclick="toggleHeartPost(${item.id})" title="قلب">
+                                <span>♥</span>
+                                <span id="shortHeartCount-${item.id}">${Number(item.hearts) || 0}</span>
+                            </button>
+                            <button type="button" class="short-rail-btn" onclick="focusShortCommentInput(${item.id})" title="التعليقات">
+                                <span></span>
+                                <span id="shortCommentsCount-${item.id}">${commentsCount}</span>
+                            </button>
+                            <button type="button" class="short-rail-btn" onclick="repost(${item.id})" title="إعادة نشر">
+                                <span></span>
+                                <span id="shortRepostCount-${item.id}">${Number(item.reposts) || 0}</span>
+                            </button>
+                            <button type="button" class="short-rail-btn" onclick="toggleBookmark(${item.id})" title="حفظ">
+                                <span>${bookmarks.includes(item.id) ? '' : ''}</span>
+                            </button>
+                        </div>
+
+                        <div class="shorts-bottom-overlay">
+                            <button type="button" class="author-trigger" style="color:#ffffff;margin-bottom:6px;" onclick="openUserProfile('${escapeHtml(postHandle)}', 'shorts')">
+                                ${renderAvatar(displayAuthor, displayAvatar)}
+                                <span style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
+                                    <strong class="author-name-text" style="color:#ffffff;">${escapeHtml(displayAuthor)}</strong>
+                                    ${renderVerifiedBadge(followers)}
+                                    <span style="font-size:0.76rem;opacity:0.85;">${escapeHtml(postHandle)}</span>
+                                </span>
+                            </button>
+                            ${item.content ? `<div style="font-size:0.88rem;line-height:1.5;white-space:pre-wrap;">${formatPostContentWithHashtags(item.content)}</div>` : ''}
+                        </div>
                     </div>
 
-                    <div class="shorts-side-actions">
-                        <button type="button" class="short-rail-btn ${isHearted ? 'active-heart' : ''}" onclick="toggleHeartPost(${item.id})" title="إعجاب">
-                            <span>♥</span>
-                            <span>${Number(item.hearts) || 0}</span>
-                        </button>
-                        <button type="button" class="short-rail-btn" onclick="repost(${item.id})" title="إعادة نشر">
-                            <span></span>
-                            <span>${Number(item.reposts) || 0}</span>
-                        </button>
-                        <button type="button" class="short-rail-btn" onclick="toggleBookmark(${item.id})" title="حفظ">
-                            <span>${bookmarks.includes(item.id) ? '' : ''}</span>
-                        </button>
-                    </div>
+                    <div class="short-comments-panel">
+                        <div class="short-comments-header">
+                            <span> التعليقات</span>
+                            <span class="views-chip">👁 ${totalViews} مشاهدة</span>
+                        </div>
 
-                    <div class="shorts-bottom-overlay">
-                        <button type="button" class="author-trigger" style="color:#ffffff;margin-bottom:6px;" onclick="openUserProfile('${escapeHtml(postHandle)}', 'shorts')">
-                            ${renderAvatar(displayAuthor, displayAvatar)}
-                            <span style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
-                                <strong class="author-name-text" style="color:#ffffff;">${escapeHtml(displayAuthor)}</strong>
-                                ${renderVerifiedBadge(followers)}
-                                <span style="font-size:0.78rem;opacity:0.85;">${escapeHtml(postHandle)}</span>
-                            </span>
-                        </button>
-                        ${item.content ? `<div style="font-size:0.9rem;line-height:1.5;white-space:pre-wrap;">${formatPostContentWithHashtags(item.content)}</div>` : ''}
+                        <div class="short-comments-list" id="shortCommentsList-${item.id}"></div>
+
+                        <div style="display:flex;gap:6px;padding-top:8px;border-top:1px solid var(--border);">
+                            <input type="text" id="shortCommentInput-${item.id}" class="input-clean" style="flex:1;" placeholder="أضف تعليقاً على الـ Short..." onkeydown="if(event.key==='Enter'){event.preventDefault();sendShortComment(${item.id});}">
+                            <button type="button" class="btn-publish" style="padding:6px 14px;" onclick="sendShortComment(${item.id})">إرسال</button>
+                        </div>
                     </div>
                 </div>
 
@@ -1967,6 +2034,42 @@
                 </div>
             </div>
         `;
+
+        renderShortCommentsOnly(item.id);
+    }
+
+    function focusShortCommentInput(id) {
+        const inp = document.getElementById(`shortCommentInput-${id}`);
+        if (inp) inp.focus();
+    }
+
+    async function sendShortComment(id) {
+        const inp = document.getElementById(`shortCommentInput-${id}`);
+        if (!inp) return;
+        const text = inp.value.trim();
+        if (!text) return;
+
+        const target = posts.find(p => String(p.id) === String(id));
+        if (target) {
+            target.comments = Array.isArray(target.comments) ? target.comments : [];
+            target.comments.push({
+                id: Date.now(),
+                author: userSettings.author,
+                text,
+                timestamp: new Date().toISOString()
+            });
+            inp.value = '';
+            lastFeedSignature = computeFeedSignature(posts);
+            renderShortCommentsOnly(id);
+        }
+
+        try {
+            await fetch(`/api/posts/${id}/comments`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ author: userSettings.author, text })
+            });
+        } catch (e) {}
     }
 
     function isHandleTakenByAnotherUser(candidateHandle) {
@@ -2057,12 +2160,6 @@
         document.documentElement.setAttribute('data-theme', resolveTheme(userSettings.theme));
         document.documentElement.style.setProperty('--font-size-base', userSettings.fontSize);
 
-        if (!userSettings.animations) {
-            document.body.classList.add('no-anim');
-        } else {
-            document.body.classList.remove('no-anim');
-        }
-
         const followersCount = Math.max(0, Number(userSettings.followers) || 0);
         document.getElementById('composerAvatarSlot').innerHTML = renderAvatar(userSettings.author, userSettings.avatar);
         document.getElementById('sidebarAvatarSlot').innerHTML = renderAvatar(userSettings.author, userSettings.avatar);
@@ -2091,7 +2188,6 @@
         document.getElementById('setTheme').value = userSettings.theme || 'system';
         document.getElementById('setFontSize').value = userSettings.fontSize;
         document.getElementById('setBootSound').checked = userSettings.bootSound !== false;
-        document.getElementById('setAnimations').checked = userSettings.animations !== false;
     }
 
     async function syncCurrentUserFromServer() {
@@ -2147,7 +2243,6 @@
         userSettings.theme = document.getElementById('setTheme').value;
         userSettings.fontSize = document.getElementById('setFontSize').value;
         userSettings.bootSound = document.getElementById('setBootSound').checked;
-        userSettings.animations = document.getElementById('setAnimations').checked;
 
         localStorage.setItem('vloxy_settings', JSON.stringify(userSettings));
         applySettings();
@@ -2213,7 +2308,7 @@
         const btn = document.getElementById('shortModeBtn');
         btn.classList.toggle('active', isShortComposerMode);
         document.getElementById('postContent').placeholder = isShortComposerMode
-            ? 'اكتب عنوان الـ Short مع #هاشتاق...'
+            ? 'اكتب عنوان الـ Short مع #هاشتاق لزيادة المشاهدات...'
             : 'اكتب تغريدتك أو #هاشتاق هنا...';
     }
 
@@ -2222,6 +2317,7 @@
         const current = ta.value;
         const suffix = current.endsWith(' ') || !current ? '#محتوى' : ' #محتوى';
         ta.value = current + suffix;
+        updateHashtagPreview();
         ta.focus();
     }
 
@@ -2229,8 +2325,9 @@
         toggleShortComposer(true);
         const ta = document.getElementById('postContent');
         if (!ta.value.includes('#')) {
-            ta.value = (ta.value ? ta.value + ' ' : '') + '#ترند_فلوكسي';
+            ta.value = (ta.value ? ta.value + ' ' : '') + '#ترند #شورت #فلوكسي';
         }
+        updateHashtagPreview();
         document.getElementById('composerBox').scrollIntoView({ behavior: 'smooth', block: 'center' });
         ta.focus();
     }
@@ -2324,7 +2421,7 @@
     function computeFeedSignature(list) {
         return list.map(p => {
             const r = p.reactions || {};
-            return `${p.id}:${p.votes}:${p.hearts || 0}:${p.reposts || 0}:${(p.comments || []).length}:${r.like || 0}:${r.fire || 0}:${r.haha || 0}:${p.followers || 0}:${p.verified ? 1 : 0}:${p.author || ''}:${p.isShort ? 1 : 0}`;
+            return `${p.id}:${p.votes}:${p.hearts || 0}:${p.reposts || 0}:${p.views || 0}:${(p.comments || []).length}:${r.like || 0}:${r.fire || 0}:${r.haha || 0}:${p.followers || 0}:${p.verified ? 1 : 0}:${p.author || ''}:${p.isShort ? 1 : 0}`;
         }).join('|');
     }
 
@@ -2399,7 +2496,11 @@
             } else if (msg.type === 'post_update' && msg.post) {
                 posts = posts.map(p => (String(p.id) === String(msg.post.id) ? msg.post : p));
                 lastFeedSignature = computeFeedSignature(posts);
-                renderPosts(true);
+                if (currentView === 'shorts') {
+                    const hEl = document.getElementById(`shortHeartCount-${msg.post.id}`);
+                    if (hEl) hEl.textContent = String(Number(msg.post.hearts) || 0);
+                    renderShortCommentsOnly(msg.post.id);
+                }
             } else if (msg.type === 'delete_post') {
                 posts = posts.filter(p => String(p.id) !== String(msg.id));
                 lastFeedSignature = computeFeedSignature(posts);
@@ -2426,7 +2527,6 @@
                     applySettings();
                 }
                 lastFeedSignature = computeFeedSignature(posts);
-                renderPosts(true);
                 if (activeProfileHandle === h) {
                     const currentModalUser = {
                         handle: h,
@@ -2455,21 +2555,31 @@
         } catch (e) {}
     }
 
+    function syncModeButtons() {
+        const tBtn = document.getElementById('modeTweetsBtn');
+        const sBtn = document.getElementById('modeShortsBtn');
+        if (tBtn) tBtn.classList.toggle('active', currentView !== 'shorts');
+        if (sBtn) sBtn.classList.toggle('active', currentView === 'shorts');
+
+        document.querySelectorAll('.nav-item[data-nav]').forEach(el => {
+            el.classList.toggle('active', el.getAttribute('data-nav') === currentView);
+        });
+    }
+
     function switchView(view, btn) {
         currentView = view;
         if (view === 'shorts') {
             shortIndex = 0;
             reachedEndOfShorts = false;
         }
-        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-        if (btn && btn.classList.contains('nav-item')) btn.classList.add('active');
+        syncModeButtons();
         const titles = {
-            all: 'الرئيسية',
+            all: 'التغريدات',
             shorts: 'Short',
             trending: 'الأكثر تصويتاً',
             bookmarks: 'المحفوظات'
         };
-        document.getElementById('viewTitle').textContent = titles[view] || 'الرئيسية';
+        document.getElementById('viewTitle').textContent = titles[view] || 'التغريدات';
         renderPosts(true);
     }
 
@@ -2546,6 +2656,7 @@
         const displayAuthor = isOwner ? userSettings.author : (post.author || 'مستخدم');
         const displayAvatar = isOwner ? userSettings.avatar : (post.avatar || '');
         const shortItem = isShortPost(post);
+        const totalViews = Number(post.views) || (150 + getHashtagBoostViews(post.content));
 
         let mediaHtml = '';
         if (post.mediaType === 'image' && post.mediaData) {
@@ -2580,6 +2691,7 @@
                             </span>
                         </button>
                         <span class="followers-chip">${followers} متابع</span>
+                        ${shortItem ? `<span class="views-chip">👁 ${totalViews}</span>` : ''}
                         <span style="color: var(--muted); font-size: 0.8rem;">· ${timeStr}</span>
                         <span class="comm-tag">r/${escapeHtml(post.community)}</span>
                         ${shortItem ? `<span class="short-badge">Short</span>` : ''}
@@ -2597,7 +2709,7 @@
                             <svg style="width:14px;height:14px;" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                             </svg>
-                            <span>${Number(post.hearts) || 0}</span>
+                            <span class="heart-count-val">${Number(post.hearts) || 0}</span>
                         </button>
 
                         <button type="button" class="react-pill" onclick="reactPost(${post.id}, 'like')"> ${r.like}</button>
@@ -2626,6 +2738,7 @@
 
     function renderPosts(force = false) {
         renderTrendingHashtags();
+        syncModeButtons();
 
         const tagChip = document.getElementById('activeHashtagChip');
         if (activeHashtag) {
@@ -2636,7 +2749,7 @@
         }
 
         const activeEl = document.activeElement;
-        const isTypingComment = activeEl && activeEl.id && activeEl.id.startsWith('c-input-');
+        const isTypingComment = activeEl && activeEl.id && (activeEl.id.startsWith('c-input-') || activeEl.id.startsWith('shortCommentInput-'));
         if (isTypingComment && !force) return;
 
         const container = document.getElementById('feedContainer');
@@ -2731,6 +2844,7 @@
         const payloadMedia = selectedMedia ? { ...selectedMedia } : null;
         const isShortItem = Boolean(isShortComposerMode || (payloadMedia && payloadMedia.type === 'video'));
         const tags = extractHashtags(content.trim());
+        const computedViews = 150 + getHashtagBoostViews(content.trim());
 
         const optimisticPost = {
             id: tempId,
@@ -2746,6 +2860,7 @@
             mediaData: payloadMedia ? payloadMedia.data : null,
             isShort: isShortItem,
             hashtags: tags,
+            views: computedViews,
             votes: 1,
             hearts: 0,
             reposts: 0,
@@ -2760,8 +2875,13 @@
         reachedEndOfShorts = false;
         lastFeedSignature = computeFeedSignature(posts);
         textarea.value = '';
+        updateHashtagPreview();
         toggleShortComposer(false);
         clearMedia();
+        if (isShortItem) {
+            currentView = 'shorts';
+            document.getElementById('viewTitle').textContent = 'Short';
+        }
         renderPosts(true);
 
         try {
@@ -2802,7 +2922,6 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ direction })
             });
-            fetchPosts(true);
         } catch (e) {}
     }
 
@@ -2819,11 +2938,25 @@
         localStorage.setItem('vloxy_hearted', JSON.stringify(heartedPosts));
 
         const target = posts.find(p => String(p.id) === idStr);
+        const newHearts = target ? Math.max(0, (Number(target.hearts) || 0) + delta) : 0;
         if (target) {
-            target.hearts = Math.max(0, (Number(target.hearts) || 0) + delta);
+            target.hearts = newHearts;
         }
         lastFeedSignature = computeFeedSignature(posts);
-        renderPosts(true);
+
+        // تحديث عداد القلب مباشرة دون إعادة رسم القائمة كاملة
+        const card = document.querySelector(`.post-card[data-post-id="${idStr}"]`);
+        if (card) {
+            const pill = card.querySelector('.heart-pill');
+            const valEl = card.querySelector('.heart-count-val');
+            if (pill) pill.classList.toggle('active', !alreadyHearted);
+            if (valEl) valEl.textContent = String(newHearts);
+        }
+
+        const shortBtn = document.querySelector(`.short-rail-btn[onclick*="toggleHeartPost(${id})"]`);
+        const shortCount = document.getElementById(`shortHeartCount-${id}`);
+        if (shortBtn) shortBtn.classList.toggle('active-heart', !alreadyHearted);
+        if (shortCount) shortCount.textContent = String(newHearts);
 
         try {
             const res = await fetch(`/api/posts/${id}/heart`, {
@@ -2835,7 +2968,6 @@
                 const updated = await res.json();
                 posts = posts.map(p => (String(p.id) === idStr ? updated : p));
                 lastFeedSignature = computeFeedSignature(posts);
-                renderPosts(true);
             }
         } catch (e) {}
     }
@@ -2854,7 +2986,6 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ type })
             });
-            fetchPosts(true);
         } catch (e) {}
     }
 
@@ -2863,11 +2994,12 @@
         if (target) {
             target.reposts = (Number(target.reposts) || 0) + 1;
             lastFeedSignature = computeFeedSignature(posts);
+            const sRep = document.getElementById(`shortRepostCount-${id}`);
+            if (sRep) sRep.textContent = String(target.reposts);
             renderPosts(true);
         }
         try {
             await fetch(`/api/posts/${id}/repost`, { method: 'POST' });
-            fetchPosts(true);
         } catch (e) {}
     }
 
@@ -2915,7 +3047,6 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ author: userSettings.author, text })
             });
-            fetchPosts(true);
         } catch (e) {}
     }
 
@@ -3095,7 +3226,6 @@
             }
         });
         lastFeedSignature = computeFeedSignature(posts);
-        renderPosts(true);
 
         const optimisticUser = {
             handle: h,
@@ -3129,7 +3259,6 @@
                     }
                 });
                 lastFeedSignature = computeFeedSignature(posts);
-                renderPosts(true);
                 if (activeProfileHandle === h) {
                     renderProfileModalView(h, { ...data.user, author: serverAuthor, followers: serverFollowers }, posts.filter(p => normalizePostHandle(p.handle) === h));
                 }
@@ -3176,6 +3305,7 @@
         }
 
         textarea.value = data.result;
+        updateHashtagPreview();
     }
 
     async function summarizePost(id) {
@@ -3219,6 +3349,7 @@
 
     function copyAiToComposer() {
         document.getElementById('postContent').value = document.getElementById('aiModalOutput').textContent;
+        updateHashtagPreview();
         closeModal('aiModal');
     }
 
@@ -3244,6 +3375,7 @@
     });
 
     applySettings();
+    updateHashtagPreview();
     syncCurrentUserFromServer();
     fetchPosts(true);
     connectRealtimeStream();
