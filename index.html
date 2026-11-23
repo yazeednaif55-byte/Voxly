@@ -420,6 +420,11 @@
             max-width: 100%;
         }
 
+        .input-clean:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+        }
+
         .input-clean:focus, .select-clean:focus {
             border-color: var(--accent);
         }
@@ -1361,7 +1366,8 @@
 
         <div class="setting-row">
             <div>
-                <div style="font-weight: 700;">المعرّف</div>
+                <div style="font-weight: 700;">المعرّف (اليوزر)</div>
+                <div id="handleLockNotice" style="font-size: 0.76rem; color: var(--muted);"></div>
             </div>
             <input type="text" id="setHandle" class="input-clean" onchange="saveSettings()">
         </div>
@@ -1445,7 +1451,8 @@
 
     let userSettings = JSON.parse(localStorage.getItem('vloxy_settings') || JSON.stringify({
         author: 'مستخدم',
-        handle: '@user',
+        handle: '',
+        handleLocked: false,
         avatar: '',
         followers: 0,
         apiKey: '',
@@ -1455,10 +1462,35 @@
         animations: true
     }));
 
-    function normalizeHandle(h) {
+    function normalizeExactHandle(h) {
+        const clean = String(h || '').trim();
+        if (!clean) return '';
+        return clean.startsWith('@') ? clean : '@' + clean;
+    }
+
+    function normalizePostHandle(h) {
         const clean = String(h || '@user').trim();
         if (!clean) return '@user';
         return clean.startsWith('@') ? clean : '@' + clean;
+    }
+
+    function getCurrentUserHandle() {
+        return normalizeExactHandle(userSettings.handle) || '@user';
+    }
+
+    function isHandleTakenByAnotherUser(candidateHandle) {
+        const target = normalizeExactHandle(candidateHandle);
+        if (!target) return false;
+        const ownHandle = normalizeExactHandle(userSettings.handle);
+        if (userSettings.handleLocked && ownHandle === target) return false;
+
+        const takenInPosts = posts.some(p => {
+            const pHandle = normalizePostHandle(p.handle);
+            if (pHandle !== target) return false;
+            return !ownHandle || pHandle !== ownHandle;
+        });
+
+        return takenInPosts;
     }
 
     function isVerifiedCount(followers) {
@@ -1532,7 +1564,7 @@
     }
 
     function applySettings() {
-        userSettings.handle = normalizeHandle(userSettings.handle);
+        const activeHandle = getCurrentUserHandle();
         document.documentElement.setAttribute('data-theme', resolveTheme(userSettings.theme));
         document.documentElement.style.setProperty('--font-size-base', userSettings.fontSize);
 
@@ -1547,11 +1579,24 @@
         document.getElementById('sidebarAvatarSlot').innerHTML = renderAvatar(userSettings.author, userSettings.avatar);
         document.getElementById('sidebarNameDisplay').textContent = userSettings.author;
         document.getElementById('sidebarVerifiedSlot').innerHTML = renderVerifiedBadge(followersCount);
-        document.getElementById('sidebarHandleDisplay').textContent = userSettings.handle;
+        document.getElementById('sidebarHandleDisplay').textContent = activeHandle;
         document.getElementById('sidebarFollowersDisplay').textContent = `${followersCount} متابع`;
 
+        const handleInput = document.getElementById('setHandle');
+        const handleNotice = document.getElementById('handleLockNotice');
         document.getElementById('setAuthor').value = userSettings.author;
-        document.getElementById('setHandle').value = userSettings.handle;
+        handleInput.value = userSettings.handle || '';
+
+        if (userSettings.handleLocked && userSettings.handle) {
+            handleInput.disabled = true;
+            handleNotice.textContent = 'اليوزر مقفول ومرتبط بحسابك ولا يمكن تغييره أو تكراره.';
+            handleNotice.style.color = 'var(--accent)';
+        } else {
+            handleInput.disabled = false;
+            handleNotice.textContent = 'اختر يوزر فريد غير مستخدم (لن يتم إضافة أرقام أو حروف تلقائياً).';
+            handleNotice.style.color = 'var(--muted)';
+        }
+
         document.getElementById('setApiKey').value = userSettings.apiKey || '';
         document.getElementById('aiModalKeyInput').value = userSettings.apiKey || '';
         document.getElementById('setTheme').value = userSettings.theme || 'system';
@@ -1561,8 +1606,9 @@
     }
 
     async function syncCurrentUserFromServer() {
+        const activeHandle = getCurrentUserHandle();
         try {
-            const res = await fetch(`/api/users/${encodeURIComponent(userSettings.handle)}`, { cache: 'no-store' });
+            const res = await fetch(`/api/users/${encodeURIComponent(activeHandle)}`, { cache: 'no-store' });
             if (!res.ok) return;
             const data = await res.json();
             if (data.user) {
@@ -1573,7 +1619,7 @@
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            handle: userSettings.handle,
+                            handle: activeHandle,
                             author: userSettings.author,
                             avatar: userSettings.avatar
                         })
@@ -1588,8 +1634,26 @@
     }
 
     async function saveSettings() {
-        userSettings.author = document.getElementById('setAuthor').value || 'مستخدم';
-        userSettings.handle = normalizeHandle(document.getElementById('setHandle').value);
+        const authorVal = (document.getElementById('setAuthor').value || '').trim() || 'مستخدم';
+        const handleInput = document.getElementById('setHandle');
+        const requestedHandle = normalizeExactHandle(handleInput.value);
+
+        if (userSettings.handleLocked && userSettings.handle) {
+            if (requestedHandle && requestedHandle !== userSettings.handle) {
+                alert('غير مسموح بتغيير اليوزر بعد اعتماده؛ اليوزر مرتبط بحسابك ولا يتغير.');
+                handleInput.value = userSettings.handle;
+            }
+        } else if (requestedHandle) {
+            if (isHandleTakenByAnotherUser(requestedHandle)) {
+                alert('هذا اليوزر مستخدم بالفعل ولا يمكن تكراره أو إضافة أرقام أو حروف عليه. اختر يوزراً آخر.');
+                handleInput.value = userSettings.handle || '';
+                return;
+            }
+            userSettings.handle = requestedHandle;
+            userSettings.handleLocked = true;
+        }
+
+        userSettings.author = authorVal;
         userSettings.apiKey = document.getElementById('setApiKey').value.trim();
         userSettings.theme = document.getElementById('setTheme').value;
         userSettings.fontSize = document.getElementById('setFontSize').value;
@@ -1600,12 +1664,13 @@
         applySettings();
         renderPosts(true);
 
+        const activeHandle = getCurrentUserHandle();
         try {
             const res = await fetch('/api/users/profile', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    handle: userSettings.handle,
+                    handle: activeHandle,
                     author: userSettings.author,
                     avatar: userSettings.avatar
                 })
@@ -1733,7 +1798,7 @@
         for (const p of posts) {
             if (p._pending) {
                 const matchedServerPost = incomingList.find(
-                    sp => sp.content === p.content && normalizeHandle(sp.handle) === normalizeHandle(p.handle)
+                    sp => sp.content === p.content && normalizePostHandle(sp.handle) === normalizePostHandle(p.handle)
                 );
                 if (!matchedServerPost && !map.has(String(p.id))) {
                     map.set(String(p.id), p);
@@ -1765,6 +1830,7 @@
         if (!rawData) return;
         try {
             const msg = JSON.parse(rawData);
+            const activeHandle = getCurrentUserHandle();
             if (msg.type === 'init' && Array.isArray(msg.posts)) {
                 mergePosts(msg.posts);
                 lastFeedSignature = computeFeedSignature(posts);
@@ -1772,14 +1838,14 @@
             } else if (msg.type === 'new_post' && msg.post) {
                 const exists = posts.some(
                     p => String(p.id) === String(msg.post.id) ||
-                    (p._pending && p.content === msg.post.content && normalizeHandle(p.handle) === normalizeHandle(msg.post.handle))
+                    (p._pending && p.content === msg.post.content && normalizePostHandle(p.handle) === normalizePostHandle(msg.post.handle))
                 );
                 if (!exists) {
                     posts.unshift(msg.post);
                 } else {
                     posts = posts.map(p => (
                         String(p.id) === String(msg.post.id) ||
-                        (p._pending && p.content === msg.post.content && normalizeHandle(p.handle) === normalizeHandle(msg.post.handle))
+                        (p._pending && p.content === msg.post.content && normalizePostHandle(p.handle) === normalizePostHandle(msg.post.handle))
                         ? msg.post : p
                     ));
                 }
@@ -1795,10 +1861,10 @@
                 lastFeedSignature = computeFeedSignature(posts);
                 renderPosts(true);
             } else if (msg.type === 'profile' || msg.type === 'follow') {
-                const h = normalizeHandle(msg.handle);
+                const h = normalizePostHandle(msg.handle);
                 const updatedFollowers = Math.max(0, Number(msg.user?.followers) || 0);
                 posts.forEach(p => {
-                    if (normalizeHandle(p.handle) === h) {
+                    if (normalizePostHandle(p.handle) === h) {
                         if (msg.user?.author && msg.user.author !== 'مستخدم') {
                             p.author = msg.user.author;
                         }
@@ -1807,7 +1873,7 @@
                         p.verified = isVerifiedCount(updatedFollowers);
                     }
                 });
-                if (h === userSettings.handle) {
+                if (h === activeHandle) {
                     userSettings.followers = updatedFollowers;
                     if (msg.user?.author && msg.user.author !== 'مستخدم') {
                         userSettings.author = msg.user.author;
@@ -1822,11 +1888,11 @@
                         handle: h,
                         author: (msg.user?.author && msg.user.author !== 'مستخدم')
                             ? msg.user.author
-                            : (posts.find(p => normalizeHandle(p.handle) === h)?.author || userSettings.author),
-                        avatar: msg.user?.avatar || posts.find(p => normalizeHandle(p.handle) === h)?.avatar || '',
+                            : (posts.find(p => normalizePostHandle(p.handle) === h)?.author || userSettings.author),
+                        avatar: msg.user?.avatar || posts.find(p => normalizePostHandle(p.handle) === h)?.avatar || '',
                         followers: updatedFollowers
                     };
-                    renderProfileModalView(h, currentModalUser, posts.filter(p => normalizeHandle(p.handle) === h));
+                    renderProfileModalView(h, currentModalUser, posts.filter(p => normalizePostHandle(p.handle) === h));
                 }
             }
         } catch (e) {}
@@ -1867,10 +1933,12 @@
         const isHearted = heartedPosts.includes(postIdStr);
         const r = post.reactions || { like: 0, fire: 0, haha: 0 };
         const timeStr = new Date(post.timestamp).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
-        const postHandle = normalizeHandle(post.handle);
-        const followers = postHandle === userSettings.handle ? (Number(userSettings.followers) || 0) : (Number(post.followers) || 0);
-        const displayAuthor = postHandle === userSettings.handle ? userSettings.author : (post.author || 'مستخدم');
-        const displayAvatar = postHandle === userSettings.handle ? userSettings.avatar : (post.avatar || '');
+        const postHandle = normalizePostHandle(post.handle);
+        const activeHandle = getCurrentUserHandle();
+        const isOwner = postHandle === activeHandle;
+        const followers = isOwner ? (Number(userSettings.followers) || 0) : (Number(post.followers) || 0);
+        const displayAuthor = isOwner ? userSettings.author : (post.author || 'مستخدم');
+        const displayAvatar = isOwner ? userSettings.avatar : (post.avatar || '');
 
         let mediaHtml = '';
         if (post.mediaType === 'image' && post.mediaData) {
@@ -1908,7 +1976,7 @@
                         <span style="color: var(--muted); font-size: 0.8rem;">· ${timeStr}</span>
                         <span class="comm-tag">r/${escapeHtml(post.community)}</span>
                     </div>
-                    <button type="button" class="vote-btn" onclick="deletePost(${post.id})" title="حذف">✕</button>
+                    ${isOwner ? `<button type="button" class="vote-btn" onclick="deletePost(${post.id})" title="حذف التغريدة">✕</button>` : ''}
                 </div>
 
                 ${post.content ? `<div class="post-text">${escapeHtml(post.content)}</div>` : ''}
@@ -2030,13 +2098,14 @@
         const community = document.getElementById('postCommunity').value;
         if (!content.trim() && !selectedMedia) return;
 
+        const activeHandle = getCurrentUserHandle();
         const tempId = Date.now();
         const payloadMedia = selectedMedia ? { ...selectedMedia } : null;
         const optimisticPost = {
             id: tempId,
             _pending: true,
             author: userSettings.author,
-            handle: userSettings.handle,
+            handle: activeHandle,
             avatar: userSettings.avatar,
             followers: Number(userSettings.followers) || 0,
             verified: isVerifiedCount(userSettings.followers),
@@ -2164,6 +2233,12 @@
     }
 
     async function deletePost(id) {
+        const target = posts.find(p => String(p.id) === String(id));
+        const activeHandle = getCurrentUserHandle();
+        if (!target || normalizePostHandle(target.handle) !== activeHandle) {
+            alert('لا يمكن حذف التغريدة إلا من صاحبها.');
+            return;
+        }
         posts = posts.filter(p => String(p.id) !== String(id));
         lastFeedSignature = computeFeedSignature(posts);
         renderPosts(true);
@@ -2220,10 +2295,11 @@
         const followersNum = Math.max(0, Number(userInfo.followers) || 0);
         const isFollowing = followedHandles.includes(h);
         const isNotified = notifiedHandles.includes(h);
+        const activeHandle = getCurrentUserHandle();
         const displayName = (userInfo.author && userInfo.author !== 'مستخدم')
             ? userInfo.author
-            : (h === userSettings.handle ? userSettings.author : (posts.find(p => normalizeHandle(p.handle) === h)?.author || userInfo.author || 'مستخدم'));
-        const displayAvatar = userInfo.avatar || (h === userSettings.handle ? userSettings.avatar : (posts.find(p => normalizeHandle(p.handle) === h)?.avatar || ''));
+            : (h === activeHandle ? userSettings.author : (posts.find(p => normalizePostHandle(p.handle) === h)?.author || userInfo.author || 'مستخدم'));
+        const displayAvatar = userInfo.avatar || (h === activeHandle ? userSettings.avatar : (posts.find(p => normalizePostHandle(p.handle) === h)?.avatar || ''));
 
         const postsListHtml = userPosts.length
             ? userPosts.map(p => `
@@ -2284,19 +2360,20 @@
     }
 
     async function openUserProfile(rawHandle) {
-        const h = normalizeHandle(rawHandle);
+        const h = normalizePostHandle(rawHandle);
+        const activeHandle = getCurrentUserHandle();
         activeProfileHandle = h;
         const modal = document.getElementById('profileModal');
         modal.classList.add('open');
 
-        const matchingPost = posts.find(p => normalizeHandle(p.handle) === h);
+        const matchingPost = posts.find(p => normalizePostHandle(p.handle) === h);
         let userInfo = {
             handle: h,
-            author: h === userSettings.handle ? userSettings.author : (matchingPost?.author || 'مستخدم'),
-            avatar: h === userSettings.handle ? userSettings.avatar : (matchingPost?.avatar || ''),
-            followers: h === userSettings.handle ? (Number(userSettings.followers) || 0) : (Number(matchingPost?.followers) || 0)
+            author: h === activeHandle ? userSettings.author : (matchingPost?.author || 'مستخدم'),
+            avatar: h === activeHandle ? userSettings.avatar : (matchingPost?.avatar || ''),
+            followers: h === activeHandle ? (Number(userSettings.followers) || 0) : (Number(matchingPost?.followers) || 0)
         };
-        let userPosts = posts.filter(p => normalizeHandle(p.handle) === h);
+        let userPosts = posts.filter(p => normalizePostHandle(p.handle) === h);
 
         renderProfileModalView(h, userInfo, userPosts);
 
@@ -2311,7 +2388,7 @@
                     };
                 }
                 if (Array.isArray(data.posts)) userPosts = data.posts;
-                if (h === userSettings.handle && data.user) {
+                if (h === activeHandle && data.user) {
                     userSettings.followers = Math.max(0, Number(data.user.followers) || 0);
                     localStorage.setItem('vloxy_settings', JSON.stringify(userSettings));
                     applySettings();
@@ -2324,7 +2401,8 @@
     }
 
     async function toggleProfileFollow(rawHandle) {
-        const h = normalizeHandle(rawHandle);
+        const h = normalizePostHandle(rawHandle);
+        const activeHandle = getCurrentUserHandle();
         const already = followedHandles.includes(h);
         const delta = already ? -1 : 1;
 
@@ -2335,25 +2413,25 @@
         }
         localStorage.setItem('vloxy_followed', JSON.stringify(followedHandles));
 
-        const matchingPost = posts.find(p => normalizeHandle(p.handle) === h);
+        const matchingPost = posts.find(p => normalizePostHandle(p.handle) === h);
         const resolvedAuthor = (matchingPost?.author && matchingPost.author !== 'مستخدم')
             ? matchingPost.author
-            : (h === userSettings.handle ? userSettings.author : 'مستخدم');
-        const resolvedAvatar = matchingPost?.avatar || (h === userSettings.handle ? userSettings.avatar : '');
+            : (h === activeHandle ? userSettings.author : 'مستخدم');
+        const resolvedAvatar = matchingPost?.avatar || (h === activeHandle ? userSettings.avatar : '');
 
-        const currentFollowers = h === userSettings.handle
+        const currentFollowers = h === activeHandle
             ? (Number(userSettings.followers) || 0)
             : (Number(matchingPost?.followers) || 0);
         const optimisticFollowers = Math.max(0, currentFollowers + delta);
 
-        if (h === userSettings.handle) {
+        if (h === activeHandle) {
             userSettings.followers = optimisticFollowers;
             localStorage.setItem('vloxy_settings', JSON.stringify(userSettings));
             applySettings();
         }
 
         posts.forEach(p => {
-            if (normalizeHandle(p.handle) === h) {
+            if (normalizePostHandle(p.handle) === h) {
                 if (resolvedAuthor && resolvedAuthor !== 'مستخدم') p.author = resolvedAuthor;
                 p.followers = optimisticFollowers;
                 p.verified = isVerifiedCount(optimisticFollowers);
@@ -2368,7 +2446,7 @@
             avatar: resolvedAvatar,
             followers: optimisticFollowers
         };
-        const userPosts = posts.filter(p => normalizeHandle(p.handle) === h);
+        const userPosts = posts.filter(p => normalizePostHandle(p.handle) === h);
         renderProfileModalView(h, optimisticUser, userPosts);
 
         try {
@@ -2381,13 +2459,13 @@
                 const data = await res.json();
                 const serverFollowers = Math.max(0, Number(data.user?.followers) || 0);
                 const serverAuthor = (data.user?.author && data.user.author !== 'مستخدم') ? data.user.author : resolvedAuthor;
-                if (h === userSettings.handle) {
+                if (h === activeHandle) {
                     userSettings.followers = serverFollowers;
                     localStorage.setItem('vloxy_settings', JSON.stringify(userSettings));
                     applySettings();
                 }
                 posts.forEach(p => {
-                    if (normalizeHandle(p.handle) === h) {
+                    if (normalizePostHandle(p.handle) === h) {
                         p.author = serverAuthor;
                         p.followers = serverFollowers;
                         p.verified = isVerifiedCount(serverFollowers);
@@ -2396,14 +2474,14 @@
                 lastFeedSignature = computeFeedSignature(posts);
                 renderPosts(true);
                 if (activeProfileHandle === h) {
-                    renderProfileModalView(h, { ...data.user, author: serverAuthor, followers: serverFollowers }, posts.filter(p => normalizeHandle(p.handle) === h));
+                    renderProfileModalView(h, { ...data.user, author: serverAuthor, followers: serverFollowers }, posts.filter(p => normalizePostHandle(p.handle) === h));
                 }
             }
         } catch (e) {}
     }
 
     function toggleProfileNotify(rawHandle) {
-        const h = normalizeHandle(rawHandle);
+        const h = normalizePostHandle(rawHandle);
         if (notifiedHandles.includes(h)) {
             notifiedHandles = notifiedHandles.filter(x => x !== h);
         } else {
