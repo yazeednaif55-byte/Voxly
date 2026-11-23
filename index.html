@@ -1367,6 +1367,8 @@
     let notifiedHandles = JSON.parse(localStorage.getItem('vloxy_notified') || '[]');
     let selectedMedia = null;
     let activeProfileHandle = null;
+    let lastFeedSignature = '';
+    let isFetchingPosts = false;
 
     let userSettings = JSON.parse(localStorage.getItem('vloxy_settings') || JSON.stringify({
         author: 'مستخدم',
@@ -1495,7 +1497,7 @@
 
         localStorage.setItem('vloxy_settings', JSON.stringify(userSettings));
         applySettings();
-        renderPosts();
+        renderPosts(true);
 
         try {
             await fetch('/api/users/profile', {
@@ -1522,7 +1524,7 @@
             userSettings.avatar = reader.result;
             localStorage.setItem('vloxy_settings', JSON.stringify(userSettings));
             applySettings();
-            renderPosts();
+            renderPosts(true);
             saveSettings();
         };
         reader.readAsDataURL(file);
@@ -1532,7 +1534,7 @@
         userSettings.avatar = '';
         localStorage.setItem('vloxy_settings', JSON.stringify(userSettings));
         applySettings();
-        renderPosts();
+        renderPosts(true);
         saveSettings();
     }
 
@@ -1602,6 +1604,13 @@
         document.getElementById('mediaPreview').classList.remove('active');
     }
 
+    function computeFeedSignature(list) {
+        return list.map(p => {
+            const r = p.reactions || {};
+            return `${p.id}:${p.votes}:${p.hearts || 0}:${p.reposts || 0}:${(p.comments || []).length}:${r.like || 0}:${r.fire || 0}:${r.haha || 0}:${p.followers || 0}:${p.author || ''}`;
+        }).join('|');
+    }
+
     function mergePosts(incomingList) {
         if (!Array.isArray(incomingList)) return;
         const map = new Map();
@@ -1609,20 +1618,87 @@
             map.set(String(p.id), p);
         }
         for (const p of posts) {
-            if (p._pending && !map.has(String(p.id))) {
-                map.set(String(p.id), p);
+            if (p._pending) {
+                const matchedServerPost = incomingList.find(
+                    sp => sp.content === p.content && normalizeHandle(sp.handle) === normalizeHandle(p.handle)
+                );
+                if (!matchedServerPost && !map.has(String(p.id))) {
+                    map.set(String(p.id), p);
+                }
             }
         }
         posts = Array.from(map.values()).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
     }
 
-    async function fetchPosts() {
+    async function fetchPosts(forceRender = false) {
+        if (isFetchingPosts) return;
+        isFetchingPosts = true;
         try {
             const res = await fetch('/api/posts', { cache: 'no-store' });
             if (!res.ok) return;
             const list = await res.json();
             mergePosts(list);
-            renderPosts();
+            const sig = computeFeedSignature(posts);
+            if (forceRender || sig !== lastFeedSignature) {
+                lastFeedSignature = sig;
+                renderPosts(true);
+            }
+        } catch (e) {} finally {
+            isFetchingPosts = false;
+        }
+    }
+
+    function handleStreamMessage(rawData) {
+        if (!rawData) return;
+        try {
+            const msg = JSON.parse(rawData);
+            if (msg.type === 'new_post' && msg.post) {
+                const exists = posts.some(
+                    p => String(p.id) === String(msg.post.id) ||
+                    (p._pending && p.content === msg.post.content && normalizeHandle(p.handle) === normalizeHandle(msg.post.handle))
+                );
+                if (!exists) {
+                    posts.unshift(msg.post);
+                    posts.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                    lastFeedSignature = computeFeedSignature(posts);
+                    renderPosts(true);
+                } else {
+                    posts = posts.map(p => (
+                        String(p.id) === String(msg.post.id) ||
+                        (p._pending && p.content === msg.post.content && normalizeHandle(p.handle) === normalizeHandle(msg.post.handle))
+                        ? msg.post : p
+                    ));
+                    lastFeedSignature = computeFeedSignature(posts);
+                    renderPosts(true);
+                }
+            } else if (msg.type === 'post_update' && msg.post) {
+                posts = posts.map(p => (String(p.id) === String(msg.post.id) ? msg.post : p));
+                lastFeedSignature = computeFeedSignature(posts);
+                renderPosts(true);
+            } else if (msg.type === 'delete_post') {
+                posts = posts.filter(p => String(p.id) !== String(msg.id));
+                lastFeedSignature = computeFeedSignature(posts);
+                renderPosts(true);
+            } else if (msg.type === 'profile' || msg.type === 'follow') {
+                const h = normalizeHandle(msg.handle);
+                posts.forEach(p => {
+                    if (normalizeHandle(p.handle) === h) {
+                        p.author = msg.user.author;
+                        p.avatar = msg.user.avatar;
+                        p.followers = msg.user.followers;
+                        p.verified = msg.verified;
+                    }
+                });
+                lastFeedSignature = computeFeedSignature(posts);
+                renderPosts(true);
+                if (activeProfileHandle === h) {
+                    openUserProfile(h);
+                }
+            } else if (Array.isArray(msg.posts)) {
+                mergePosts(msg.posts);
+                lastFeedSignature = computeFeedSignature(posts);
+                renderPosts(true);
+            }
         } catch (e) {}
     }
 
@@ -1630,38 +1706,12 @@
         if (!window.EventSource) return;
         try {
             const es = new EventSource('/api/stream');
-            es.addEventListener('sync', (ev) => {
-                try {
-                    const msg = JSON.parse(ev.data);
-                    if (msg.type === 'new_post' && msg.post) {
-                        const exists = posts.some(p => String(p.id) === String(msg.post.id) || (p._pending && p.content === msg.post.content && p.handle === msg.post.handle));
-                        if (!exists) {
-                            posts.unshift(msg.post);
-                            renderPosts();
-                        }
-                    } else if (msg.type === 'post_update' && msg.post) {
-                        posts = posts.map(p => (String(p.id) === String(msg.post.id) ? msg.post : p));
-                        renderPosts();
-                    } else if (msg.type === 'delete_post') {
-                        posts = posts.filter(p => String(p.id) !== String(msg.id));
-                        renderPosts();
-                    } else if (msg.type === 'profile' || msg.type === 'follow') {
-                        const h = normalizeHandle(msg.handle);
-                        posts.forEach(p => {
-                            if (normalizeHandle(p.handle) === h) {
-                                p.author = msg.user.author;
-                                p.avatar = msg.user.avatar;
-                                p.followers = msg.user.followers;
-                                p.verified = msg.verified;
-                            }
-                        });
-                        renderPosts();
-                        if (activeProfileHandle === h) {
-                            openUserProfile(h);
-                        }
-                    }
-                } catch (e) {}
-            });
+            es.onmessage = (ev) => handleStreamMessage(ev.data);
+            es.addEventListener('sync', (ev) => handleStreamMessage(ev.data));
+            es.addEventListener('message', (ev) => handleStreamMessage(ev.data));
+            es.onerror = () => {
+                fetchPosts(true);
+            };
         } catch (e) {}
     }
 
@@ -1671,17 +1721,28 @@
         if (btn && btn.classList.contains('nav-item')) btn.classList.add('active');
         const titles = { all: 'الرئيسية', trending: 'الأكثر تصويتاً', bookmarks: 'المحفوظات' };
         document.getElementById('viewTitle').textContent = titles[view];
-        renderPosts();
+        renderPosts(true);
     }
 
     function setCommunity(comm, btn) {
         currentCommunity = comm;
         document.querySelectorAll('.comm-pill').forEach(el => el.classList.remove('active'));
         btn.classList.add('active');
-        renderPosts();
+        renderPosts(true);
     }
 
-    function renderPosts() {
+    function renderPosts(force = false) {
+        const activeEl = document.activeElement;
+        const isTypingComment = activeEl && activeEl.id && activeEl.id.startsWith('c-input-');
+        if (isTypingComment && !force) return;
+
+        const openCommentIds = Array.from(document.querySelectorAll('.comments-box.open'))
+            .map(el => el.id.replace('comments-', ''));
+        const draftComments = {};
+        document.querySelectorAll('[id^="c-input-"]').forEach(inp => {
+            if (inp.value) draftComments[inp.id.replace('c-input-', '')] = inp.value;
+        });
+
         const container = document.getElementById('feedContainer');
         const query = document.getElementById('searchInput').value.toLowerCase();
         container.innerHTML = '';
@@ -1786,10 +1847,10 @@
                         </div>
                     </div>
 
-                    <div class="comments-box" id="comments-${post.id}">
+                    <div class="comments-box ${openCommentIds.includes(postIdStr) ? 'open' : ''}" id="comments-${post.id}">
                         ${commentsHtml}
                         <div style="display:flex; gap:6px; margin-top:8px;">
-                            <input type="text" id="c-input-${post.id}" class="input-clean" style="flex:1;" placeholder="اكتب تعليقاً...">
+                            <input type="text" id="c-input-${post.id}" class="input-clean" style="flex:1;" placeholder="اكتب تعليقاً..." value="${escapeHtml(draftComments[postIdStr] || '')}">
                             <button type="button" class="btn-publish" style="padding: 6px 14px;" onclick="sendComment(${post.id})">إرسال</button>
                         </div>
                     </div>
@@ -1828,9 +1889,10 @@
         };
 
         posts.unshift(optimisticPost);
+        lastFeedSignature = computeFeedSignature(posts);
         textarea.value = '';
         clearMedia();
-        renderPosts();
+        renderPosts(true);
 
         try {
             const res = await fetch('/api/posts', {
@@ -1849,7 +1911,8 @@
             if (res.ok) {
                 const saved = await res.json();
                 posts = posts.map(p => (String(p.id) === String(tempId) ? saved : p));
-                renderPosts();
+                lastFeedSignature = computeFeedSignature(posts);
+                renderPosts(true);
             }
         } catch (e) {}
     }
@@ -1858,7 +1921,8 @@
         const target = posts.find(p => String(p.id) === String(id));
         if (target) {
             target.votes += direction === 'up' ? 1 : -1;
-            renderPosts();
+            lastFeedSignature = computeFeedSignature(posts);
+            renderPosts(true);
         }
         try {
             await fetch(`/api/posts/${id}/vote`, {
@@ -1866,6 +1930,7 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ direction })
             });
+            fetchPosts(true);
         } catch (e) {}
     }
 
@@ -1885,7 +1950,8 @@
         if (target) {
             target.hearts = Math.max(0, (Number(target.hearts) || 0) + delta);
         }
-        renderPosts();
+        lastFeedSignature = computeFeedSignature(posts);
+        renderPosts(true);
 
         try {
             const res = await fetch(`/api/posts/${id}/heart`, {
@@ -1896,7 +1962,8 @@
             if (res.ok) {
                 const updated = await res.json();
                 posts = posts.map(p => (String(p.id) === idStr ? updated : p));
-                renderPosts();
+                lastFeedSignature = computeFeedSignature(posts);
+                renderPosts(true);
             }
         } catch (e) {}
     }
@@ -1906,7 +1973,8 @@
         if (target) {
             if (!target.reactions) target.reactions = { like: 0, fire: 0, haha: 0 };
             target.reactions[type] = (Number(target.reactions[type]) || 0) + 1;
-            renderPosts();
+            lastFeedSignature = computeFeedSignature(posts);
+            renderPosts(true);
         }
         try {
             await fetch(`/api/posts/${id}/react`, {
@@ -1914,6 +1982,7 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ type })
             });
+            fetchPosts(true);
         } catch (e) {}
     }
 
@@ -1921,16 +1990,19 @@
         const target = posts.find(p => String(p.id) === String(id));
         if (target) {
             target.reposts = (Number(target.reposts) || 0) + 1;
-            renderPosts();
+            lastFeedSignature = computeFeedSignature(posts);
+            renderPosts(true);
         }
         try {
             await fetch(`/api/posts/${id}/repost`, { method: 'POST' });
+            fetchPosts(true);
         } catch (e) {}
     }
 
     async function deletePost(id) {
         posts = posts.filter(p => String(p.id) !== String(id));
-        renderPosts();
+        lastFeedSignature = computeFeedSignature(posts);
+        renderPosts(true);
         try {
             await fetch(`/api/posts/${id}`, { method: 'DELETE' });
         } catch (e) {}
@@ -1954,7 +2026,8 @@
                 timestamp: new Date().toISOString()
             });
             input.value = '';
-            renderPosts();
+            lastFeedSignature = computeFeedSignature(posts);
+            renderPosts(true);
             document.getElementById(`comments-${id}`).classList.add('open');
         }
 
@@ -1964,6 +2037,7 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ author: userSettings.author, text })
             });
+            fetchPosts(true);
         } catch (e) {}
     }
 
@@ -1974,7 +2048,7 @@
             bookmarks.push(id);
         }
         localStorage.setItem('vloxy_bookmarks', JSON.stringify(bookmarks));
-        renderPosts();
+        renderPosts(true);
     }
 
     async function openUserProfile(rawHandle) {
@@ -2095,7 +2169,8 @@
                         p.verified = data.verified;
                     }
                 });
-                renderPosts();
+                lastFeedSignature = computeFeedSignature(posts);
+                renderPosts(true);
             }
         } catch (e) {}
 
@@ -2201,9 +2276,14 @@
         return div.innerHTML;
     }
 
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) fetchPosts(true);
+    });
+
     applySettings();
-    fetchPosts();
+    fetchPosts(true);
     connectRealtimeStream();
+    setInterval(() => fetchPosts(false), 3000);
     playBootChime(false);
 </script>
 
