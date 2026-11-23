@@ -2,17 +2,17 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <title>Vloxy</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #07090e;
-            --surface: #10141f;
-            --surface-elevated: #161c2c;
+            --bg: #06080d;
+            --surface: #0f131d;
+            --surface-elevated: #151b29;
             --border: rgba(255, 255, 255, 0.09);
             --text: #f4f7fc;
-            --muted: #8a95a8;
+            --muted: #8b96a9;
             --accent: #1d9bf0;
             --accent-soft: rgba(29, 155, 240, 0.14);
             --heart: #f91880;
@@ -45,14 +45,14 @@
             background-color: var(--bg);
             color: var(--text);
             min-height: 100vh;
-            transition: background-color 0.2s ease, color 0.2s ease;
+            transition: background-color 0.18s ease, color 0.18s ease;
             overflow-x: hidden;
         }
 
         @keyframes fadeSlideIn {
             from {
                 opacity: 0;
-                transform: translateY(8px);
+                transform: translateY(6px);
             }
             to {
                 opacity: 1;
@@ -62,7 +62,7 @@
 
         @keyframes heartBurst {
             0% { transform: scale(1); }
-            40% { transform: scale(1.32); }
+            45% { transform: scale(1.28); }
             100% { transform: scale(1); }
         }
 
@@ -171,45 +171,49 @@
             border-left: 1px solid var(--border);
             border-right: 1px solid var(--border);
             min-height: 100vh;
+            width: 100%;
+            min-width: 0;
         }
 
         .top-header {
             position: sticky;
             top: 0;
-            background: rgba(7, 9, 14, 0.84);
+            background: rgba(6, 8, 13, 0.85);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            padding: 12px 18px;
+            padding: 11px 16px;
             border-bottom: 1px solid var(--border);
             z-index: 20;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         [data-theme="light"] .top-header {
-            background: rgba(243, 246, 250, 0.86);
+            background: rgba(243, 246, 250, 0.88);
         }
 
         .header-actions {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
+            min-width: 0;
         }
 
         .icon-btn {
             background: var(--surface);
             border: 1px solid var(--border);
             color: var(--text);
-            width: 36px;
-            height: 36px;
+            width: 34px;
+            height: 34px;
             border-radius: 999px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: 0.15s ease;
+            transition: 0.12s ease;
+            flex-shrink: 0;
         }
 
         .icon-btn:hover {
@@ -221,11 +225,12 @@
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: 999px;
-            padding: 6px 14px;
+            padding: 5px 12px;
             display: flex;
             align-items: center;
-            gap: 8px;
-            width: 190px;
+            gap: 6px;
+            width: 175px;
+            min-width: 0;
         }
 
         .search-box input {
@@ -234,28 +239,30 @@
             color: var(--text);
             outline: none;
             width: 100%;
-            font-size: 0.86rem;
+            font-size: 0.84rem;
+            min-width: 0;
         }
 
         .communities-bar {
             display: flex;
-            gap: 8px;
-            padding: 10px 18px;
+            gap: 7px;
+            padding: 9px 16px;
             border-bottom: 1px solid var(--border);
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         .comm-pill {
             background: var(--surface);
             border: 1px solid var(--border);
             color: var(--text);
-            padding: 5px 14px;
+            padding: 4px 12px;
             border-radius: 999px;
-            font-size: 0.84rem;
+            font-size: 0.8rem;
             font-weight: 600;
             cursor: pointer;
             white-space: nowrap;
-            transition: all 0.15s ease;
+            transition: all 0.12s ease;
         }
 
         .comm-pill.active, .comm-pill:hover {
@@ -265,7 +272,7 @@
         }
 
         .composer {
-            padding: 16px 18px;
+            padding: 14px 16px;
             border-bottom: 1px solid var(--border);
             background: var(--surface);
         }
@@ -273,12 +280,12 @@
         .composer-top {
             display: flex;
             align-items: flex-start;
-            gap: 12px;
+            gap: 10px;
         }
 
         .avatar-img, .avatar-fallback {
-            width: 44px;
-            height: 44px;
+            width: 42px;
+            height: 42px;
             border-radius: 999px;
             object-fit: cover;
             flex-shrink: 0;
@@ -292,7 +299,7 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.05rem;
+            font-size: 1rem;
         }
 
         .composer textarea {
@@ -300,17 +307,18 @@
             background: transparent;
             border: none;
             color: var(--text);
-            font-size: 1.02rem;
+            font-size: 0.98rem;
             resize: none;
             outline: none;
-            min-height: 68px;
-            margin-bottom: 8px;
-            line-height: 1.6;
+            min-height: 62px;
+            margin-bottom: 6px;
+            line-height: 1.55;
+            min-width: 0;
         }
 
         .media-preview {
             position: relative;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             border-radius: 14px;
             overflow: hidden;
             border: 1px solid var(--border);
@@ -320,14 +328,14 @@
 
         .media-preview.active {
             display: block;
-            animation: fadeSlideIn 0.18s ease;
+            animation: fadeSlideIn 0.15s ease;
         }
 
         .media-preview img,
         .media-preview video {
             display: block;
             width: 100%;
-            max-height: 320px;
+            max-height: 290px;
             object-fit: contain;
         }
 
@@ -340,7 +348,7 @@
             border: none;
             border-radius: 999px;
             padding: 4px 10px;
-            font-size: 0.78rem;
+            font-size: 0.76rem;
             cursor: pointer;
         }
 
@@ -350,13 +358,13 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 8px;
-            padding-top: 10px;
+            padding-top: 9px;
             border-top: 1px solid var(--border);
         }
 
         .tool-group {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             align-items: center;
             flex-wrap: wrap;
         }
@@ -365,26 +373,38 @@
             background: var(--bg);
             color: var(--text);
             border: 1px solid var(--border);
-            padding: 7px 12px;
+            padding: 6px 10px;
             border-radius: 10px;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             outline: none;
+            max-width: 100%;
+        }
+
+        .media-upload-btn {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
         }
 
         .plus-trigger-btn {
             background: var(--accent-soft);
             color: var(--accent);
             border: 1px solid rgba(29, 155, 240, 0.35);
-            width: 34px;
-            height: 34px;
+            width: 32px;
+            height: 32px;
             border-radius: 999px;
-            font-size: 1.25rem;
+            font-size: 1.2rem;
             font-weight: 800;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: 0.15s ease;
+            transition: 0.12s ease;
         }
 
         .plus-trigger-btn:hover {
@@ -396,25 +416,25 @@
             background: var(--accent-soft);
             color: var(--accent);
             border: 1px solid rgba(29, 155, 240, 0.3);
-            padding: 6px 11px;
+            padding: 5px 10px;
             border-radius: 10px;
-            font-size: 0.82rem;
+            font-size: 0.8rem;
             font-weight: 700;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 5px;
-            transition: 0.15s ease;
+            gap: 4px;
+            transition: 0.12s ease;
         }
 
         .btn-publish {
             background: var(--accent);
             color: #ffffff;
             border: none;
-            padding: 8px 20px;
+            padding: 7px 18px;
             border-radius: 999px;
             font-weight: 700;
-            font-size: 0.88rem;
+            font-size: 0.86rem;
             cursor: pointer;
             transition: transform 0.12s ease, opacity 0.12s ease;
         }
@@ -426,12 +446,12 @@
 
         .post-card {
             display: flex;
-            gap: 12px;
-            padding: 16px 18px;
+            gap: 10px;
+            padding: 14px 16px;
             border-bottom: 1px solid var(--border);
             background: var(--bg);
-            transition: background-color 0.15s ease;
-            animation: fadeSlideIn 0.2s ease forwards;
+            transition: background-color 0.12s ease;
+            animation: fadeSlideIn 0.16s ease forwards;
         }
 
         .post-card:hover {
@@ -442,12 +462,13 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 3px;
+            gap: 2px;
             background: var(--surface);
-            padding: 6px;
+            padding: 5px;
             border-radius: 10px;
             height: fit-content;
             border: 1px solid var(--border);
+            flex-shrink: 0;
         }
 
         .vote-btn {
@@ -455,13 +476,14 @@
             border: none;
             color: var(--muted);
             cursor: pointer;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             transition: 0.12s ease;
+            line-height: 1.2;
         }
 
         .vote-btn.up:hover { color: var(--upvote); }
         .vote-btn.down:hover { color: var(--downvote); }
-        .vote-score { font-weight: 800; font-size: 0.86rem; }
+        .vote-score { font-weight: 800; font-size: 0.82rem; }
 
         .post-main {
             flex: 1;
@@ -470,20 +492,30 @@
 
         .post-meta {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: space-between;
+            gap: 6px;
             margin-bottom: 6px;
+        }
+
+        .author-info {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            min-width: 0;
         }
 
         .author-trigger {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 7px;
             background: none;
             border: none;
             color: var(--text);
             cursor: pointer;
             text-align: right;
+            max-width: 100%;
         }
 
         .author-trigger:hover .author-name-text {
@@ -495,12 +527,12 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 18px;
-            height: 18px;
+            width: 17px;
+            height: 17px;
             border-radius: 999px;
             background: #1d9bf0;
             color: #ffffff;
-            font-size: 0.72rem;
+            font-size: 0.7rem;
             font-weight: 800;
             flex-shrink: 0;
         }
@@ -508,21 +540,23 @@
         .comm-tag {
             background: var(--accent-soft);
             color: var(--accent);
-            padding: 2px 10px;
+            padding: 2px 9px;
             border-radius: 999px;
-            font-size: 0.74rem;
+            font-size: 0.72rem;
             font-weight: 700;
+            white-space: nowrap;
         }
 
         .post-text {
-            line-height: 1.65;
+            line-height: 1.6;
             margin-bottom: 10px;
             white-space: pre-wrap;
             word-wrap: break-word;
+            font-size: 0.94rem;
         }
 
         .post-media {
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             border-radius: 14px;
             overflow: hidden;
             border: 1px solid var(--border);
@@ -533,19 +567,19 @@
         .post-media video {
             display: block;
             width: 100%;
-            max-height: 420px;
+            max-height: 380px;
             object-fit: cover;
         }
 
         .ai-box {
             background: var(--accent-soft);
             border-right: 3px solid var(--accent);
-            padding: 10px 14px;
+            padding: 10px 12px;
             border-radius: 10px;
-            font-size: 0.86rem;
+            font-size: 0.84rem;
             margin-bottom: 10px;
             white-space: pre-wrap;
-            line-height: 1.6;
+            line-height: 1.55;
         }
 
         .post-actions {
@@ -553,24 +587,25 @@
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 6px;
             padding-top: 8px;
             border-top: 1px solid var(--border);
         }
 
         .reaction-group {
             display: flex;
-            gap: 6px;
+            gap: 5px;
             flex-wrap: wrap;
+            align-items: center;
         }
 
         .react-pill {
             background: var(--surface);
             border: 1px solid var(--border);
             color: var(--text);
-            padding: 4px 10px;
+            padding: 4px 9px;
             border-radius: 999px;
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
@@ -583,12 +618,12 @@
         }
 
         .heart-pill {
-            background: rgba(249, 24, 128, 0.12);
+            background: rgba(249, 24, 128, 0.11);
             border: 1px solid rgba(249, 24, 128, 0.35);
             color: var(--heart);
-            padding: 4px 11px;
+            padding: 4px 10px;
             border-radius: 999px;
-            font-size: 0.82rem;
+            font-size: 0.8rem;
             font-weight: 700;
             cursor: pointer;
             display: inline-flex;
@@ -597,15 +632,20 @@
             transition: 0.12s ease;
         }
 
-        .heart-pill.active, .heart-pill:hover {
+        .heart-pill:hover {
+            background: rgba(249, 24, 128, 0.22);
+        }
+
+        .heart-pill.active {
             background: var(--heart);
             color: #ffffff;
-            animation: heartBurst 0.25s ease;
+            border-color: var(--heart);
+            animation: heartBurst 0.22s ease;
         }
 
         .comments-box {
-            margin-top: 10px;
-            padding-top: 10px;
+            margin-top: 8px;
+            padding-top: 8px;
             border-top: 1px dashed var(--border);
             display: none;
         }
@@ -614,10 +654,10 @@
 
         .comment-bubble {
             background: var(--surface);
-            padding: 8px 12px;
+            padding: 7px 11px;
             border-radius: 10px;
             margin-bottom: 6px;
-            font-size: 0.86rem;
+            font-size: 0.84rem;
         }
 
         .sidebar-right {
@@ -635,13 +675,13 @@
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: 16px;
-            padding: 16px;
+            padding: 15px;
         }
 
         .widget-title {
-            font-size: 0.98rem;
+            font-size: 0.96rem;
             font-weight: 700;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -654,13 +694,13 @@
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.74);
+            background: rgba(0, 0, 0, 0.76);
             backdrop-filter: blur(8px);
             display: none;
             align-items: center;
             justify-content: center;
             z-index: 100;
-            padding: 14px;
+            padding: 10px;
         }
 
         .modal-overlay.open { display: flex; }
@@ -671,32 +711,32 @@
             border-radius: 20px;
             width: 100%;
             max-width: 580px;
-            max-height: 88vh;
+            max-height: 90vh;
             overflow-y: auto;
-            padding: 22px;
-            animation: fadeSlideIn 0.18s ease;
+            padding: 18px;
+            animation: fadeSlideIn 0.16s ease;
         }
 
         .profile-banner {
-            height: 84px;
+            height: 76px;
             border-radius: 14px;
             background: linear-gradient(135deg, var(--accent), #6366f1);
-            margin-bottom: -34px;
+            margin-bottom: -32px;
         }
 
         .profile-top-row {
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
-            padding: 0 12px;
-            margin-bottom: 12px;
-            gap: 10px;
+            padding: 0 8px;
+            margin-bottom: 10px;
+            gap: 8px;
             flex-wrap: wrap;
         }
 
         .profile-avatar-lg {
-            width: 68px;
-            height: 68px;
+            width: 62px;
+            height: 62px;
             border-radius: 999px;
             border: 3px solid var(--surface);
             object-fit: cover;
@@ -705,7 +745,7 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: 800;
         }
 
@@ -713,15 +753,16 @@
             background: var(--accent);
             color: #ffffff;
             border: none;
-            padding: 7px 16px;
+            padding: 6px 15px;
             border-radius: 999px;
             font-weight: 700;
-            font-size: 0.85rem;
+            font-size: 0.84rem;
             cursor: pointer;
+            transition: 0.12s ease;
         }
 
         .follow-btn.following {
-            background: transparent;
+            background: var(--bg);
             color: var(--text);
             border: 1px solid var(--border);
         }
@@ -729,8 +770,8 @@
         .create-picker-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-top: 10px;
+            gap: 8px;
+            margin-top: 8px;
         }
 
         .picker-option-btn {
@@ -738,15 +779,15 @@
             border: 1px solid var(--border);
             color: var(--text);
             border-radius: 14px;
-            padding: 16px 10px;
+            padding: 14px 8px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             font-weight: 700;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             cursor: pointer;
-            transition: 0.15s ease;
+            transition: 0.12s ease;
         }
 
         .picker-option-btn:hover {
@@ -765,7 +806,7 @@
         }
 
         .nexus-header {
-            padding: 12px 18px;
+            padding: 12px 16px;
             background: var(--bg);
             border-bottom: 1px solid var(--border);
             display: flex;
@@ -784,14 +825,15 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 12px;
-            padding: 12px 0;
+            gap: 10px;
+            padding: 11px 0;
             border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
         }
 
         .api-help-link {
             color: var(--accent);
-            font-size: 0.84rem;
+            font-size: 0.82rem;
             text-decoration: underline;
             word-break: break-all;
         }
@@ -811,7 +853,7 @@
             inset: 0;
             background-color: rgba(148, 163, 184, 0.35);
             border-radius: 24px;
-            transition: 0.25s;
+            transition: 0.2s;
         }
 
         .slider:before {
@@ -823,7 +865,7 @@
             bottom: 3px;
             background-color: #ffffff;
             border-radius: 50%;
-            transition: 0.25s;
+            transition: 0.2s;
         }
 
         input:checked + .slider { background-color: var(--accent); }
@@ -836,10 +878,27 @@
         }
 
         @media (max-width: 680px) {
-            .app-layout { grid-template-columns: 1fr; padding: 0; }
+            .app-layout { grid-template-columns: 1fr; padding: 0; gap: 0; }
             .sidebar-left { display: none; }
-            .search-box { width: 125px; }
-            .main-feed { padding-bottom: 76px; }
+            .main-feed { border-left: none; border-right: none; padding-bottom: 72px; }
+            .top-header { padding: 9px 10px; gap: 6px; }
+            .top-header h2 { font-size: 0.96rem !important; white-space: nowrap; }
+            .header-actions { gap: 4px; }
+            .search-box { width: 96px; padding: 4px 8px; }
+            .search-box input { font-size: 0.78rem; }
+            .icon-btn { width: 30px; height: 30px; }
+            .icon-btn .icon-svg { width: 16px; height: 16px; }
+            .communities-bar { padding: 8px 10px; gap: 5px; }
+            .comm-pill { padding: 4px 10px; font-size: 0.76rem; }
+            .composer { padding: 11px 10px; }
+            .avatar-img, .avatar-fallback { width: 34px; height: 34px; font-size: 0.88rem; }
+            .composer textarea { font-size: 0.92rem; min-height: 54px; }
+            .post-card { padding: 11px 10px; gap: 7px; }
+            .vote-col { padding: 4px; }
+            .vote-score { font-size: 0.76rem; }
+            .post-text { font-size: 0.88rem; }
+            .react-pill, .heart-pill { padding: 3px 8px; font-size: 0.74rem; }
+            .btn-publish { padding: 6px 14px; font-size: 0.8rem; }
 
             .mobile-bottom-bar {
                 display: flex;
@@ -847,13 +906,13 @@
                 bottom: 0;
                 left: 0;
                 right: 0;
-                height: 60px;
+                height: 56px;
                 background: var(--surface);
                 border-top: 1px solid var(--border);
                 justify-content: space-around;
                 align-items: center;
                 z-index: 60;
-                padding: 0 8px;
+                padding: 0 4px;
             }
 
             .mobile-bar-btn {
@@ -864,28 +923,35 @@
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
-                gap: 2px;
-                font-size: 0.72rem;
+                gap: 1px;
+                font-size: 0.66rem;
                 font-weight: 700;
                 cursor: pointer;
-                padding: 4px 8px;
+                padding: 3px 4px;
                 border-radius: 10px;
+                min-width: 0;
+            }
+
+            .mobile-bar-btn .icon-svg {
+                width: 18px;
+                height: 18px;
             }
 
             .mobile-plus-btn {
                 background: var(--accent);
                 color: #ffffff;
                 border: none;
-                width: 44px;
-                height: 44px;
+                width: 40px;
+                height: 40px;
                 border-radius: 999px;
-                font-size: 1.6rem;
+                font-size: 1.45rem;
                 font-weight: 800;
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
                 cursor: pointer;
                 line-height: 1;
+                flex-shrink: 0;
             }
         }
     </style>
@@ -959,12 +1025,12 @@
     <main class="main-feed">
         <div class="top-header">
             <div>
-                <h2 style="font-size: 1.1rem; font-weight: 800;" id="viewTitle">الرئيسية</h2>
+                <h2 style="font-size: 1.08rem; font-weight: 800;" id="viewTitle">الرئيسية</h2>
             </div>
 
             <div class="header-actions">
                 <div class="search-box">
-                    <svg class="icon-svg" style="width:16px;height:16px;color:var(--muted);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <svg class="icon-svg" style="width:15px;height:15px;color:var(--muted);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
                     </svg>
                     <input type="text" id="searchInput" placeholder="بحث..." oninput="renderPosts()">
@@ -1004,7 +1070,7 @@
         <div class="composer" id="composerBox">
             <div class="composer-top">
                 <div id="composerAvatarSlot"></div>
-                <textarea id="postContent" placeholder="اكتب تغريدتك هنا..."></textarea>
+                <textarea id="postContent" placeholder="اكتب تغريدتك هنا..." onkeydown="handleComposerKey(event)"></textarea>
             </div>
 
             <div class="media-preview" id="mediaPreview">
@@ -1028,7 +1094,7 @@
                     </select>
 
                     <button type="button" class="ai-btn" onclick="aiEnhanceComposer()">
-                        <svg class="icon-svg" style="width:15px;height:15px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg class="icon-svg" style="width:14px;height:14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9L12 3z"/>
                         </svg>
                         AI
@@ -1120,12 +1186,10 @@
     </button>
 </nav>
 
-<!-- نافذة الحساب الشخصي / حساب أي مستخدم -->
 <div class="modal-overlay" id="profileModal">
     <div class="modal-box" id="profileModalContent"></div>
 </div>
 
-<!-- نافذة زر + -->
 <div class="modal-overlay" id="createPickerModal">
     <div class="modal-box" style="max-width: 420px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
@@ -1157,7 +1221,6 @@
     </div>
 </div>
 
-<!-- نافذة Nexus Messenger -->
 <div class="modal-overlay" id="nexusModal">
     <div class="modal-box nexus-modal">
         <div class="nexus-header">
@@ -1171,7 +1234,6 @@
     </div>
 </div>
 
-<!-- نافذة الذكاء الاصطناعي -->
 <div class="modal-overlay" id="aiModal">
     <div class="modal-box">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
@@ -1205,7 +1267,6 @@
     </div>
 </div>
 
-<!-- نافذة الإعدادات -->
 <div class="modal-overlay" id="settingsModal">
     <div class="modal-box">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
@@ -1309,10 +1370,11 @@
     let currentCommunity = 'الكل';
     let currentView = 'all';
     let bookmarks = JSON.parse(localStorage.getItem('vloxy_bookmarks') || '[]');
-    let heartedPosts = JSON.parse(localStorage.getItem('vloxy_hearted') || '[]');
+    let heartedPosts = JSON.parse(localStorage.getItem('vloxy_hearted') || '[]').map(String);
     let followedHandles = JSON.parse(localStorage.getItem('vloxy_followed') || '[]');
     let notifiedHandles = JSON.parse(localStorage.getItem('vloxy_notified') || '[]');
     let selectedMedia = null;
+    let activeProfileHandle = null;
 
     let userSettings = JSON.parse(localStorage.getItem('vloxy_settings') || JSON.stringify({
         author: 'مستخدم',
@@ -1443,6 +1505,7 @@
 
         localStorage.setItem('vloxy_settings', JSON.stringify(userSettings));
         applySettings();
+        renderPosts();
 
         try {
             await fetch('/api/users/profile', {
@@ -1451,14 +1514,14 @@
                 body: JSON.stringify({
                     handle: userSettings.handle,
                     author: userSettings.author,
-                    avatar: userSettings.avatar
+                    avatar: userSettings.avatar,
+                    followers: userSettings.followers
                 })
             });
-            await fetchPosts(true);
         } catch (e) {}
     }
 
-    async function handleAvatarUpload(event) {
+    function handleAvatarUpload(event) {
         const file = event.target.files?.[0];
         if (!file) return;
         if (file.size > 5 * 1024 * 1024) {
@@ -1470,6 +1533,7 @@
             userSettings.avatar = reader.result;
             localStorage.setItem('vloxy_settings', JSON.stringify(userSettings));
             applySettings();
+            renderPosts();
             saveSettings();
         };
         reader.readAsDataURL(file);
@@ -1479,6 +1543,7 @@
         userSettings.avatar = '';
         localStorage.setItem('vloxy_settings', JSON.stringify(userSettings));
         applySettings();
+        renderPosts();
         saveSettings();
     }
 
@@ -1499,11 +1564,18 @@
             const box = document.getElementById('composerBox');
             const textarea = document.getElementById('postContent');
             box.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            setTimeout(() => textarea.focus(), 140);
+            setTimeout(() => textarea.focus(), 100);
         } else if (type === 'image') {
             document.getElementById('imageFileInput').click();
         } else if (type === 'video') {
             document.getElementById('videoFileInput').click();
+        }
+    }
+
+    function handleComposerKey(event) {
+        if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+            event.preventDefault();
+            publishPost();
         }
     }
 
@@ -1541,13 +1613,66 @@
         document.getElementById('mediaPreview').classList.remove('active');
     }
 
-    async function fetchPosts(silent = false) {
+    function mergePosts(incomingList) {
+        if (!Array.isArray(incomingList)) return;
+        const map = new Map();
+        for (const p of incomingList) {
+            map.set(String(p.id), p);
+        }
+        for (const p of posts) {
+            if (p._pending && !map.has(String(p.id))) {
+                map.set(String(p.id), p);
+            }
+        }
+        posts = Array.from(map.values()).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    }
+
+    async function fetchPosts() {
         try {
-            const res = await fetch('/api/posts');
+            const res = await fetch('/api/posts', { cache: 'no-store' });
             if (!res.ok) return;
-            posts = await res.json();
-            if (!silent) renderPosts();
-            else renderPosts();
+            const list = await res.json();
+            mergePosts(list);
+            renderPosts();
+        } catch (e) {}
+    }
+
+    function connectRealtimeStream() {
+        if (!window.EventSource) return;
+        try {
+            const es = new EventSource('/api/stream');
+            es.addEventListener('sync', (ev) => {
+                try {
+                    const msg = JSON.parse(ev.data);
+                    if (msg.type === 'new_post' && msg.post) {
+                        const exists = posts.some(p => String(p.id) === String(msg.post.id) || (p._pending && p.content === msg.post.content && p.handle === msg.post.handle));
+                        if (!exists) {
+                            posts.unshift(msg.post);
+                            renderPosts();
+                        }
+                    } else if (msg.type === 'post_update' && msg.post) {
+                        posts = posts.map(p => (String(p.id) === String(msg.post.id) ? msg.post : p));
+                        renderPosts();
+                    } else if (msg.type === 'delete_post') {
+                        posts = posts.filter(p => String(p.id) !== String(msg.id));
+                        renderPosts();
+                    } else if (msg.type === 'profile' || msg.type === 'follow') {
+                        const h = normalizeHandle(msg.handle);
+                        posts.forEach(p => {
+                            if (normalizeHandle(p.handle) === h) {
+                                p.author = msg.user.author;
+                                p.avatar = msg.user.avatar;
+                                p.followers = msg.user.followers;
+                                p.verified = msg.verified;
+                            }
+                        });
+                        renderPosts();
+                        if (activeProfileHandle === h) {
+                            openUserProfile(h);
+                        }
+                    }
+                } catch (e) {}
+            });
         } catch (e) {}
     }
 
@@ -1598,8 +1723,9 @@
         }
 
         list.forEach(post => {
+            const postIdStr = String(post.id);
             const isBookmarked = bookmarks.includes(post.id);
-            const isHearted = heartedPosts.includes(post.id);
+            const isHearted = heartedPosts.includes(postIdStr);
             const r = post.reactions || { like: 0, fire: 0, haha: 0 };
             const timeStr = new Date(post.timestamp).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
             const postHandle = normalizeHandle(post.handle);
@@ -1623,9 +1749,9 @@
             card.className = 'post-card';
             card.innerHTML = `
                 <div class="vote-col">
-                    <button class="vote-btn up" onclick="votePost(${post.id}, 'up')">▲</button>
+                    <button type="button" class="vote-btn up" onclick="votePost(${post.id}, 'up')">▲</button>
                     <span class="vote-score">${post.votes}</span>
-                    <button class="vote-btn down" onclick="votePost(${post.id}, 'down')">▼</button>
+                    <button type="button" class="vote-btn down" onclick="votePost(${post.id}, 'down')">▼</button>
                 </div>
 
                 <div class="post-main">
@@ -1636,13 +1762,13 @@
                                 <span style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
                                     <strong class="author-name-text">${escapeHtml(post.author)}</strong>
                                     ${renderVerifiedBadge(followers)}
-                                    <span style="color: var(--muted); font-size: 0.82rem;">${escapeHtml(postHandle)}</span>
+                                    <span style="color: var(--muted); font-size: 0.8rem;">${escapeHtml(postHandle)}</span>
                                 </span>
                             </button>
-                            <span style="color: var(--muted); font-size: 0.82rem;">· ${timeStr}</span>
+                            <span style="color: var(--muted); font-size: 0.8rem;">· ${timeStr}</span>
                             <span class="comm-tag">r/${escapeHtml(post.community)}</span>
                         </div>
-                        <button class="vote-btn" onclick="deletePost(${post.id})" title="حذف">✕</button>
+                        <button type="button" class="vote-btn" onclick="deletePost(${post.id})" title="حذف">✕</button>
                     </div>
 
                     ${post.content ? `<div class="post-text">${escapeHtml(post.content)}</div>` : ''}
@@ -1651,7 +1777,7 @@
 
                     <div class="post-actions">
                         <div class="reaction-group">
-                            <button type="button" class="heart-pill ${isHearted ? 'active' : ''}" onclick="heartPost(${post.id})" title="قلب">
+                            <button type="button" class="heart-pill ${isHearted ? 'active' : ''}" onclick="toggleHeartPost(${post.id})" title="قلب">
                                 <svg style="width:14px;height:14px;" viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                                 </svg>
@@ -1691,8 +1817,10 @@
         if (!content.trim() && !selectedMedia) return;
 
         const tempId = Date.now();
+        const payloadMedia = selectedMedia ? { ...selectedMedia } : null;
         const optimisticPost = {
             id: tempId,
+            _pending: true,
             author: userSettings.author,
             handle: userSettings.handle,
             avatar: userSettings.avatar,
@@ -1700,8 +1828,8 @@
             verified: isVerifiedCount(userSettings.followers),
             community,
             content: content.trim(),
-            mediaType: selectedMedia ? selectedMedia.type : null,
-            mediaData: selectedMedia ? selectedMedia.data : null,
+            mediaType: payloadMedia ? payloadMedia.type : null,
+            mediaData: payloadMedia ? payloadMedia.data : null,
             votes: 1,
             hearts: 0,
             reposts: 0,
@@ -1712,7 +1840,6 @@
 
         posts.unshift(optimisticPost);
         textarea.value = '';
-        const payloadMedia = selectedMedia ? { ...selectedMedia } : null;
         clearMedia();
         renderPosts();
 
@@ -1732,14 +1859,14 @@
             });
             if (res.ok) {
                 const saved = await res.json();
-                posts = posts.map(p => (p.id === tempId ? saved : p));
+                posts = posts.map(p => (String(p.id) === String(tempId) ? saved : p));
                 renderPosts();
             }
         } catch (e) {}
     }
 
     async function votePost(id, direction) {
-        const target = posts.find(p => p.id === id);
+        const target = posts.find(p => String(p.id) === String(id));
         if (target) {
             target.votes += direction === 'up' ? 1 : -1;
             renderPosts();
@@ -1753,23 +1880,40 @@
         } catch (e) {}
     }
 
-    async function heartPost(id) {
-        const target = posts.find(p => p.id === id);
-        if (target) {
-            target.hearts = (Number(target.hearts) || 0) + 1;
-            if (!heartedPosts.includes(id)) {
-                heartedPosts.push(id);
-                localStorage.setItem('vloxy_hearted', JSON.stringify(heartedPosts));
-            }
-            renderPosts();
+    async function toggleHeartPost(id) {
+        const idStr = String(id);
+        const alreadyHearted = heartedPosts.includes(idStr);
+        const delta = alreadyHearted ? -1 : 1;
+
+        if (alreadyHearted) {
+            heartedPosts = heartedPosts.filter(x => x !== idStr);
+        } else {
+            heartedPosts.push(idStr);
         }
+        localStorage.setItem('vloxy_hearted', JSON.stringify(heartedPosts));
+
+        const target = posts.find(p => String(p.id) === idStr);
+        if (target) {
+            target.hearts = Math.max(0, (Number(target.hearts) || 0) + delta);
+        }
+        renderPosts();
+
         try {
-            await fetch(`/api/posts/${id}/heart`, { method: 'POST' });
+            const res = await fetch(`/api/posts/${id}/heart`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ delta })
+            });
+            if (res.ok) {
+                const updated = await res.json();
+                posts = posts.map(p => (String(p.id) === idStr ? updated : p));
+                renderPosts();
+            }
         } catch (e) {}
     }
 
     async function reactPost(id, type) {
-        const target = posts.find(p => p.id === id);
+        const target = posts.find(p => String(p.id) === String(id));
         if (target) {
             if (!target.reactions) target.reactions = { like: 0, fire: 0, haha: 0 };
             target.reactions[type] = (Number(target.reactions[type]) || 0) + 1;
@@ -1785,7 +1929,7 @@
     }
 
     async function repost(id) {
-        const target = posts.find(p => p.id === id);
+        const target = posts.find(p => String(p.id) === String(id));
         if (target) {
             target.reposts = (Number(target.reposts) || 0) + 1;
             renderPosts();
@@ -1796,7 +1940,7 @@
     }
 
     async function deletePost(id) {
-        posts = posts.filter(p => p.id !== id);
+        posts = posts.filter(p => String(p.id) !== String(id));
         renderPosts();
         try {
             await fetch(`/api/posts/${id}`, { method: 'DELETE' });
@@ -1812,7 +1956,7 @@
         const text = input.value.trim();
         if (!text) return;
 
-        const target = posts.find(p => p.id === id);
+        const target = posts.find(p => String(p.id) === String(id));
         if (target) {
             target.comments.push({
                 id: Date.now(),
@@ -1846,6 +1990,7 @@
 
     async function openUserProfile(rawHandle) {
         const h = normalizeHandle(rawHandle);
+        activeProfileHandle = h;
         const modal = document.getElementById('profileModal');
         const container = document.getElementById('profileModalContent');
         modal.classList.add('open');
@@ -1859,7 +2004,7 @@
         let userPosts = posts.filter(p => normalizeHandle(p.handle) === h);
 
         try {
-            const res = await fetch(`/api/users/${encodeURIComponent(h)}`);
+            const res = await fetch(`/api/users/${encodeURIComponent(h)}`, { cache: 'no-store' });
             if (res.ok) {
                 const data = await res.json();
                 if (data.user) userInfo = data.user;
@@ -1875,7 +2020,7 @@
             ? userPosts.map(p => `
                 <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:8px;">
                     <div style="font-size:0.78rem;color:var(--muted);margin-bottom:4px;">r/${escapeHtml(p.community)} · ♥ ${Number(p.hearts) || 0}</div>
-                    <div style="font-size:0.92rem;line-height:1.55;white-space:pre-wrap;">${escapeHtml(p.content || 'منشور وسائط')}</div>
+                    <div style="font-size:0.9rem;line-height:1.55;white-space:pre-wrap;">${escapeHtml(p.content || 'منشور وسائط')}</div>
                 </div>
             `).join('')
             : `<div style="text-align:center;color:var(--muted);padding:20px;font-size:0.88rem;">لا توجد تغريدات لهذا الحساب بعد.</div>`;
@@ -1892,11 +2037,11 @@
                 <div style="display:flex;align-items:flex-end;gap:10px;">
                     ${renderAvatar(userInfo.author, userInfo.avatar, 'profile-avatar-lg')}
                     <div style="margin-bottom:4px;">
-                        <div style="font-size:1.1rem;font-weight:800;display:flex;align-items:center;gap:5px;">
+                        <div style="font-size:1.08rem;font-weight:800;display:flex;align-items:center;gap:5px;">
                             <span>${escapeHtml(userInfo.author)}</span>
                             ${renderVerifiedBadge(followersNum)}
                         </div>
-                        <div style="font-size:0.84rem;color:var(--muted);">${escapeHtml(h)}</div>
+                        <div style="font-size:0.82rem;color:var(--muted);">${escapeHtml(h)}</div>
                     </div>
                 </div>
 
@@ -1914,7 +2059,7 @@
                 </div>
             </div>
 
-            <div style="display:flex;gap:14px;padding:0 12px 12px;border-bottom:1px solid var(--border);font-size:0.86rem;flex-wrap:wrap;">
+            <div style="display:flex;gap:14px;padding:0 8px 12px;border-bottom:1px solid var(--border);font-size:0.84rem;flex-wrap:wrap;">
                 <div><strong>${followersNum}</strong> <span style="color:var(--muted);">متابع</span></div>
                 <div><strong>${userPosts.length}</strong> <span style="color:var(--muted);">تغريدة</span></div>
                 <div style="color:${isVerifiedCount(followersNum) ? 'var(--accent)' : 'var(--muted)'};">
@@ -1923,7 +2068,7 @@
             </div>
 
             <div style="margin-top:14px;">
-                <div style="font-weight:800;font-size:0.92rem;margin-bottom:8px;">التغريدات</div>
+                <div style="font-weight:800;font-size:0.9rem;margin-bottom:8px;">التغريدات</div>
                 ${postsListHtml}
             </div>
         `;
@@ -2010,7 +2155,7 @@
     }
 
     async function summarizePost(id) {
-        const post = posts.find(p => p.id === id);
+        const post = posts.find(p => String(p.id) === String(id));
         if (!post) return;
         const box = document.getElementById(`ai-box-${id}`);
         box.style.display = 'block';
@@ -2056,7 +2201,10 @@
     function openNexus() { document.getElementById('nexusModal').classList.add('open'); }
     function openAIModal() { document.getElementById('aiModal').classList.add('open'); }
     function openSettings() { document.getElementById('settingsModal').classList.add('open'); }
-    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+    function closeModal(id) {
+        document.getElementById(id).classList.remove('open');
+        if (id === 'profileModal') activeProfileHandle = null;
+    }
 
     function escapeHtml(str) {
         const div = document.createElement('div');
@@ -2066,6 +2214,7 @@
 
     applySettings();
     fetchPosts();
+    connectRealtimeStream();
     playBootChime(false);
 </script>
 
