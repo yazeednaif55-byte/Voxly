@@ -27,6 +27,12 @@ function extractHashtags(text) {
     return Array.from(new Set(matches.map(tag => tag.trim())));
 }
 
+function calcHashtagViews(hashtags, baseViews = 0) {
+    const tagCount = Array.isArray(hashtags) ? hashtags.length : 0;
+    const hashtagBoost = tagCount * (tagCount + 1) * 45;
+    return Math.max(0, Number(baseViews) || 0) + hashtagBoost;
+}
+
 function loadData() {
     try {
         if (fs.existsSync(DATA_FILE)) {
@@ -77,6 +83,9 @@ function enrichPost(post) {
         ? post.hashtags
         : extractHashtags(post.content);
 
+    const rawViews = Math.max(10, Number(post.views) || 120);
+    const totalViews = calcHashtagViews(hashtags, rawViews);
+
     return {
         ...post,
         handle: h,
@@ -86,6 +95,7 @@ function enrichPost(post) {
         verified: followers >= VERIFIED_THRESHOLD,
         isShort: Boolean(post.isShort || post.mediaType === 'video'),
         hashtags,
+        views: totalViews,
         hearts: Math.max(0, Number(post.hearts) || 0),
         reposts: Math.max(0, Number(post.reposts) || 0),
         reactions: {
@@ -141,6 +151,9 @@ app.post('/api/posts', (req, res) => {
 
     const h = normalizeHandle(handle);
     const user = ensureUser(h, author, avatar);
+    const hashtags = extractHashtags(text);
+    const initialViews = calcHashtagViews(hashtags, 150);
+
     const post = enrichPost({
         id: Date.now() + Math.floor(Math.random() * 1000),
         author: user.author,
@@ -150,8 +163,9 @@ app.post('/api/posts', (req, res) => {
         content: text,
         mediaType: mediaType || null,
         mediaData: mediaData || null,
-        isShort: Boolean(isShort),
-        hashtags: extractHashtags(text),
+        isShort: Boolean(isShort || mediaType === 'video'),
+        hashtags,
+        views: initialViews,
         votes: 1,
         hearts: 0,
         reposts: 0,
