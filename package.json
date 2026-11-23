@@ -1,6 +1,6 @@
 {
   "name": "vloxy",
-  "version": "2.1.0",
+  "version": "2.3.0",
   "description": "An all-in-one social platform combining X-style microblogging, Reddit-style communities & voting, and Facebook-style interactions.",
   "main": "server.js",
   "scripts": {
