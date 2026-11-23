@@ -249,6 +249,19 @@
             cursor: pointer;
         }
 
+        .algo-match-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(29, 155, 240, 0.16);
+            color: #bae6fd;
+            border: 1px solid rgba(125, 211, 252, 0.35);
+            padding: 2px 9px;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 800;
+        }
+
         .header-actions {
             display: flex;
             align-items: center;
@@ -506,7 +519,6 @@
             cursor: pointer;
         }
 
-        /* واجهة Short بأبعاد 9:12 + قائمة تعليقات كبيرة بأسلوب يوتيوب وتيك توك */
         .shorts-stage {
             padding: 16px;
             display: flex;
@@ -565,12 +577,13 @@
             justify-content: space-between;
             align-items: center;
             gap: 6px;
-            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.72), transparent);
+            flex-wrap: wrap;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.75), transparent);
             z-index: 4;
         }
 
         .shorts-counter-pill {
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.72);
             color: #ffffff;
             border: 1px solid rgba(255, 255, 255, 0.18);
             padding: 3px 10px;
@@ -1406,7 +1419,7 @@
                     <svg class="icon-svg" style="width:15px;height:15px;color:var(--muted);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
                     </svg>
-                    <input type="text" id="searchInput" placeholder="بحث أو #هاشتاق..." oninput="renderPosts(true)">
+                    <input type="text" id="searchInput" placeholder="بحث أو #هاشتاق..." oninput="onSearchOrHashtagInput()">
                 </div>
 
                 <button class="icon-btn" onclick="openAIModal()" title="الذكاء الاصطناعي">
@@ -1452,11 +1465,11 @@
         <div class="composer" id="composerBox">
             <div class="composer-top">
                 <div id="composerAvatarSlot"></div>
-                <textarea id="postContent" placeholder="اكتب تغريدتك أو #هاشتاق هنا..." oninput="updateHashtagPreview()" onkeydown="handleComposerKey(event)"></textarea>
+                <textarea id="postContent" placeholder="اكتب تغريدتك أو #هاشتاق الموضوع ليصل لمن يبحث عنه..." oninput="onComposerDraftInput()" onkeydown="handleComposerKey(event)"></textarea>
             </div>
 
-            <div style="font-size:0.78rem;color:var(--accent);font-weight:700;margin-bottom:8px;" id="hashtagBoostPreview">
-                كل هاشتاق تضيفه يزيد مشاهدات الـ Short تلقائياً.
+            <div style="font-size:0.78rem;color:var(--accent);font-weight:700;margin-bottom:8px;" id="hashtagAlgoHint">
+                الهاشتاقات تساعد الخوارزمية على توجيه المحتوى لمن يبحث عن نفس الموضوع.
             </div>
 
             <div class="media-preview" id="mediaPreview">
@@ -1514,19 +1527,19 @@
         </div>
 
         <div class="ad-card">
-            <span class="ad-pill">إعلان · زيادة المشاهدات</span>
-            <div style="font-weight:800;font-size:0.98rem;margin-bottom:6px;">كل هاشتاق = مشاهدات أكثر في Short</div>
+            <span class="ad-pill">إعلان · خوارزمية الهاشتاق</span>
+            <div style="font-weight:800;font-size:0.98rem;margin-bottom:6px;">الهاشتاق يربط المحتوى بمن يبحث عن الحل</div>
             <p style="font-size:0.83rem;color:var(--muted);line-height:1.55;margin-bottom:10px;">
-                أضف هاشتاقات أكثر لمقاطع Short لرفع عداد المشاهدات تلقائياً، وتصفح التعليقات الكبيرة مباشرة بجانب الفيديو.
+                استخدم هاشتاقاً دقيقاً يصف المشكلة أو الموضوع؛ خوارزمية Short تقرّب المقاطع المطابقة لاهتماماتك وبحثك.
             </p>
-            <button type="button" class="btn-publish" style="width:100%;" onclick="startPromoteContent()">أنشئ Short بهاشتاقات</button>
+            <button type="button" class="btn-publish" style="width:100%;" onclick="startPromoteContent()">أنشئ Short بهاشتاق موضوعي</button>
         </div>
 
         <div class="widget-card">
             <div class="widget-title">
-                <span># الهاشتاقات</span>
+                <span># الهاشتاقات الذكية</span>
             </div>
-            <p style="font-size: 0.8rem; color: var(--muted);">اضغط على أي هاشتاق للتصفية حسبه:</p>
+            <p style="font-size: 0.8rem; color: var(--muted);">اختر هاشتاقاً لترتيب وترشيح المقاطع والحلول المطابقة له:</p>
             <div id="trendingHashtagsBox" class="hashtag-cloud"></div>
         </div>
 
@@ -1751,10 +1764,14 @@
     let reachedEndOfShorts = false;
     let shortTouchStartY = null;
     let shortWheelLock = false;
+    let recordedViewIds = new Set();
+
     let bookmarks = JSON.parse(localStorage.getItem('vloxy_bookmarks') || '[]');
     let heartedPosts = JSON.parse(localStorage.getItem('vloxy_hearted') || '[]').map(String);
     let followedHandles = JSON.parse(localStorage.getItem('vloxy_followed') || '[]');
     let notifiedHandles = JSON.parse(localStorage.getItem('vloxy_notified') || '[]');
+    let hashtagAffinities = JSON.parse(localStorage.getItem('vloxy_tag_affinity') || '{}');
+
     let selectedMedia = null;
     let activeProfileHandle = null;
     let activeProfileTab = 'tweets';
@@ -1791,25 +1808,78 @@
 
     function extractHashtags(text) {
         const matches = String(text || '').match(/#[\p{L}\p{N}_]+/gu) || [];
-        return Array.from(new Set(matches.map(tag => tag.trim())));
+        return Array.from(new Set(matches.map(tag => tag.trim().toLowerCase())));
     }
 
-    function getHashtagBoostViews(text) {
-        const count = extractHashtags(text).length;
-        return count * (count + 1) * 45;
+    function bumpHashtagAffinity(tags, weight = 1) {
+        if (!Array.isArray(tags) || !tags.length) return;
+        tags.forEach(t => {
+            const key = String(t).toLowerCase();
+            hashtagAffinities[key] = (Number(hashtagAffinities[key]) || 0) + weight;
+        });
+        localStorage.setItem('vloxy_tag_affinity', JSON.stringify(hashtagAffinities));
     }
 
-    function updateHashtagPreview() {
+    function getSmartHashtagScore(post) {
+        const tags = extractHashtags(post.content);
+        const searchText = (document.getElementById('searchInput')?.value || '').toLowerCase();
+        const draftText = (document.getElementById('postContent')?.value || '').toLowerCase();
+        const queryTags = new Set([
+            ...extractHashtags(searchText),
+            ...extractHashtags(draftText)
+        ]);
+
+        let score = 0;
+        if (activeHashtag && tags.includes(activeHashtag.toLowerCase())) {
+            score += 100;
+        }
+        tags.forEach(t => {
+            if (queryTags.has(t)) score += 50;
+            score += (Number(hashtagAffinities[t]) || 0) * 10;
+        });
+
+        const engagement = (Number(post.hearts) || 0) * 2 + (Array.isArray(post.comments) ? post.comments.length * 3 : 0);
+        return score + engagement;
+    }
+
+    function getHashtagMatchReason(post) {
+        const tags = extractHashtags(post.content);
+        const searchText = (document.getElementById('searchInput')?.value || '').toLowerCase();
+        const queryTags = extractHashtags(searchText);
+
+        if (activeHashtag && tags.includes(activeHashtag.toLowerCase())) {
+            return `مطابق لـ ${activeHashtag}`;
+        }
+        const matchedQueryTag = tags.find(t => queryTags.includes(t));
+        if (matchedQueryTag) {
+            return `حل مطابق لبحثك ${matchedQueryTag}`;
+        }
+        const matchedAffinityTag = tags.find(t => (Number(hashtagAffinities[t]) || 0) > 0);
+        if (matchedAffinityTag) {
+            return `موصى به حسب اهتمامك بـ ${matchedAffinityTag}`;
+        }
+        return tags.length ? `مرتبط بـ ${tags[0]}` : 'محتوى قصير';
+    }
+
+    function onComposerDraftInput() {
         const val = document.getElementById('postContent').value;
         const tags = extractHashtags(val);
-        const boost = getHashtagBoostViews(val);
-        const el = document.getElementById('hashtagBoostPreview');
+        const el = document.getElementById('hashtagAlgoHint');
         if (!el) return;
         if (tags.length > 0) {
-            el.textContent = `عدد الهاشتاقات: ${tags.length} → زيادة مشاهدات متوقعة: +${boost} مشاهدة`;
+            el.textContent = `الخوارزمية ستصنّف هذا المحتوى تحت: ${tags.join(' · ')} ليوصل لمن يبحث عن الحل.`;
         } else {
-            el.textContent = 'كل هاشتاق تضيفه يزيد مشاهدات الـ Short تلقائياً.';
+            el.textContent = 'الهاشتاقات تساعد الخوارزمية على توجيه المحتوى لمن يبحث عن نفس الموضوع.';
         }
+        if (currentView === 'shorts') {
+            renderPosts(true);
+        }
+    }
+
+    function onSearchOrHashtagInput() {
+        shortIndex = 0;
+        reachedEndOfShorts = false;
+        renderPosts(true);
     }
 
     function isShortPost(post) {
@@ -1823,7 +1893,7 @@
             list = list.filter(p => p.community === currentCommunity);
         }
         if (activeHashtag) {
-            list = list.filter(p => extractHashtags(p.content).includes(activeHashtag));
+            list = list.filter(p => extractHashtags(p.content).includes(activeHashtag.toLowerCase()));
         }
         if (query) {
             list = list.filter(p =>
@@ -1832,7 +1902,32 @@
                 (p.handle || '').toLowerCase().includes(query)
             );
         }
-        return list;
+
+        return list.sort((a, b) => {
+            const diff = getSmartHashtagScore(b) - getSmartHashtagScore(a);
+            if (diff !== 0) return diff;
+            return new Date(b.timestamp) - new Date(a.timestamp);
+        });
+    }
+
+    async function recordRealViewOnce(post) {
+        if (!post || post._pending) return;
+        const idStr = String(post.id);
+        if (recordedViewIds.has(idStr)) return;
+        recordedViewIds.add(idStr);
+
+        post.views = (Number(post.views) || 0) + 1;
+        const vEl = document.getElementById(`shortViewsCount-${post.id}`);
+        if (vEl) vEl.textContent = String(post.views);
+
+        try {
+            const res = await fetch(`/api/posts/${post.id}/view`, { method: 'POST' });
+            if (res.ok) {
+                const updated = await res.json();
+                posts = posts.map(p => (String(p.id) === idStr ? updated : p));
+                lastFeedSignature = computeFeedSignature(posts);
+            }
+        } catch (e) {}
     }
 
     function stepShort(delta) {
@@ -1902,7 +1997,7 @@
         if (!listEl) return;
 
         if (!comments.length) {
-            listEl.innerHTML = `<div style="text-align:center;color:var(--muted);padding:24px 10px;font-size:0.84rem;">لا توجد تعليقات بعد. كن أول من يعلق على هذا الـ Short!</div>`;
+            listEl.innerHTML = `<div style="text-align:center;color:var(--muted);padding:24px 10px;font-size:0.84rem;">لا توجد تعليقات بعد. شارك رأيك أو الحل هنا!</div>`;
             return;
         }
 
@@ -1926,7 +2021,7 @@
                 <div class="shorts-stage">
                     <div class="no-more-shorts-card">
                         <div style="font-size:1.1rem;font-weight:800;">لا يوجد شورت جديد</div>
-                        <p style="font-size:0.86rem;color:var(--muted);">لم يتم نشر أي مقطع Short مطابق بعد. أنشئ أول Short الآن!</p>
+                        <p style="font-size:0.86rem;color:var(--muted);">لم يتم العثور على مقطع Short مطابق للهاشتاق أو البحث الحالي.</p>
                         <button type="button" class="btn-publish" onclick="chooseCreateType('short')">إنشاء Short جديد</button>
                     </div>
                 </div>
@@ -1939,7 +2034,7 @@
                 <div class="shorts-stage">
                     <div class="no-more-shorts-card">
                         <div style="font-size:1.1rem;font-weight:800;">لا يوجد شورت جديد</div>
-                        <p style="font-size:0.86rem;color:var(--muted);">لقد شاهدت جميع مقاطع Short المتاحة حالياً.</p>
+                        <p style="font-size:0.86rem;color:var(--muted);">لقد استعرضت جميع مقاطع Short المطابقة حالياً.</p>
                         <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;">
                             <button type="button" class="btn-publish" onclick="resetShortsToStart()">العودة لأول Short</button>
                             <button type="button" class="media-upload-btn" onclick="chooseCreateType('short')">+ نشر Short</button>
@@ -1959,8 +2054,9 @@
         const followers = isOwner ? (Number(userSettings.followers) || 0) : (Number(item.followers) || 0);
         const displayAuthor = isOwner ? userSettings.author : (item.author || 'مستخدم');
         const displayAvatar = isOwner ? userSettings.avatar : (item.avatar || '');
-        const totalViews = Number(item.views) || (150 + getHashtagBoostViews(item.content));
+        const realViews = Number(item.views) || 0;
         const commentsCount = Array.isArray(item.comments) ? item.comments.length : 0;
+        const matchLabel = getHashtagMatchReason(item);
 
         const mediaVisual = (item.mediaType === 'video' && item.mediaData)
             ? `<video src="${item.mediaData}" class="shorts-media-el" controls autoplay loop playsinline></video>`
@@ -1978,7 +2074,7 @@
 
                         <div class="shorts-top-overlay">
                             <span class="short-badge">Short 9:12</span>
-                            <span class="shorts-counter-pill">👁 ${totalViews}</span>
+                            <span class="algo-match-badge">${escapeHtml(matchLabel)}</span>
                             <span class="shorts-counter-pill">${shortIndex + 1}/${list.length}</span>
                         </div>
 
@@ -2016,13 +2112,13 @@
                     <div class="short-comments-panel">
                         <div class="short-comments-header">
                             <span> التعليقات</span>
-                            <span class="views-chip">👁 ${totalViews} مشاهدة</span>
+                            <span class="views-chip">👁 <span id="shortViewsCount-${item.id}">${realViews}</span> مشاهدة</span>
                         </div>
 
                         <div class="short-comments-list" id="shortCommentsList-${item.id}"></div>
 
                         <div style="display:flex;gap:6px;padding-top:8px;border-top:1px solid var(--border);">
-                            <input type="text" id="shortCommentInput-${item.id}" class="input-clean" style="flex:1;" placeholder="أضف تعليقاً على الـ Short..." onkeydown="if(event.key==='Enter'){event.preventDefault();sendShortComment(${item.id});}">
+                            <input type="text" id="shortCommentInput-${item.id}" class="input-clean" style="flex:1;" placeholder="أضف تعليقاً أو حلاً..." onkeydown="if(event.key==='Enter'){event.preventDefault();sendShortComment(${item.id});}">
                             <button type="button" class="btn-publish" style="padding:6px 14px;" onclick="sendShortComment(${item.id})">إرسال</button>
                         </div>
                     </div>
@@ -2036,6 +2132,8 @@
         `;
 
         renderShortCommentsOnly(item.id);
+        bumpHashtagAffinity(extractHashtags(item.content), 1);
+        recordRealViewOnce(item);
     }
 
     function focusShortCommentInput(id) {
@@ -2058,6 +2156,7 @@
                 text,
                 timestamp: new Date().toISOString()
             });
+            bumpHashtagAffinity(extractHashtags(target.content), 2);
             inp.value = '';
             lastFeedSignature = computeFeedSignature(posts);
             renderShortCommentsOnly(id);
@@ -2308,16 +2407,16 @@
         const btn = document.getElementById('shortModeBtn');
         btn.classList.toggle('active', isShortComposerMode);
         document.getElementById('postContent').placeholder = isShortComposerMode
-            ? 'اكتب عنوان الـ Short مع #هاشتاق لزيادة المشاهدات...'
-            : 'اكتب تغريدتك أو #هاشتاق هنا...';
+            ? 'اكتب عنوان الـ Short أو الحل مع #هاشتاق...'
+            : 'اكتب تغريدتك أو #هاشتاق الموضوع ليصل لمن يبحث عنه...';
     }
 
     function insertHashtagTemplate() {
         const ta = document.getElementById('postContent');
         const current = ta.value;
-        const suffix = current.endsWith(' ') || !current ? '#محتوى' : ' #محتوى';
+        const suffix = current.endsWith(' ') || !current ? '#موضوع' : ' #موضوع';
         ta.value = current + suffix;
-        updateHashtagPreview();
+        onComposerDraftInput();
         ta.focus();
     }
 
@@ -2325,9 +2424,9 @@
         toggleShortComposer(true);
         const ta = document.getElementById('postContent');
         if (!ta.value.includes('#')) {
-            ta.value = (ta.value ? ta.value + ' ' : '') + '#ترند #شورت #فلوكسي';
+            ta.value = (ta.value ? ta.value + ' ' : '') + '#حلول #شورت';
         }
-        updateHashtagPreview();
+        onComposerDraftInput();
         document.getElementById('composerBox').scrollIntoView({ behavior: 'smooth', block: 'center' });
         ta.focus();
     }
@@ -2499,6 +2598,8 @@
                 if (currentView === 'shorts') {
                     const hEl = document.getElementById(`shortHeartCount-${msg.post.id}`);
                     if (hEl) hEl.textContent = String(Number(msg.post.hearts) || 0);
+                    const vEl = document.getElementById(`shortViewsCount-${msg.post.id}`);
+                    if (vEl) vEl.textContent = String(Number(msg.post.views) || 0);
                     renderShortCommentsOnly(msg.post.id);
                 }
             } else if (msg.type === 'delete_post') {
@@ -2593,7 +2694,11 @@
     }
 
     function selectHashtag(tag) {
-        activeHashtag = activeHashtag === tag ? '' : tag;
+        const normalized = String(tag || '').toLowerCase();
+        activeHashtag = activeHashtag === normalized ? '' : normalized;
+        if (activeHashtag) {
+            bumpHashtagAffinity([activeHashtag], 2);
+        }
         shortIndex = 0;
         reachedEndOfShorts = false;
         renderPosts(true);
@@ -2632,7 +2737,7 @@
             .slice(0, 12);
 
         if (!sorted.length) {
-            box.innerHTML = `<span style="font-size:0.8rem;color:var(--muted);">اكتب هاشتاق مثل #برمجة أو #ألعاب ليظهر هنا.</span>`;
+            box.innerHTML = `<span style="font-size:0.8rem;color:var(--muted);">اكتب هاشتاق مثل #برمجة أو #حلول لتصنيف المحتوى.</span>`;
             return;
         }
 
@@ -2656,7 +2761,7 @@
         const displayAuthor = isOwner ? userSettings.author : (post.author || 'مستخدم');
         const displayAvatar = isOwner ? userSettings.avatar : (post.avatar || '');
         const shortItem = isShortPost(post);
-        const totalViews = Number(post.views) || (150 + getHashtagBoostViews(post.content));
+        const realViews = Number(post.views) || 0;
 
         let mediaHtml = '';
         if (post.mediaType === 'image' && post.mediaData) {
@@ -2691,7 +2796,7 @@
                             </span>
                         </button>
                         <span class="followers-chip">${followers} متابع</span>
-                        ${shortItem ? `<span class="views-chip">👁 ${totalViews}</span>` : ''}
+                        ${shortItem ? `<span class="views-chip">👁 ${realViews}</span>` : ''}
                         <span style="color: var(--muted); font-size: 0.8rem;">· ${timeStr}</span>
                         <span class="comm-tag">r/${escapeHtml(post.community)}</span>
                         ${shortItem ? `<span class="short-badge">Short</span>` : ''}
@@ -2781,7 +2886,7 @@
         }
 
         if (activeHashtag) {
-            list = list.filter(p => extractHashtags(p.content).includes(activeHashtag));
+            list = list.filter(p => extractHashtags(p.content).includes(activeHashtag.toLowerCase()));
         }
 
         if (query) {
@@ -2844,7 +2949,6 @@
         const payloadMedia = selectedMedia ? { ...selectedMedia } : null;
         const isShortItem = Boolean(isShortComposerMode || (payloadMedia && payloadMedia.type === 'video'));
         const tags = extractHashtags(content.trim());
-        const computedViews = 150 + getHashtagBoostViews(content.trim());
 
         const optimisticPost = {
             id: tempId,
@@ -2860,7 +2964,7 @@
             mediaData: payloadMedia ? payloadMedia.data : null,
             isShort: isShortItem,
             hashtags: tags,
-            views: computedViews,
+            views: 0,
             votes: 1,
             hearts: 0,
             reposts: 0,
@@ -2870,12 +2974,13 @@
         };
 
         posts.unshift(optimisticPost);
+        bumpHashtagAffinity(tags, 2);
         autoSaveMatchingHashtagVideos(optimisticPost);
         shortIndex = 0;
         reachedEndOfShorts = false;
         lastFeedSignature = computeFeedSignature(posts);
         textarea.value = '';
-        updateHashtagPreview();
+        onComposerDraftInput();
         toggleShortComposer(false);
         clearMedia();
         if (isShortItem) {
@@ -2913,6 +3018,7 @@
         const target = posts.find(p => String(p.id) === String(id));
         if (target) {
             target.votes += direction === 'up' ? 1 : -1;
+            bumpHashtagAffinity(extractHashtags(target.content), 1);
             lastFeedSignature = computeFeedSignature(posts);
             renderPosts(true);
         }
@@ -2941,10 +3047,12 @@
         const newHearts = target ? Math.max(0, (Number(target.hearts) || 0) + delta) : 0;
         if (target) {
             target.hearts = newHearts;
+            if (!alreadyHearted) {
+                bumpHashtagAffinity(extractHashtags(target.content), 2);
+            }
         }
         lastFeedSignature = computeFeedSignature(posts);
 
-        // تحديث عداد القلب مباشرة دون إعادة رسم القائمة كاملة
         const card = document.querySelector(`.post-card[data-post-id="${idStr}"]`);
         if (card) {
             const pill = card.querySelector('.heart-pill');
@@ -2977,6 +3085,7 @@
         if (target) {
             if (!target.reactions) target.reactions = { like: 0, fire: 0, haha: 0 };
             target.reactions[type] = (Number(target.reactions[type]) || 0) + 1;
+            bumpHashtagAffinity(extractHashtags(target.content), 1);
             lastFeedSignature = computeFeedSignature(posts);
             renderPosts(true);
         }
@@ -2993,6 +3102,7 @@
         const target = posts.find(p => String(p.id) === String(id));
         if (target) {
             target.reposts = (Number(target.reposts) || 0) + 1;
+            bumpHashtagAffinity(extractHashtags(target.content), 2);
             lastFeedSignature = computeFeedSignature(posts);
             const sRep = document.getElementById(`shortRepostCount-${id}`);
             if (sRep) sRep.textContent = String(target.reposts);
@@ -3035,6 +3145,7 @@
                 text,
                 timestamp: new Date().toISOString()
             });
+            bumpHashtagAffinity(extractHashtags(target.content), 2);
             input.value = '';
             lastFeedSignature = computeFeedSignature(posts);
             renderPosts(true);
@@ -3055,6 +3166,8 @@
             bookmarks = bookmarks.filter(b => b !== id);
         } else {
             bookmarks.push(id);
+            const target = posts.find(p => String(p.id) === String(id));
+            if (target) bumpHashtagAffinity(extractHashtags(target.content), 2);
         }
         localStorage.setItem('vloxy_bookmarks', JSON.stringify(bookmarks));
         renderPosts(true);
@@ -3305,7 +3418,7 @@
         }
 
         textarea.value = data.result;
-        updateHashtagPreview();
+        onComposerDraftInput();
     }
 
     async function summarizePost(id) {
@@ -3349,7 +3462,7 @@
 
     function copyAiToComposer() {
         document.getElementById('postContent').value = document.getElementById('aiModalOutput').textContent;
-        updateHashtagPreview();
+        onComposerDraftInput();
         closeModal('aiModal');
     }
 
@@ -3375,7 +3488,7 @@
     });
 
     applySettings();
-    updateHashtagPreview();
+    onComposerDraftInput();
     syncCurrentUserFromServer();
     fetchPosts(true);
     connectRealtimeStream();
