@@ -8,12 +8,12 @@ const PORT = process.env.PORT || 3000;
 const DB_FILE = path.join(__dirname, 'vloxy_db.json');
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(express.static(__dirname));
 
 if (!fs.existsSync(DB_FILE)) {
-    const initialData = { posts: [] };
-    fs.writeFileSync(DB_FILE, JSON.stringify(initialData, null, 2));
+    fs.writeFileSync(DB_FILE, JSON.stringify({ posts: [] }, null, 2));
 }
 
 function readDB() {
@@ -34,9 +34,12 @@ app.get('/api/posts', (req, res) => {
 });
 
 app.post('/api/posts', (req, res) => {
-    const { author, handle, community, content, verified } = req.body;
-    if (!content || !content.trim()) {
-        return res.status(400).json({ error: 'المحتوى مطلوب' });
+    const { author, handle, community, content, verified, mediaType, mediaData } = req.body;
+    const hasText = !!(content && content.trim());
+    const hasMedia = !!(mediaType && mediaData);
+
+    if (!hasText && !hasMedia) {
+        return res.status(400).json({ error: 'أضف نصاً أو صورة أو فيديو للنشر' });
     }
 
     const db = readDB();
@@ -46,7 +49,9 @@ app.post('/api/posts', (req, res) => {
         handle: handle || '@user',
         verified: !!verified,
         community: community || 'عام',
-        content: content.trim(),
+        content: hasText ? content.trim() : '',
+        mediaType: hasMedia ? mediaType : null,
+        mediaData: hasMedia ? mediaData : null,
         votes: 1,
         reposts: 0,
         reactions: { like: 0, love: 0, fire: 0, haha: 0 },
@@ -125,7 +130,7 @@ app.delete('/api/posts/:id', (req, res) => {
 
 app.post('/api/ai', async (req, res) => {
     const { action, text, apiKey } = req.body;
-    const key = (apiKey && apiKey.trim()) || process.env.GEMINI_API_KEY;
+    const key = (apiKey && apiKey.trim()) || process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
 
     if (!key) {
         return res.status(400).json({
