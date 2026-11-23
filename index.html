@@ -7,27 +7,34 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #06080d;
-            --surface: #0f131d;
-            --surface-elevated: #151b29;
-            --border: rgba(255, 255, 255, 0.09);
-            --text: #f4f7fc;
-            --muted: #8b96a9;
+            --bg: #05070c;
+            --surface: #0d121c;
+            --surface-elevated: #141b29;
+            --surface-glass: rgba(13, 18, 28, 0.84);
+            --border: rgba(255, 255, 255, 0.08);
+            --border-strong: rgba(255, 255, 255, 0.15);
+            --text: #f5f8fc;
+            --muted: #8f9bb0;
             --accent: #1d9bf0;
             --accent-soft: rgba(29, 155, 240, 0.14);
+            --accent-glow: rgba(29, 155, 240, 0.28);
             --heart: #f91880;
             --upvote: #ff4500;
             --downvote: #6366f1;
+            --success: #10b981;
             --font-size-base: 15px;
         }
 
         [data-theme="light"] {
-            --bg: #f3f6fa;
+            --bg: #f1f5f9;
             --surface: #ffffff;
             --surface-elevated: #f8fafc;
-            --border: rgba(15, 23, 42, 0.1);
+            --surface-glass: rgba(255, 255, 255, 0.88);
+            --border: rgba(15, 23, 42, 0.09);
+            --border-strong: rgba(15, 23, 42, 0.16);
             --text: #0f172a;
             --muted: #64748b;
+            --accent-glow: rgba(29, 155, 240, 0.18);
         }
 
         * {
@@ -42,17 +49,20 @@
         }
 
         body {
-            background-color: var(--bg);
+            background:
+                radial-gradient(circle at 12% 0%, var(--accent-glow), transparent 36%),
+                radial-gradient(circle at 88% 12%, rgba(99, 102, 241, 0.12), transparent 32%),
+                var(--bg);
             color: var(--text);
             min-height: 100vh;
-            transition: background-color 0.18s ease, color 0.18s ease;
+            transition: background-color 0.2s ease, color 0.2s ease;
             overflow-x: hidden;
         }
 
         @keyframes fadeSlideIn {
             from {
                 opacity: 0;
-                transform: translateY(6px);
+                transform: translateY(7px);
             }
             to {
                 opacity: 1;
@@ -66,6 +76,11 @@
             100% { transform: scale(1); }
         }
 
+        @keyframes pulseDot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.55; transform: scale(0.88); }
+        }
+
         .no-anim * {
             animation: none !important;
             transition: none !important;
@@ -76,7 +91,7 @@
             grid-template-columns: 248px minmax(0, 680px) 315px;
             justify-content: center;
             gap: 20px;
-            max-width: 1310px;
+            max-width: 1320px;
             margin: 0 auto;
             padding: 0 14px;
         }
@@ -96,24 +111,25 @@
             align-items: center;
             gap: 12px;
             padding: 8px 14px;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
 
         .brand-logo {
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
             background: linear-gradient(135deg, var(--accent), #6366f1);
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 800;
-            font-size: 1.3rem;
+            font-size: 1.35rem;
             color: #ffffff;
+            box-shadow: 0 8px 20px var(--accent-glow);
         }
 
         .brand-title {
-            font-size: 1.45rem;
+            font-size: 1.5rem;
             font-weight: 800;
         }
 
@@ -122,7 +138,7 @@
             align-items: center;
             gap: 12px;
             padding: 11px 16px;
-            border-radius: 12px;
+            border-radius: 14px;
             background: transparent;
             border: 1px solid transparent;
             color: var(--text);
@@ -135,17 +151,17 @@
 
         .nav-item:hover, .nav-item.active {
             background: var(--surface);
-            border-color: var(--border);
+            border-color: var(--border-strong);
             color: var(--accent);
         }
 
         .plus-desktop-btn {
-            margin-top: 8px;
-            background: var(--accent);
+            margin-top: 10px;
+            background: linear-gradient(135deg, var(--accent), #2563eb);
             color: #ffffff;
             border: none;
-            padding: 11px 16px;
-            border-radius: 14px;
+            padding: 12px 16px;
+            border-radius: 15px;
             font-size: 1rem;
             font-weight: 800;
             cursor: pointer;
@@ -153,11 +169,12 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
+            box-shadow: 0 8px 22px var(--accent-glow);
             transition: opacity 0.15s ease, transform 0.15s ease;
         }
 
         .plus-desktop-btn:hover {
-            opacity: 0.92;
+            opacity: 0.95;
             transform: translateY(-1px);
         }
 
@@ -173,14 +190,19 @@
             min-height: 100vh;
             width: 100%;
             min-width: 0;
+            background: rgba(13, 18, 28, 0.35);
+        }
+
+        [data-theme="light"] .main-feed {
+            background: rgba(255, 255, 255, 0.55);
         }
 
         .top-header {
             position: sticky;
             top: 0;
-            background: rgba(6, 8, 13, 0.85);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            background: var(--surface-glass);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
             padding: 11px 16px;
             border-bottom: 1px solid var(--border);
             z-index: 20;
@@ -190,8 +212,31 @@
             gap: 8px;
         }
 
-        [data-theme="light"] .top-header {
-            background: rgba(243, 246, 250, 0.88);
+        .title-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .live-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--success);
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.28);
+            padding: 2px 8px;
+            border-radius: 999px;
+        }
+
+        .live-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 999px;
+            background: var(--success);
+            animation: pulseDot 1.6s infinite ease-in-out;
         }
 
         .header-actions {
@@ -212,13 +257,14 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: 0.12s ease;
+            transition: 0.14s ease;
             flex-shrink: 0;
         }
 
         .icon-btn:hover {
             border-color: var(--accent);
             color: var(--accent);
+            background: var(--accent-soft);
         }
 
         .search-box {
@@ -231,6 +277,10 @@
             gap: 6px;
             width: 175px;
             min-width: 0;
+        }
+
+        .search-box:focus-within {
+            border-color: var(--accent);
         }
 
         .search-box input {
@@ -250,25 +300,27 @@
             border-bottom: 1px solid var(--border);
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
+            background: var(--surface);
         }
 
         .comm-pill {
-            background: var(--surface);
+            background: var(--bg);
             border: 1px solid var(--border);
             color: var(--text);
-            padding: 4px 12px;
+            padding: 4px 13px;
             border-radius: 999px;
             font-size: 0.8rem;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             white-space: nowrap;
-            transition: all 0.12s ease;
+            transition: all 0.14s ease;
         }
 
         .comm-pill.active, .comm-pill:hover {
             background: var(--accent);
             border-color: var(--accent);
             color: #ffffff;
+            box-shadow: 0 4px 12px var(--accent-glow);
         }
 
         .composer {
@@ -289,7 +341,7 @@
             border-radius: 999px;
             object-fit: cover;
             flex-shrink: 0;
-            border: 1px solid var(--border);
+            border: 1px solid var(--border-strong);
         }
 
         .avatar-fallback {
@@ -358,7 +410,7 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 8px;
-            padding-top: 9px;
+            padding-top: 10px;
             border-top: 1px solid var(--border);
         }
 
@@ -373,18 +425,22 @@
             background: var(--bg);
             color: var(--text);
             border: 1px solid var(--border);
-            padding: 6px 10px;
-            border-radius: 10px;
+            padding: 6px 11px;
+            border-radius: 11px;
             font-size: 0.82rem;
             outline: none;
             max-width: 100%;
+        }
+
+        .input-clean:focus, .select-clean:focus {
+            border-color: var(--accent);
         }
 
         .media-upload-btn {
             background: var(--bg);
             border: 1px solid var(--border);
             color: var(--text);
-            padding: 5px 10px;
+            padding: 5px 11px;
             border-radius: 10px;
             font-size: 0.8rem;
             font-weight: 700;
@@ -404,7 +460,7 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: 0.12s ease;
+            transition: 0.14s ease;
         }
 
         .plus-trigger-btn:hover {
@@ -416,7 +472,7 @@
             background: var(--accent-soft);
             color: var(--accent);
             border: 1px solid rgba(29, 155, 240, 0.3);
-            padding: 5px 10px;
+            padding: 5px 11px;
             border-radius: 10px;
             font-size: 0.8rem;
             font-weight: 700;
@@ -424,33 +480,34 @@
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            transition: 0.12s ease;
+            transition: 0.14s ease;
         }
 
         .btn-publish {
-            background: var(--accent);
+            background: linear-gradient(135deg, var(--accent), #2563eb);
             color: #ffffff;
             border: none;
-            padding: 7px 18px;
+            padding: 7px 19px;
             border-radius: 999px;
             font-weight: 700;
             font-size: 0.86rem;
             cursor: pointer;
+            box-shadow: 0 4px 14px var(--accent-glow);
             transition: transform 0.12s ease, opacity 0.12s ease;
         }
 
         .btn-publish:hover {
-            opacity: 0.92;
+            opacity: 0.94;
             transform: translateY(-1px);
         }
 
         .post-card {
             display: flex;
             gap: 10px;
-            padding: 14px 16px;
+            padding: 15px 16px;
             border-bottom: 1px solid var(--border);
-            background: var(--bg);
-            transition: background-color 0.12s ease;
+            background: var(--surface);
+            transition: background-color 0.14s ease;
             animation: fadeSlideIn 0.16s ease forwards;
         }
 
@@ -463,9 +520,9 @@
             flex-direction: column;
             align-items: center;
             gap: 2px;
-            background: var(--surface);
-            padding: 5px;
-            border-radius: 10px;
+            background: var(--bg);
+            padding: 6px 5px;
+            border-radius: 12px;
             height: fit-content;
             border: 1px solid var(--border);
             flex-shrink: 0;
@@ -481,8 +538,8 @@
             line-height: 1.2;
         }
 
-        .vote-btn.up:hover { color: var(--upvote); }
-        .vote-btn.down:hover { color: var(--downvote); }
+        .vote-btn.up:hover { color: var(--upvote); transform: scale(1.15); }
+        .vote-btn.down:hover { color: var(--downvote); transform: scale(1.15); }
         .vote-score { font-weight: 800; font-size: 0.82rem; }
 
         .post-main {
@@ -527,14 +584,25 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 17px;
-            height: 17px;
+            width: 18px;
+            height: 18px;
             border-radius: 999px;
-            background: #1d9bf0;
+            background: linear-gradient(135deg, #1d9bf0, #0ea5e9);
             color: #ffffff;
-            font-size: 0.7rem;
+            font-size: 0.72rem;
             font-weight: 800;
             flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(29, 155, 240, 0.45);
+        }
+
+        .followers-chip {
+            font-size: 0.73rem;
+            font-weight: 700;
+            color: var(--muted);
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: 1px 7px;
+            border-radius: 999px;
         }
 
         .comm-tag {
@@ -548,7 +616,7 @@
         }
 
         .post-text {
-            line-height: 1.6;
+            line-height: 1.62;
             margin-bottom: 10px;
             white-space: pre-wrap;
             word-wrap: break-word;
@@ -560,7 +628,7 @@
             border-radius: 14px;
             overflow: hidden;
             border: 1px solid var(--border);
-            background: var(--surface);
+            background: var(--bg);
         }
 
         .post-media img,
@@ -588,7 +656,7 @@
             justify-content: space-between;
             flex-wrap: wrap;
             gap: 6px;
-            padding-top: 8px;
+            padding-top: 9px;
             border-top: 1px solid var(--border);
         }
 
@@ -600,21 +668,23 @@
         }
 
         .react-pill {
-            background: var(--surface);
+            background: var(--bg);
             border: 1px solid var(--border);
             color: var(--text);
-            padding: 4px 9px;
+            padding: 4px 10px;
             border-radius: 999px;
             font-size: 0.78rem;
+            font-weight: 600;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            transition: 0.12s ease;
+            transition: 0.14s ease;
         }
 
         .react-pill:hover {
             border-color: var(--accent);
+            color: var(--accent);
         }
 
         .heart-pill {
@@ -629,7 +699,7 @@
             display: inline-flex;
             align-items: center;
             gap: 5px;
-            transition: 0.12s ease;
+            transition: 0.14s ease;
         }
 
         .heart-pill:hover {
@@ -653,7 +723,8 @@
         .comments-box.open { display: block; }
 
         .comment-bubble {
-            background: var(--surface);
+            background: var(--bg);
+            border: 1px solid var(--border);
             padding: 7px 11px;
             border-radius: 10px;
             margin-bottom: 6px;
@@ -674,13 +745,14 @@
         .widget-card {
             background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 15px;
+            border-radius: 18px;
+            padding: 16px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
         }
 
         .widget-title {
             font-size: 0.96rem;
-            font-weight: 700;
+            font-weight: 800;
             margin-bottom: 8px;
             display: flex;
             align-items: center;
@@ -694,8 +766,8 @@
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.76);
-            backdrop-filter: blur(8px);
+            background: rgba(0, 0, 0, 0.78);
+            backdrop-filter: blur(10px);
             display: none;
             align-items: center;
             justify-content: center;
@@ -707,21 +779,22 @@
 
         .modal-box {
             background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 20px;
+            border: 1px solid var(--border-strong);
+            border-radius: 22px;
             width: 100%;
             max-width: 580px;
             max-height: 90vh;
             overflow-y: auto;
             padding: 18px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
             animation: fadeSlideIn 0.16s ease;
         }
 
         .profile-banner {
-            height: 76px;
-            border-radius: 14px;
-            background: linear-gradient(135deg, var(--accent), #6366f1);
-            margin-bottom: -32px;
+            height: 84px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--accent), #6366f1, #ec4899);
+            margin-bottom: -34px;
         }
 
         .profile-top-row {
@@ -735,8 +808,8 @@
         }
 
         .profile-avatar-lg {
-            width: 62px;
-            height: 62px;
+            width: 64px;
+            height: 64px;
             border-radius: 999px;
             border: 3px solid var(--surface);
             object-fit: cover;
@@ -745,26 +818,32 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.4rem;
+            font-size: 1.45rem;
             font-weight: 800;
         }
 
         .follow-btn {
-            background: var(--accent);
+            background: linear-gradient(135deg, var(--accent), #2563eb);
             color: #ffffff;
             border: none;
-            padding: 6px 15px;
+            padding: 7px 17px;
             border-radius: 999px;
-            font-weight: 700;
-            font-size: 0.84rem;
+            font-weight: 800;
+            font-size: 0.85rem;
             cursor: pointer;
-            transition: 0.12s ease;
+            box-shadow: 0 4px 14px var(--accent-glow);
+            transition: transform 0.12s ease, background-color 0.15s ease;
+        }
+
+        .follow-btn:hover {
+            transform: translateY(-1px);
         }
 
         .follow-btn.following {
             background: var(--bg);
             color: var(--text);
-            border: 1px solid var(--border);
+            border: 1px solid var(--border-strong);
+            box-shadow: none;
         }
 
         .create-picker-grid {
@@ -787,7 +866,7 @@
             font-weight: 700;
             font-size: 0.85rem;
             cursor: pointer;
-            transition: 0.12s ease;
+            transition: 0.14s ease;
         }
 
         .picker-option-btn:hover {
@@ -883,8 +962,9 @@
             .main-feed { border-left: none; border-right: none; padding-bottom: 72px; }
             .top-header { padding: 9px 10px; gap: 6px; }
             .top-header h2 { font-size: 0.96rem !important; white-space: nowrap; }
+            .live-pill { padding: 2px 6px; font-size: 0.66rem; }
             .header-actions { gap: 4px; }
-            .search-box { width: 96px; padding: 4px 8px; }
+            .search-box { width: 92px; padding: 4px 8px; }
             .search-box input { font-size: 0.78rem; }
             .icon-btn { width: 30px; height: 30px; }
             .icon-btn .icon-svg { width: 16px; height: 16px; }
@@ -907,7 +987,8 @@
                 left: 0;
                 right: 0;
                 height: 56px;
-                background: var(--surface);
+                background: var(--surface-glass);
+                backdrop-filter: blur(16px);
                 border-top: 1px solid var(--border);
                 justify-content: space-around;
                 align-items: center;
@@ -938,7 +1019,7 @@
             }
 
             .mobile-plus-btn {
-                background: var(--accent);
+                background: linear-gradient(135deg, var(--accent), #2563eb);
                 color: #ffffff;
                 border: none;
                 width: 40px;
@@ -952,6 +1033,7 @@
                 cursor: pointer;
                 line-height: 1;
                 flex-shrink: 0;
+                box-shadow: 0 4px 14px var(--accent-glow);
             }
         }
     </style>
@@ -1024,8 +1106,12 @@
 
     <main class="main-feed">
         <div class="top-header">
-            <div>
+            <div class="title-row">
                 <h2 style="font-size: 1.08rem; font-weight: 800;" id="viewTitle">الرئيسية</h2>
+                <span class="live-pill" title="تحديث فوري">
+                    <span class="live-dot"></span>
+                    <span>مباشر</span>
+                </span>
             </div>
 
             <div class="header-actions">
@@ -1033,7 +1119,7 @@
                     <svg class="icon-svg" style="width:15px;height:15px;color:var(--muted);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
                     </svg>
-                    <input type="text" id="searchInput" placeholder="بحث..." oninput="renderPosts()">
+                    <input type="text" id="searchInput" placeholder="بحث..." oninput="renderPosts(true)">
                 </div>
 
                 <button class="icon-btn" onclick="openAIModal()" title="الذكاء الاصطناعي">
@@ -1120,7 +1206,7 @@
                     <div style="font-size:0.82rem;color:var(--muted);" id="sidebarHandleDisplay"></div>
                 </div>
             </div>
-            <div style="font-size:0.82rem;color:var(--accent);" id="sidebarFollowersDisplay"></div>
+            <div style="font-size:0.82rem;color:var(--accent);font-weight:700;" id="sidebarFollowersDisplay"></div>
         </div>
 
         <div class="widget-card">
@@ -1358,6 +1444,7 @@
 </div>
 
 <script>
+    const VERIFIED_THRESHOLD = 3000;
     let posts = [];
     let currentCommunity = 'الكل';
     let currentView = 'all';
@@ -1383,13 +1470,13 @@
     }));
 
     function normalizeHandle(h) {
-        const clean = (h || '@user').trim();
+        const clean = String(h || '@user').trim();
         if (!clean) return '@user';
         return clean.startsWith('@') ? clean : '@' + clean;
     }
 
     function isVerifiedCount(followers) {
-        return (Number(followers) || 0) >= 3000;
+        return (Number(followers) || 0) >= VERIFIED_THRESHOLD;
     }
 
     function renderAvatar(name, avatarData, extraClass = '') {
@@ -1469,12 +1556,13 @@
             document.body.classList.remove('no-anim');
         }
 
+        const followersCount = Math.max(0, Number(userSettings.followers) || 0);
         document.getElementById('composerAvatarSlot').innerHTML = renderAvatar(userSettings.author, userSettings.avatar);
         document.getElementById('sidebarAvatarSlot').innerHTML = renderAvatar(userSettings.author, userSettings.avatar);
         document.getElementById('sidebarNameDisplay').textContent = userSettings.author;
-        document.getElementById('sidebarVerifiedSlot').innerHTML = renderVerifiedBadge(userSettings.followers);
+        document.getElementById('sidebarVerifiedSlot').innerHTML = renderVerifiedBadge(followersCount);
         document.getElementById('sidebarHandleDisplay').textContent = userSettings.handle;
-        document.getElementById('sidebarFollowersDisplay').textContent = `${Number(userSettings.followers) || 0} متابع`;
+        document.getElementById('sidebarFollowersDisplay').textContent = `${followersCount} متابع`;
 
         document.getElementById('setAuthor').value = userSettings.author;
         document.getElementById('setHandle').value = userSettings.handle;
@@ -1484,6 +1572,21 @@
         document.getElementById('setFontSize').value = userSettings.fontSize;
         document.getElementById('setBootSound').checked = userSettings.bootSound !== false;
         document.getElementById('setAnimations').checked = userSettings.animations !== false;
+    }
+
+    async function syncCurrentUserFromServer() {
+        try {
+            const res = await fetch(`/api/users/${encodeURIComponent(userSettings.handle)}`, { cache: 'no-store' });
+            if (!res.ok) return;
+            const data = await res.json();
+            if (data.user) {
+                userSettings.author = data.user.author || userSettings.author;
+                userSettings.avatar = data.user.avatar !== undefined ? data.user.avatar : userSettings.avatar;
+                userSettings.followers = Math.max(0, Number(data.user.followers) || 0);
+                localStorage.setItem('vloxy_settings', JSON.stringify(userSettings));
+                applySettings();
+            }
+        } catch (e) {}
     }
 
     async function saveSettings() {
@@ -1500,7 +1603,7 @@
         renderPosts(true);
 
         try {
-            await fetch('/api/users/profile', {
+            const res = await fetch('/api/users/profile', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -1509,6 +1612,14 @@
                     avatar: userSettings.avatar
                 })
             });
+            if (res.ok) {
+                const data = await res.json();
+                if (data.user) {
+                    userSettings.followers = Math.max(0, Number(data.user.followers) || 0);
+                    localStorage.setItem('vloxy_settings', JSON.stringify(userSettings));
+                    applySettings();
+                }
+            }
         } catch (e) {}
     }
 
@@ -1607,7 +1718,7 @@
     function computeFeedSignature(list) {
         return list.map(p => {
             const r = p.reactions || {};
-            return `${p.id}:${p.votes}:${p.hearts || 0}:${p.reposts || 0}:${(p.comments || []).length}:${r.like || 0}:${r.fire || 0}:${r.haha || 0}:${p.followers || 0}:${p.author || ''}`;
+            return `${p.id}:${p.votes}:${p.hearts || 0}:${p.reposts || 0}:${(p.comments || []).length}:${r.like || 0}:${r.fire || 0}:${r.haha || 0}:${p.followers || 0}:${p.verified ? 1 : 0}:${p.author || ''}`;
         }).join('|');
     }
 
@@ -1652,25 +1763,27 @@
         if (!rawData) return;
         try {
             const msg = JSON.parse(rawData);
-            if (msg.type === 'new_post' && msg.post) {
+            if (msg.type === 'init' && Array.isArray(msg.posts)) {
+                mergePosts(msg.posts);
+                lastFeedSignature = computeFeedSignature(posts);
+                renderPosts(true);
+            } else if (msg.type === 'new_post' && msg.post) {
                 const exists = posts.some(
                     p => String(p.id) === String(msg.post.id) ||
                     (p._pending && p.content === msg.post.content && normalizeHandle(p.handle) === normalizeHandle(msg.post.handle))
                 );
                 if (!exists) {
                     posts.unshift(msg.post);
-                    posts.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-                    lastFeedSignature = computeFeedSignature(posts);
-                    renderPosts(true);
                 } else {
                     posts = posts.map(p => (
                         String(p.id) === String(msg.post.id) ||
                         (p._pending && p.content === msg.post.content && normalizeHandle(p.handle) === normalizeHandle(msg.post.handle))
                         ? msg.post : p
                     ));
-                    lastFeedSignature = computeFeedSignature(posts);
-                    renderPosts(true);
                 }
+                posts.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                lastFeedSignature = computeFeedSignature(posts);
+                renderPosts(true);
             } else if (msg.type === 'post_update' && msg.post) {
                 posts = posts.map(p => (String(p.id) === String(msg.post.id) ? msg.post : p));
                 lastFeedSignature = computeFeedSignature(posts);
@@ -1681,23 +1794,26 @@
                 renderPosts(true);
             } else if (msg.type === 'profile' || msg.type === 'follow') {
                 const h = normalizeHandle(msg.handle);
+                const updatedFollowers = Math.max(0, Number(msg.user?.followers) || 0);
                 posts.forEach(p => {
                     if (normalizeHandle(p.handle) === h) {
                         p.author = msg.user.author;
                         p.avatar = msg.user.avatar;
-                        p.followers = msg.user.followers;
-                        p.verified = msg.verified;
+                        p.followers = updatedFollowers;
+                        p.verified = isVerifiedCount(updatedFollowers);
                     }
                 });
+                if (h === userSettings.handle) {
+                    userSettings.followers = updatedFollowers;
+                    userSettings.author = msg.user.author || userSettings.author;
+                    localStorage.setItem('vloxy_settings', JSON.stringify(userSettings));
+                    applySettings();
+                }
                 lastFeedSignature = computeFeedSignature(posts);
                 renderPosts(true);
                 if (activeProfileHandle === h) {
                     openUserProfile(h);
                 }
-            } else if (Array.isArray(msg.posts)) {
-                mergePosts(msg.posts);
-                lastFeedSignature = computeFeedSignature(posts);
-                renderPosts(true);
             }
         } catch (e) {}
     }
@@ -1779,7 +1895,7 @@
             const r = post.reactions || { like: 0, fire: 0, haha: 0 };
             const timeStr = new Date(post.timestamp).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
             const postHandle = normalizeHandle(post.handle);
-            const followers = postHandle === userSettings.handle ? Number(userSettings.followers) || 0 : Number(post.followers) || 0;
+            const followers = postHandle === userSettings.handle ? (Number(userSettings.followers) || 0) : (Number(post.followers) || 0);
 
             let mediaHtml = '';
             if (post.mediaType === 'image' && post.mediaData) {
@@ -1815,6 +1931,7 @@
                                     <span style="color: var(--muted); font-size: 0.8rem;">${escapeHtml(postHandle)}</span>
                                 </span>
                             </button>
+                            <span class="followers-chip">${followers} متابع</span>
                             <span style="color: var(--muted); font-size: 0.8rem;">· ${timeStr}</span>
                             <span class="comm-tag">r/${escapeHtml(post.community)}</span>
                         </div>
@@ -2051,31 +2168,9 @@
         renderPosts(true);
     }
 
-    async function openUserProfile(rawHandle) {
-        const h = normalizeHandle(rawHandle);
-        activeProfileHandle = h;
-        const modal = document.getElementById('profileModal');
+    function renderProfileModalView(h, userInfo, userPosts) {
         const container = document.getElementById('profileModalContent');
-        modal.classList.add('open');
-
-        let userInfo = {
-            handle: h,
-            author: h === userSettings.handle ? userSettings.author : 'مستخدم',
-            avatar: h === userSettings.handle ? userSettings.avatar : '',
-            followers: h === userSettings.handle ? Number(userSettings.followers) || 0 : 0
-        };
-        let userPosts = posts.filter(p => normalizeHandle(p.handle) === h);
-
-        try {
-            const res = await fetch(`/api/users/${encodeURIComponent(h)}`, { cache: 'no-store' });
-            if (res.ok) {
-                const data = await res.json();
-                if (data.user) userInfo = data.user;
-                if (Array.isArray(data.posts)) userPosts = data.posts;
-            }
-        } catch (e) {}
-
-        const followersNum = h === userSettings.handle ? Number(userSettings.followers) || 0 : Number(userInfo.followers) || 0;
+        const followersNum = Math.max(0, Number(userInfo.followers) || 0);
         const isFollowing = followedHandles.includes(h);
         const isNotified = notifiedHandles.includes(h);
 
@@ -2125,7 +2220,7 @@
             <div style="display:flex;gap:14px;padding:0 8px 12px;border-bottom:1px solid var(--border);font-size:0.84rem;flex-wrap:wrap;">
                 <div><strong>${followersNum}</strong> <span style="color:var(--muted);">متابع</span></div>
                 <div><strong>${userPosts.length}</strong> <span style="color:var(--muted);">تغريدة</span></div>
-                <div style="color:${isVerifiedCount(followersNum) ? 'var(--accent)' : 'var(--muted)'};">
+                <div style="color:${isVerifiedCount(followersNum) ? 'var(--accent)' : 'var(--muted)'};font-weight:700;">
                     ${isVerifiedCount(followersNum) ? 'حساب موثق (3000+ متابع)' : 'الصح الأزرق عند 3000 متابع'}
                 </div>
             </div>
@@ -2135,6 +2230,41 @@
                 ${postsListHtml}
             </div>
         `;
+    }
+
+    async function openUserProfile(rawHandle) {
+        const h = normalizeHandle(rawHandle);
+        activeProfileHandle = h;
+        const modal = document.getElementById('profileModal');
+        modal.classList.add('open');
+
+        const matchingPost = posts.find(p => normalizeHandle(p.handle) === h);
+        let userInfo = {
+            handle: h,
+            author: h === userSettings.handle ? userSettings.author : (matchingPost?.author || 'مستخدم'),
+            avatar: h === userSettings.handle ? userSettings.avatar : (matchingPost?.avatar || ''),
+            followers: h === userSettings.handle ? (Number(userSettings.followers) || 0) : (Number(matchingPost?.followers) || 0)
+        };
+        let userPosts = posts.filter(p => normalizeHandle(p.handle) === h);
+
+        renderProfileModalView(h, userInfo, userPosts);
+
+        try {
+            const res = await fetch(`/api/users/${encodeURIComponent(h)}`, { cache: 'no-store' });
+            if (res.ok) {
+                const data = await res.json();
+                if (data.user) userInfo = data.user;
+                if (Array.isArray(data.posts)) userPosts = data.posts;
+                if (h === userSettings.handle && data.user) {
+                    userSettings.followers = Math.max(0, Number(data.user.followers) || 0);
+                    localStorage.setItem('vloxy_settings', JSON.stringify(userSettings));
+                    applySettings();
+                }
+                if (activeProfileHandle === h) {
+                    renderProfileModalView(h, userInfo, userPosts);
+                }
+            }
+        } catch (e) {}
     }
 
     async function toggleProfileFollow(rawHandle) {
@@ -2149,11 +2279,35 @@
         }
         localStorage.setItem('vloxy_followed', JSON.stringify(followedHandles));
 
+        const matchingPost = posts.find(p => normalizeHandle(p.handle) === h);
+        const currentFollowers = h === userSettings.handle
+            ? (Number(userSettings.followers) || 0)
+            : (Number(matchingPost?.followers) || 0);
+        const optimisticFollowers = Math.max(0, currentFollowers + delta);
+
         if (h === userSettings.handle) {
-            userSettings.followers = Math.max(0, (Number(userSettings.followers) || 0) + delta);
+            userSettings.followers = optimisticFollowers;
             localStorage.setItem('vloxy_settings', JSON.stringify(userSettings));
             applySettings();
         }
+
+        posts.forEach(p => {
+            if (normalizeHandle(p.handle) === h) {
+                p.followers = optimisticFollowers;
+                p.verified = isVerifiedCount(optimisticFollowers);
+            }
+        });
+        lastFeedSignature = computeFeedSignature(posts);
+        renderPosts(true);
+
+        const optimisticUser = {
+            handle: h,
+            author: h === userSettings.handle ? userSettings.author : (matchingPost?.author || 'مستخدم'),
+            avatar: h === userSettings.handle ? userSettings.avatar : (matchingPost?.avatar || ''),
+            followers: optimisticFollowers
+        };
+        const userPosts = posts.filter(p => normalizeHandle(p.handle) === h);
+        renderProfileModalView(h, optimisticUser, userPosts);
 
         try {
             const res = await fetch(`/api/users/${encodeURIComponent(h)}/follow`, {
@@ -2163,18 +2317,25 @@
             });
             if (res.ok) {
                 const data = await res.json();
+                const serverFollowers = Math.max(0, Number(data.user?.followers) || 0);
+                if (h === userSettings.handle) {
+                    userSettings.followers = serverFollowers;
+                    localStorage.setItem('vloxy_settings', JSON.stringify(userSettings));
+                    applySettings();
+                }
                 posts.forEach(p => {
                     if (normalizeHandle(p.handle) === h) {
-                        p.followers = data.user.followers;
-                        p.verified = data.verified;
+                        p.followers = serverFollowers;
+                        p.verified = isVerifiedCount(serverFollowers);
                     }
                 });
                 lastFeedSignature = computeFeedSignature(posts);
                 renderPosts(true);
+                if (activeProfileHandle === h) {
+                    renderProfileModalView(h, { ...data.user, followers: serverFollowers }, posts.filter(p => normalizeHandle(p.handle) === h));
+                }
             }
         } catch (e) {}
-
-        openUserProfile(h);
     }
 
     function toggleProfileNotify(rawHandle) {
@@ -2277,10 +2438,14 @@
     }
 
     document.addEventListener('visibilitychange', () => {
-        if (!document.hidden) fetchPosts(true);
+        if (!document.hidden) {
+            fetchPosts(true);
+            syncCurrentUserFromServer();
+        }
     });
 
     applySettings();
+    syncCurrentUserFromServer();
     fetchPosts(true);
     connectRealtimeStream();
     setInterval(() => fetchPosts(false), 3000);
