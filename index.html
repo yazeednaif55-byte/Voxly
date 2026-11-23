@@ -59,17 +59,6 @@
             overflow-x: hidden;
         }
 
-        @keyframes fadeSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(7px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
         @keyframes heartBurst {
             0% { transform: scale(1); }
             45% { transform: scale(1.28); }
@@ -380,7 +369,6 @@
 
         .media-preview.active {
             display: block;
-            animation: fadeSlideIn 0.15s ease;
         }
 
         .media-preview img,
@@ -508,7 +496,6 @@
             border-bottom: 1px solid var(--border);
             background: var(--surface);
             transition: background-color 0.14s ease;
-            animation: fadeSlideIn 0.16s ease forwards;
         }
 
         .post-card:hover {
@@ -787,7 +774,6 @@
             overflow-y: auto;
             padding: 18px;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
-            animation: fadeSlideIn 0.16s ease;
         }
 
         .profile-banner {
@@ -1580,8 +1566,20 @@
             if (!res.ok) return;
             const data = await res.json();
             if (data.user) {
-                userSettings.author = data.user.author || userSettings.author;
-                userSettings.avatar = data.user.avatar !== undefined ? data.user.avatar : userSettings.avatar;
+                if (data.user.author && data.user.author !== 'مستخدم') {
+                    userSettings.author = data.user.author;
+                } else if (userSettings.author && userSettings.author !== 'مستخدم') {
+                    await fetch('/api/users/profile', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            handle: userSettings.handle,
+                            author: userSettings.author,
+                            avatar: userSettings.avatar
+                        })
+                    });
+                }
+                if (data.user.avatar) userSettings.avatar = data.user.avatar;
                 userSettings.followers = Math.max(0, Number(data.user.followers) || 0);
                 localStorage.setItem('vloxy_settings', JSON.stringify(userSettings));
                 applySettings();
@@ -1726,7 +1724,11 @@
         if (!Array.isArray(incomingList)) return;
         const map = new Map();
         for (const p of incomingList) {
-            map.set(String(p.id), p);
+            const existingLocal = posts.find(lp => String(lp.id) === String(p.id));
+            const mergedAuthor = (p.author && p.author !== 'مستخدم')
+                ? p.author
+                : (existingLocal && existingLocal.author && existingLocal.author !== 'مستخدم' ? existingLocal.author : p.author);
+            map.set(String(p.id), { ...p, author: mergedAuthor });
         }
         for (const p of posts) {
             if (p._pending) {
@@ -1797,22 +1799,34 @@
                 const updatedFollowers = Math.max(0, Number(msg.user?.followers) || 0);
                 posts.forEach(p => {
                     if (normalizeHandle(p.handle) === h) {
-                        p.author = msg.user.author;
-                        p.avatar = msg.user.avatar;
+                        if (msg.user?.author && msg.user.author !== 'مستخدم') {
+                            p.author = msg.user.author;
+                        }
+                        if (msg.user?.avatar) p.avatar = msg.user.avatar;
                         p.followers = updatedFollowers;
                         p.verified = isVerifiedCount(updatedFollowers);
                     }
                 });
                 if (h === userSettings.handle) {
                     userSettings.followers = updatedFollowers;
-                    userSettings.author = msg.user.author || userSettings.author;
+                    if (msg.user?.author && msg.user.author !== 'مستخدم') {
+                        userSettings.author = msg.user.author;
+                    }
                     localStorage.setItem('vloxy_settings', JSON.stringify(userSettings));
                     applySettings();
                 }
                 lastFeedSignature = computeFeedSignature(posts);
                 renderPosts(true);
                 if (activeProfileHandle === h) {
-                    openUserProfile(h);
+                    const currentModalUser = {
+                        handle: h,
+                        author: (msg.user?.author && msg.user.author !== 'مستخدم')
+                            ? msg.user.author
+                            : (posts.find(p => normalizeHandle(p.handle) === h)?.author || userSettings.author),
+                        avatar: msg.user?.avatar || posts.find(p => normalizeHandle(p.handle) === h)?.avatar || '',
+                        followers: updatedFollowers
+                    };
+                    renderProfileModalView(h, currentModalUser, posts.filter(p => normalizeHandle(p.handle) === h));
                 }
             }
         } catch (e) {}
@@ -1847,6 +1861,93 @@
         renderPosts(true);
     }
 
+    function buildPostCardHtml(post) {
+        const postIdStr = String(post.id);
+        const isBookmarked = bookmarks.includes(post.id);
+        const isHearted = heartedPosts.includes(postIdStr);
+        const r = post.reactions || { like: 0, fire: 0, haha: 0 };
+        const timeStr = new Date(post.timestamp).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+        const postHandle = normalizeHandle(post.handle);
+        const followers = postHandle === userSettings.handle ? (Number(userSettings.followers) || 0) : (Number(post.followers) || 0);
+        const displayAuthor = postHandle === userSettings.handle ? userSettings.author : (post.author || 'مستخدم');
+        const displayAvatar = postHandle === userSettings.handle ? userSettings.avatar : (post.avatar || '');
+
+        let mediaHtml = '';
+        if (post.mediaType === 'image' && post.mediaData) {
+            mediaHtml = `<div class="post-media"><img src="${post.mediaData}" alt="صورة المنشور"></div>`;
+        } else if (post.mediaType === 'video' && post.mediaData) {
+            mediaHtml = `<div class="post-media"><video src="${post.mediaData}" controls></video></div>`;
+        }
+
+        const commentsHtml = (post.comments || []).map(c => `
+            <div class="comment-bubble">
+                <strong style="color: var(--accent); font-size: 0.82rem;">${escapeHtml(c.author)}</strong>
+                <div>${escapeHtml(c.text)}</div>
+            </div>
+        `).join('');
+
+        return `
+            <div class="vote-col">
+                <button type="button" class="vote-btn up" onclick="votePost(${post.id}, 'up')">▲</button>
+                <span class="vote-score">${post.votes}</span>
+                <button type="button" class="vote-btn down" onclick="votePost(${post.id}, 'down')">▼</button>
+            </div>
+
+            <div class="post-main">
+                <div class="post-meta">
+                    <div class="author-info">
+                        <button type="button" class="author-trigger" onclick="openUserProfile('${escapeHtml(postHandle)}')">
+                            ${renderAvatar(displayAuthor, displayAvatar)}
+                            <span style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
+                                <strong class="author-name-text">${escapeHtml(displayAuthor)}</strong>
+                                ${renderVerifiedBadge(followers)}
+                                <span style="color: var(--muted); font-size: 0.8rem;">${escapeHtml(postHandle)}</span>
+                            </span>
+                        </button>
+                        <span class="followers-chip">${followers} متابع</span>
+                        <span style="color: var(--muted); font-size: 0.8rem;">· ${timeStr}</span>
+                        <span class="comm-tag">r/${escapeHtml(post.community)}</span>
+                    </div>
+                    <button type="button" class="vote-btn" onclick="deletePost(${post.id})" title="حذف">✕</button>
+                </div>
+
+                ${post.content ? `<div class="post-text">${escapeHtml(post.content)}</div>` : ''}
+                ${mediaHtml}
+                <div id="ai-box-${post.id}" class="ai-box" style="display:none;"></div>
+
+                <div class="post-actions">
+                    <div class="reaction-group">
+                        <button type="button" class="heart-pill ${isHearted ? 'active' : ''}" onclick="toggleHeartPost(${post.id})" title="قلب">
+                            <svg style="width:14px;height:14px;" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                            </svg>
+                            <span>${Number(post.hearts) || 0}</span>
+                        </button>
+
+                        <button type="button" class="react-pill" onclick="reactPost(${post.id}, 'like')"> ${r.like}</button>
+                        <button type="button" class="react-pill" onclick="reactPost(${post.id}, 'fire')"> ${r.fire}</button>
+                        <button type="button" class="react-pill" onclick="reactPost(${post.id}, 'haha')"> ${r.haha}</button>
+                    </div>
+
+                    <div class="reaction-group">
+                        <button type="button" class="react-pill" onclick="toggleComments(${post.id})"> ${post.comments.length}</button>
+                        <button type="button" class="react-pill" onclick="repost(${post.id})"> ${post.reposts || 0}</button>
+                        <button type="button" class="react-pill" onclick="summarizePost(${post.id})">AI تلخيص</button>
+                        <button type="button" class="react-pill" onclick="toggleBookmark(${post.id})">${isBookmarked ? '' : ''}</button>
+                    </div>
+                </div>
+
+                <div class="comments-box" id="comments-${post.id}">
+                    ${commentsHtml}
+                    <div style="display:flex; gap:6px; margin-top:8px;">
+                        <input type="text" id="c-input-${post.id}" class="input-clean" style="flex:1;" placeholder="اكتب تعليقاً...">
+                        <button type="button" class="btn-publish" style="padding: 6px 14px;" onclick="sendComment(${post.id})">إرسال</button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
     function renderPosts(force = false) {
         const activeEl = document.activeElement;
         const isTypingComment = activeEl && activeEl.id && activeEl.id.startsWith('c-input-');
@@ -1861,7 +1962,6 @@
 
         const container = document.getElementById('feedContainer');
         const query = document.getElementById('searchInput').value.toLowerCase();
-        container.innerHTML = '';
 
         let list = [...posts];
 
@@ -1888,91 +1988,38 @@
             return;
         }
 
+        const existingCards = new Map();
+        container.querySelectorAll('.post-card[data-post-id]').forEach(el => {
+            existingCards.set(el.getAttribute('data-post-id'), el);
+        });
+
+        const emptyNotice = container.querySelector('div:not(.post-card)');
+        if (emptyNotice) emptyNotice.remove();
+
+        const desiredIds = list.map(p => String(p.id));
+        existingCards.forEach((el, id) => {
+            if (!desiredIds.includes(id)) el.remove();
+        });
+
         list.forEach(post => {
             const postIdStr = String(post.id);
-            const isBookmarked = bookmarks.includes(post.id);
-            const isHearted = heartedPosts.includes(postIdStr);
-            const r = post.reactions || { like: 0, fire: 0, haha: 0 };
-            const timeStr = new Date(post.timestamp).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
-            const postHandle = normalizeHandle(post.handle);
-            const followers = postHandle === userSettings.handle ? (Number(userSettings.followers) || 0) : (Number(post.followers) || 0);
+            let card = existingCards.get(postIdStr);
+            if (!card) {
+                card = document.createElement('div');
+                card.className = 'post-card';
+                card.setAttribute('data-post-id', postIdStr);
+            }
+            card.innerHTML = buildPostCardHtml(post);
 
-            let mediaHtml = '';
-            if (post.mediaType === 'image' && post.mediaData) {
-                mediaHtml = `<div class="post-media"><img src="${post.mediaData}" alt="صورة المنشور"></div>`;
-            } else if (post.mediaType === 'video' && post.mediaData) {
-                mediaHtml = `<div class="post-media"><video src="${post.mediaData}" controls></video></div>`;
+            if (openCommentIds.includes(postIdStr)) {
+                const cBox = card.querySelector(`#comments-${post.id}`);
+                if (cBox) cBox.classList.add('open');
+            }
+            if (draftComments[postIdStr]) {
+                const cInp = card.querySelector(`#c-input-${post.id}`);
+                if (cInp) cInp.value = draftComments[postIdStr];
             }
 
-            const commentsHtml = (post.comments || []).map(c => `
-                <div class="comment-bubble">
-                    <strong style="color: var(--accent); font-size: 0.82rem;">${escapeHtml(c.author)}</strong>
-                    <div>${escapeHtml(c.text)}</div>
-                </div>
-            `).join('');
-
-            const card = document.createElement('div');
-            card.className = 'post-card';
-            card.innerHTML = `
-                <div class="vote-col">
-                    <button type="button" class="vote-btn up" onclick="votePost(${post.id}, 'up')">▲</button>
-                    <span class="vote-score">${post.votes}</span>
-                    <button type="button" class="vote-btn down" onclick="votePost(${post.id}, 'down')">▼</button>
-                </div>
-
-                <div class="post-main">
-                    <div class="post-meta">
-                        <div class="author-info">
-                            <button type="button" class="author-trigger" onclick="openUserProfile('${escapeHtml(postHandle)}')">
-                                ${renderAvatar(post.author, post.avatar)}
-                                <span style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
-                                    <strong class="author-name-text">${escapeHtml(post.author)}</strong>
-                                    ${renderVerifiedBadge(followers)}
-                                    <span style="color: var(--muted); font-size: 0.8rem;">${escapeHtml(postHandle)}</span>
-                                </span>
-                            </button>
-                            <span class="followers-chip">${followers} متابع</span>
-                            <span style="color: var(--muted); font-size: 0.8rem;">· ${timeStr}</span>
-                            <span class="comm-tag">r/${escapeHtml(post.community)}</span>
-                        </div>
-                        <button type="button" class="vote-btn" onclick="deletePost(${post.id})" title="حذف">✕</button>
-                    </div>
-
-                    ${post.content ? `<div class="post-text">${escapeHtml(post.content)}</div>` : ''}
-                    ${mediaHtml}
-                    <div id="ai-box-${post.id}" class="ai-box" style="display:none;"></div>
-
-                    <div class="post-actions">
-                        <div class="reaction-group">
-                            <button type="button" class="heart-pill ${isHearted ? 'active' : ''}" onclick="toggleHeartPost(${post.id})" title="قلب">
-                                <svg style="width:14px;height:14px;" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                                </svg>
-                                <span>${Number(post.hearts) || 0}</span>
-                            </button>
-
-                            <button type="button" class="react-pill" onclick="reactPost(${post.id}, 'like')"> ${r.like}</button>
-                            <button type="button" class="react-pill" onclick="reactPost(${post.id}, 'fire')"> ${r.fire}</button>
-                            <button type="button" class="react-pill" onclick="reactPost(${post.id}, 'haha')"> ${r.haha}</button>
-                        </div>
-
-                        <div class="reaction-group">
-                            <button type="button" class="react-pill" onclick="toggleComments(${post.id})"> ${post.comments.length}</button>
-                            <button type="button" class="react-pill" onclick="repost(${post.id})"> ${post.reposts || 0}</button>
-                            <button type="button" class="react-pill" onclick="summarizePost(${post.id})">AI تلخيص</button>
-                            <button type="button" class="react-pill" onclick="toggleBookmark(${post.id})">${isBookmarked ? '' : ''}</button>
-                        </div>
-                    </div>
-
-                    <div class="comments-box ${openCommentIds.includes(postIdStr) ? 'open' : ''}" id="comments-${post.id}">
-                        ${commentsHtml}
-                        <div style="display:flex; gap:6px; margin-top:8px;">
-                            <input type="text" id="c-input-${post.id}" class="input-clean" style="flex:1;" placeholder="اكتب تعليقاً..." value="${escapeHtml(draftComments[postIdStr] || '')}">
-                            <button type="button" class="btn-publish" style="padding: 6px 14px;" onclick="sendComment(${post.id})">إرسال</button>
-                        </div>
-                    </div>
-                </div>
-            `;
             container.appendChild(card);
         });
     }
@@ -2173,6 +2220,10 @@
         const followersNum = Math.max(0, Number(userInfo.followers) || 0);
         const isFollowing = followedHandles.includes(h);
         const isNotified = notifiedHandles.includes(h);
+        const displayName = (userInfo.author && userInfo.author !== 'مستخدم')
+            ? userInfo.author
+            : (h === userSettings.handle ? userSettings.author : (posts.find(p => normalizeHandle(p.handle) === h)?.author || userInfo.author || 'مستخدم'));
+        const displayAvatar = userInfo.avatar || (h === userSettings.handle ? userSettings.avatar : (posts.find(p => normalizeHandle(p.handle) === h)?.avatar || ''));
 
         const postsListHtml = userPosts.length
             ? userPosts.map(p => `
@@ -2193,10 +2244,10 @@
 
             <div class="profile-top-row">
                 <div style="display:flex;align-items:flex-end;gap:10px;">
-                    ${renderAvatar(userInfo.author, userInfo.avatar, 'profile-avatar-lg')}
+                    ${renderAvatar(displayName, displayAvatar, 'profile-avatar-lg')}
                     <div style="margin-bottom:4px;">
                         <div style="font-size:1.08rem;font-weight:800;display:flex;align-items:center;gap:5px;">
-                            <span>${escapeHtml(userInfo.author)}</span>
+                            <span>${escapeHtml(displayName)}</span>
                             ${renderVerifiedBadge(followersNum)}
                         </div>
                         <div style="font-size:0.82rem;color:var(--muted);">${escapeHtml(h)}</div>
@@ -2253,7 +2304,12 @@
             const res = await fetch(`/api/users/${encodeURIComponent(h)}`, { cache: 'no-store' });
             if (res.ok) {
                 const data = await res.json();
-                if (data.user) userInfo = data.user;
+                if (data.user) {
+                    userInfo = {
+                        ...data.user,
+                        author: (data.user.author && data.user.author !== 'مستخدم') ? data.user.author : userInfo.author
+                    };
+                }
                 if (Array.isArray(data.posts)) userPosts = data.posts;
                 if (h === userSettings.handle && data.user) {
                     userSettings.followers = Math.max(0, Number(data.user.followers) || 0);
@@ -2280,6 +2336,11 @@
         localStorage.setItem('vloxy_followed', JSON.stringify(followedHandles));
 
         const matchingPost = posts.find(p => normalizeHandle(p.handle) === h);
+        const resolvedAuthor = (matchingPost?.author && matchingPost.author !== 'مستخدم')
+            ? matchingPost.author
+            : (h === userSettings.handle ? userSettings.author : 'مستخدم');
+        const resolvedAvatar = matchingPost?.avatar || (h === userSettings.handle ? userSettings.avatar : '');
+
         const currentFollowers = h === userSettings.handle
             ? (Number(userSettings.followers) || 0)
             : (Number(matchingPost?.followers) || 0);
@@ -2293,6 +2354,7 @@
 
         posts.forEach(p => {
             if (normalizeHandle(p.handle) === h) {
+                if (resolvedAuthor && resolvedAuthor !== 'مستخدم') p.author = resolvedAuthor;
                 p.followers = optimisticFollowers;
                 p.verified = isVerifiedCount(optimisticFollowers);
             }
@@ -2302,8 +2364,8 @@
 
         const optimisticUser = {
             handle: h,
-            author: h === userSettings.handle ? userSettings.author : (matchingPost?.author || 'مستخدم'),
-            avatar: h === userSettings.handle ? userSettings.avatar : (matchingPost?.avatar || ''),
+            author: resolvedAuthor,
+            avatar: resolvedAvatar,
             followers: optimisticFollowers
         };
         const userPosts = posts.filter(p => normalizeHandle(p.handle) === h);
@@ -2313,11 +2375,12 @@
             const res = await fetch(`/api/users/${encodeURIComponent(h)}/follow`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ delta })
+                body: JSON.stringify({ delta, author: resolvedAuthor, avatar: resolvedAvatar })
             });
             if (res.ok) {
                 const data = await res.json();
                 const serverFollowers = Math.max(0, Number(data.user?.followers) || 0);
+                const serverAuthor = (data.user?.author && data.user.author !== 'مستخدم') ? data.user.author : resolvedAuthor;
                 if (h === userSettings.handle) {
                     userSettings.followers = serverFollowers;
                     localStorage.setItem('vloxy_settings', JSON.stringify(userSettings));
@@ -2325,6 +2388,7 @@
                 }
                 posts.forEach(p => {
                     if (normalizeHandle(p.handle) === h) {
+                        p.author = serverAuthor;
                         p.followers = serverFollowers;
                         p.verified = isVerifiedCount(serverFollowers);
                     }
@@ -2332,7 +2396,7 @@
                 lastFeedSignature = computeFeedSignature(posts);
                 renderPosts(true);
                 if (activeProfileHandle === h) {
-                    renderProfileModalView(h, { ...data.user, followers: serverFollowers }, posts.filter(p => normalizeHandle(p.handle) === h));
+                    renderProfileModalView(h, { ...data.user, author: serverAuthor, followers: serverFollowers }, posts.filter(p => normalizeHandle(p.handle) === h));
                 }
             }
         } catch (e) {}
