@@ -1307,14 +1307,6 @@
 
         <div class="setting-row">
             <div>
-                <div style="font-weight: 700;">عدد متابعيني</div>
-                <div style="font-size:0.78rem;color:var(--muted);">الصح الأزرق يُمنح تلقائياً عند 3000 متابع</div>
-            </div>
-            <input type="number" id="setFollowers" min="0" class="input-clean" style="width:110px;" onchange="saveSettings()">
-        </div>
-
-        <div class="setting-row">
-            <div>
                 <div style="font-weight: 700;">مفتاح الذكاء الاصطناعي (API Key)</div>
                 <a href="https://aistudio.google.com/apps" target="_blank" class="api-help-link">https://aistudio.google.com/apps</a>
             </div>
@@ -1484,7 +1476,6 @@
 
         document.getElementById('setAuthor').value = userSettings.author;
         document.getElementById('setHandle').value = userSettings.handle;
-        document.getElementById('setFollowers').value = Number(userSettings.followers) || 0;
         document.getElementById('setApiKey').value = userSettings.apiKey || '';
         document.getElementById('aiModalKeyInput').value = userSettings.apiKey || '';
         document.getElementById('setTheme').value = userSettings.theme || 'system';
@@ -1496,7 +1487,6 @@
     async function saveSettings() {
         userSettings.author = document.getElementById('setAuthor').value || 'مستخدم';
         userSettings.handle = normalizeHandle(document.getElementById('setHandle').value);
-        userSettings.followers = Math.max(0, Number(document.getElementById('setFollowers').value) || 0);
         userSettings.apiKey = document.getElementById('setApiKey').value.trim();
         userSettings.theme = document.getElementById('setTheme').value;
         userSettings.fontSize = document.getElementById('setFontSize').value;
@@ -1514,8 +1504,7 @@
                 body: JSON.stringify({
                     handle: userSettings.handle,
                     author: userSettings.author,
-                    avatar: userSettings.avatar,
-                    followers: userSettings.followers
+                    avatar: userSettings.avatar
                 })
             });
         } catch (e) {}
