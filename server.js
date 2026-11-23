@@ -39,27 +39,62 @@ function saveState() {
     } catch (e) {}
 }
 
-function ensureUser(rawHandle, fallbackAuthor = 'مستخدم', fallbackAvatar = '') {
+function findExistingAuthorForHandle(handle) {
+    if (state.users[handle] && state.users[handle].author && state.users[handle].author !== 'مستخدم') {
+        return state.users[handle].author;
+    }
+    const foundPost = state.posts.find(
+        p => normalizeHandle(p.handle) === handle && p.author && p.author !== 'مستخدم'
+    );
+    if (foundPost) return foundPost.author;
+    if (state.users[handle] && state.users[handle].author) {
+        return state.users[handle].author;
+    }
+    return null;
+}
+
+function findExistingAvatarForHandle(handle) {
+    if (state.users[handle] && state.users[handle].avatar) {
+        return state.users[handle].avatar;
+    }
+    const foundPost = state.posts.find(
+        p => normalizeHandle(p.handle) === handle && p.avatar
+    );
+    return foundPost ? foundPost.avatar : '';
+}
+
+function ensureUser(rawHandle, fallbackAuthor = null, fallbackAvatar = null) {
     const handle = normalizeHandle(rawHandle);
-    if (!state.users[handle]) {
+    const existing = state.users[handle];
+    const resolvedAuthor =
+        (fallbackAuthor && String(fallbackAuthor).trim() && String(fallbackAuthor).trim() !== 'مستخدم')
+            ? String(fallbackAuthor).trim()
+            : (findExistingAuthorForHandle(handle) || (existing && existing.author) || (fallbackAuthor && String(fallbackAuthor).trim()) || 'مستخدم');
+
+    const resolvedAvatar =
+        (fallbackAvatar !== null && fallbackAvatar !== undefined && String(fallbackAvatar).trim() !== '')
+            ? String(fallbackAvatar)
+            : (findExistingAvatarForHandle(handle) || (existing && existing.avatar) || '');
+
+    if (!existing) {
         state.users[handle] = {
             handle,
-            author: fallbackAuthor || 'مستخدم',
-            avatar: fallbackAvatar || '',
+            author: resolvedAuthor,
+            avatar: resolvedAvatar,
             followers: 0
         };
     } else {
-        if (fallbackAuthor) state.users[handle].author = fallbackAuthor;
-        if (fallbackAvatar !== undefined && fallbackAvatar !== null && fallbackAvatar !== '') {
-            state.users[handle].avatar = fallbackAvatar;
-        }
-        state.users[handle].followers = Math.max(0, Number(state.users[handle].followers) || 0);
+        existing.author = resolvedAuthor;
+        if (resolvedAvatar) existing.avatar = resolvedAvatar;
+        existing.followers = Math.max(0, Number(existing.followers) || 0);
     }
+
     return state.users[handle];
 }
 
 function enrichPost(post) {
-    const u = ensureUser(post.handle, post.author, post.avatar);
+    const handle = normalizeHandle(post.handle);
+    const u = ensureUser(handle, post.author, post.avatar);
     const followers = Math.max(0, Number(u.followers) || 0);
     return {
         ...post,
@@ -128,7 +163,7 @@ app.get('/api/posts', (req, res) => {
 app.post('/api/posts', (req, res) => {
     const body = req.body || {};
     const handle = normalizeHandle(body.handle);
-    const user = ensureUser(handle, body.author || 'مستخدم', body.avatar || '');
+    const user = ensureUser(handle, body.author, body.avatar);
 
     const newPost = enrichPost({
         id: Date.now() + Math.floor(Math.random() * 1000),
@@ -245,9 +280,11 @@ app.delete('/api/posts/:id', (req, res) => {
 app.post('/api/users/profile', (req, res) => {
     const body = req.body || {};
     const handle = normalizeHandle(body.handle);
-    const existing = ensureUser(handle);
+    const existing = ensureUser(handle, body.author, body.avatar);
 
-    existing.author = String(body.author || existing.author || 'مستخدم').trim() || 'مستخدم';
+    if (body.author && String(body.author).trim()) {
+        existing.author = String(body.author).trim();
+    }
     if (body.avatar !== undefined) {
         existing.avatar = String(body.avatar || '');
     }
@@ -279,7 +316,7 @@ app.get('/api/users/:handle', (req, res) => {
 
 app.post('/api/users/:handle/follow', (req, res) => {
     const handle = normalizeHandle(decodeURIComponent(req.params.handle));
-    const user = ensureUser(handle);
+    const user = ensureUser(handle, req.body?.author, req.body?.avatar);
     const delta = Number(req.body?.delta) === -1 ? -1 : 1;
 
     user.followers = Math.max(0, (Number(user.followers) || 0) + delta);
@@ -287,7 +324,7 @@ app.post('/api/users/:handle/follow', (req, res) => {
 
     state.posts = state.posts.map(p => {
         if (normalizeHandle(p.handle) === handle) {
-            return enrichPost({ ...p, followers: user.followers, verified });
+            return enrichPost({ ...p, author: user.author, avatar: user.avatar, followers: user.followers, verified });
         }
         return enrichPost(p);
     });
