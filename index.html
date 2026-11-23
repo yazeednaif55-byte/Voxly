@@ -9,7 +9,7 @@
         :root {
             --bg: #080a0f;
             --surface: #111520;
-            --surface-elevated: #171c2b;
+            --surface-elevated: #171d2c;
             --border: rgba(255, 255, 255, 0.08);
             --text: #f3f6fb;
             --muted: #8b95a7;
@@ -18,13 +18,6 @@
             --upvote: #ff4500;
             --downvote: #6366f1;
             --font-size-base: 15px;
-        }
-
-        [data-theme="midnight"] {
-            --bg: #000000;
-            --surface: #0b0b0d;
-            --surface-elevated: #141418;
-            --border: rgba(255, 255, 255, 0.1);
         }
 
         [data-theme="light"] {
@@ -73,10 +66,10 @@
 
         .app-layout {
             display: grid;
-            grid-template-columns: 250px minmax(0, 680px) 320px;
+            grid-template-columns: 245px minmax(0, 680px) 310px;
             justify-content: center;
             gap: 20px;
-            max-width: 1320px;
+            max-width: 1300px;
             margin: 0 auto;
             padding: 0 14px;
         }
@@ -88,7 +81,7 @@
             padding: 20px 8px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
         }
 
         .brand {
@@ -126,10 +119,10 @@
             background: transparent;
             border: 1px solid transparent;
             color: var(--text);
-            font-size: 1rem;
+            font-size: 0.98rem;
             font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.2s ease, transform 0.2s ease;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
             text-align: right;
         }
 
@@ -137,6 +130,12 @@
             background: var(--surface);
             border-color: var(--border);
             color: var(--accent);
+        }
+
+        .icon-svg {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
         }
 
         .main-feed {
@@ -151,7 +150,7 @@
             background: rgba(8, 10, 15, 0.82);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            padding: 14px 18px;
+            padding: 12px 18px;
             border-bottom: 1px solid var(--border);
             z-index: 20;
             display: flex;
@@ -164,6 +163,31 @@
             background: rgba(244, 246, 250, 0.85);
         }
 
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .icon-btn {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+            width: 36px;
+            height: 36px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.15s ease;
+        }
+
+        .icon-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
         .search-box {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -172,7 +196,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            width: 220px;
+            width: 200px;
         }
 
         .search-box input {
@@ -181,7 +205,7 @@
             color: var(--text);
             outline: none;
             width: 100%;
-            font-size: 0.88rem;
+            font-size: 0.86rem;
         }
 
         .communities-bar {
@@ -222,12 +246,48 @@
             background: transparent;
             border: none;
             color: var(--text);
-            font-size: 1.05rem;
+            font-size: 1.02rem;
             resize: none;
             outline: none;
-            min-height: 75px;
-            margin-bottom: 10px;
+            min-height: 70px;
+            margin-bottom: 8px;
             line-height: 1.6;
+        }
+
+        .media-preview {
+            position: relative;
+            margin-bottom: 12px;
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            display: none;
+        }
+
+        .media-preview.active {
+            display: block;
+            animation: fadeSlideIn 0.2s ease;
+        }
+
+        .media-preview img,
+        .media-preview video {
+            display: block;
+            width: 100%;
+            max-height: 320px;
+            object-fit: contain;
+        }
+
+        .remove-media-btn {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: rgba(0, 0, 0, 0.75);
+            color: #ffffff;
+            border: none;
+            border-radius: 999px;
+            padding: 4px 10px;
+            font-size: 0.78rem;
+            cursor: pointer;
         }
 
         .composer-tools {
@@ -235,7 +295,7 @@
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
             padding-top: 10px;
             border-top: 1px solid var(--border);
         }
@@ -253,24 +313,43 @@
             border: 1px solid var(--border);
             padding: 7px 12px;
             border-radius: 10px;
-            font-size: 0.86rem;
+            font-size: 0.85rem;
             outline: none;
+        }
+
+        .media-upload-btn {
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 6px 11px;
+            border-radius: 10px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: 0.15s ease;
+        }
+
+        .media-upload-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
         }
 
         .ai-btn {
             background: var(--accent-soft);
             color: var(--accent);
             border: 1px solid rgba(59, 130, 246, 0.3);
-            padding: 6px 12px;
+            padding: 6px 11px;
             border-radius: 10px;
-            font-size: 0.84rem;
+            font-size: 0.82rem;
             font-weight: 700;
             cursor: pointer;
-            transition: 0.2s ease;
-        }
-
-        .ai-btn:hover {
-            opacity: 0.85;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: 0.15s ease;
         }
 
         .btn-publish {
@@ -280,7 +359,7 @@
             padding: 8px 20px;
             border-radius: 999px;
             font-weight: 700;
-            font-size: 0.9rem;
+            font-size: 0.88rem;
             cursor: pointer;
             transition: transform 0.15s ease, opacity 0.15s ease;
         }
@@ -292,12 +371,12 @@
 
         .post-card {
             display: flex;
-            gap: 14px;
+            gap: 12px;
             padding: 16px 18px;
             border-bottom: 1px solid var(--border);
             background: var(--bg);
             transition: background-color 0.2s ease;
-            animation: fadeSlideIn 0.28s ease forwards;
+            animation: fadeSlideIn 0.25s ease forwards;
         }
 
         .post-card:hover {
@@ -321,13 +400,13 @@
             border: none;
             color: var(--muted);
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 0.95rem;
             transition: 0.15s ease;
         }
 
         .vote-btn.up:hover { color: var(--upvote); }
         .vote-btn.down:hover { color: var(--downvote); }
-        .vote-score { font-weight: 800; font-size: 0.88rem; }
+        .vote-score { font-weight: 800; font-size: 0.86rem; }
 
         .post-main {
             flex: 1;
@@ -359,9 +438,25 @@
 
         .post-text {
             line-height: 1.65;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             white-space: pre-wrap;
             word-wrap: break-word;
+        }
+
+        .post-media {
+            margin-bottom: 12px;
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            background: var(--surface);
+        }
+
+        .post-media img,
+        .post-media video {
+            display: block;
+            width: 100%;
+            max-height: 420px;
+            object-fit: cover;
         }
 
         .ai-box {
@@ -369,8 +464,8 @@
             border-right: 3px solid var(--accent);
             padding: 10px 14px;
             border-radius: 10px;
-            font-size: 0.88rem;
-            margin-bottom: 12px;
+            font-size: 0.86rem;
+            margin-bottom: 10px;
             white-space: pre-wrap;
             line-height: 1.6;
         }
@@ -399,7 +494,7 @@
             border-radius: 999px;
             font-size: 0.8rem;
             cursor: pointer;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 4px;
             transition: 0.15s ease;
@@ -445,12 +540,17 @@
         }
 
         .widget-title {
-            font-size: 1rem;
+            font-size: 0.98rem;
             font-weight: 700;
             margin-bottom: 10px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            gap: 8px;
+        }
+
+        /* شريط الجوال السفلي */
+        .mobile-bottom-bar {
+            display: none;
         }
 
         .modal-overlay {
@@ -561,27 +661,54 @@
 
         @media (max-width: 680px) {
             .app-layout { grid-template-columns: 1fr; padding: 0; }
-            .sidebar-left {
+            .sidebar-left { display: none; }
+            .search-box { width: 135px; }
+            .main-feed { padding-bottom: 76px; }
+
+            .mobile-bottom-bar {
+                display: flex;
                 position: fixed;
                 bottom: 0;
-                top: auto;
-                height: 58px;
-                width: 100%;
-                flex-direction: row;
-                justify-content: space-around;
+                left: 0;
+                right: 0;
+                height: 60px;
                 background: var(--surface);
                 border-top: 1px solid var(--border);
-                z-index: 50;
-                padding: 4px;
+                justify-content: space-around;
+                align-items: center;
+                z-index: 60;
+                padding: 0 8px;
             }
-            .brand { display: none; }
-            .main-feed { padding-bottom: 70px; }
+
+            .mobile-bar-btn {
+                background: transparent;
+                border: none;
+                color: var(--text);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 2px;
+                font-size: 0.72rem;
+                font-weight: 700;
+                cursor: pointer;
+                padding: 4px 8px;
+                border-radius: 10px;
+            }
+
+            .mobile-bar-btn.primary {
+                background: var(--accent);
+                color: #ffffff;
+                padding: 6px 14px;
+                border-radius: 999px;
+            }
         }
     </style>
 </head>
 <body>
 
 <div class="app-layout">
+    <!-- الشريط الجانبي للشاشات الكبيرة -->
     <aside class="sidebar-left">
         <div class="brand">
             <div class="brand-logo">V</div>
@@ -589,37 +716,84 @@
         </div>
 
         <button class="nav-item active" onclick="switchView('all', this)">
-            <span></span> <span class="nav-text">الرئيسية</span>
+            <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-9.5z"/>
+            </svg>
+            <span class="nav-text">الرئيسية</span>
         </button>
+
         <button class="nav-item" onclick="switchView('trending', this)">
-            <span></span> <span class="nav-text">الأكثر تصويتاً</span>
+            <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+            </svg>
+            <span class="nav-text">الأكثر تصويتاً</span>
         </button>
+
         <button class="nav-item" onclick="switchView('bookmarks', this)">
-            <span></span> <span class="nav-text">المحفوظات</span>
+            <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+            </svg>
+            <span class="nav-text">المحفوظات</span>
         </button>
+
         <button class="nav-item" onclick="openNexus()">
-            <span></span> <span class="nav-text">Nexus Messenger</span>
+            <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
+            <span class="nav-text">Nexus Messenger</span>
         </button>
+
         <button class="nav-item" onclick="openAIModal()">
-            <span></span> <span class="nav-text">الذكاء الاصطناعي</span>
+            <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9L12 3z"/>
+                <path d="M19 16l.9 2.1L22 19l-2.1.9L19 22l-.9-2.1L16 19l2.1-.9L19 16z"/>
+            </svg>
+            <span class="nav-text">الذكاء الاصطناعي</span>
         </button>
+
         <button class="nav-item" onclick="openSettings()">
-            <span></span> <span class="nav-text">الإعدادات</span>
+            <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+            <span class="nav-text">الإعدادات</span>
         </button>
     </aside>
 
+    <!-- المحتوى الرئيسي -->
     <main class="main-feed">
         <div class="top-header">
             <div>
-                <h2 style="font-size: 1.12rem; font-weight: 800;" id="viewTitle">الرئيسية</h2>
-                <span style="font-size: 0.78rem; color: var(--muted);">Vloxy</span>
+                <h2 style="font-size: 1.1rem; font-weight: 800;" id="viewTitle">الرئيسية</h2>
             </div>
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <button class="react-pill" onclick="playBootChime(true)" title="تشغيل صوت البدء"></button>
+
+            <div class="header-actions">
                 <div class="search-box">
-                    <span></span>
+                    <svg class="icon-svg" style="width:16px;height:16px;color:var(--muted);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+                    </svg>
                     <input type="text" id="searchInput" placeholder="بحث..." oninput="renderPosts()">
                 </div>
+
+                <button class="icon-btn" onclick="openAIModal()" title="الذكاء الاصطناعي">
+                    <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9L12 3z"/>
+                    </svg>
+                </button>
+
+                <button class="icon-btn" onclick="openSettings()" title="الإعدادات">
+                    <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                    </svg>
+                </button>
+
+                <button class="icon-btn" onclick="playBootChime(true)" title="صوت البدء">
+                    <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+                        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+                    </svg>
+                </button>
             </div>
         </div>
 
@@ -632,10 +806,34 @@
             <button class="comm-pill" onclick="setCommunity('نقاشات', this)">r/نقاشات</button>
         </div>
 
-        <div class="composer">
-            <textarea id="postContent" placeholder="اكتب منشورك أو تغريدتك..."></textarea>
+        <!-- صندوق النشر -->
+        <div class="composer" id="composerBox">
+            <textarea id="postContent" placeholder="اكتب تغريدتك أو منشورك..."></textarea>
+
+            <div class="media-preview" id="mediaPreview">
+                <button class="remove-media-btn" onclick="clearMedia()">إزالة</button>
+                <div id="mediaPreviewContent"></div>
+            </div>
+
+            <input type="file" id="imageFileInput" accept="image/*" style="display:none;" onchange="handleMediaFile(event, 'image')">
+            <input type="file" id="videoFileInput" accept="video/*" style="display:none;" onchange="handleMediaFile(event, 'video')">
+
             <div class="composer-tools">
                 <div class="tool-group">
+                    <button type="button" class="media-upload-btn" onclick="document.getElementById('imageFileInput').click()">
+                        <svg class="icon-svg" style="width:16px;height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>
+                        </svg>
+                        صورة
+                    </button>
+
+                    <button type="button" class="media-upload-btn" onclick="document.getElementById('videoFileInput').click()">
+                        <svg class="icon-svg" style="width:16px;height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/>
+                        </svg>
+                        فيديو
+                    </button>
+
                     <select id="postCommunity" class="select-clean">
                         <option value="عام">r/عام</option>
                         <option value="برمجة">r/برمجة</option>
@@ -643,19 +841,30 @@
                         <option value="تقنية">r/تقنية</option>
                         <option value="نقاشات">r/نقاشات</option>
                     </select>
-                    <button class="ai-btn" onclick="aiEnhanceComposer()"> تحسين بالذكاء الاصطناعي</button>
+
+                    <button type="button" class="ai-btn" onclick="aiEnhanceComposer()">
+                        <svg class="icon-svg" style="width:15px;height:15px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9L12 3z"/>
+                        </svg>
+                        AI
+                    </button>
                 </div>
-                <button class="btn-publish" onclick="publishPost()">نشر</button>
+
+                <button type="button" class="btn-publish" onclick="publishPost()">نشر</button>
             </div>
         </div>
 
         <div id="feedContainer"></div>
     </main>
 
+    <!-- الشريط الجانبي الأيسر -->
     <aside class="sidebar-right">
         <div class="widget-card">
             <div class="widget-title">
-                <span> Nexus Messenger</span>
+                <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>
+                <span>Nexus Messenger</span>
             </div>
             <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 10px;">
                 افتح محادثات Nexus Messenger مباشرة من هنا.
@@ -664,9 +873,14 @@
         </div>
 
         <div class="widget-card">
-            <div class="widget-title"> الذكاء الاصطناعي</div>
+            <div class="widget-title">
+                <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9L12 3z"/>
+                </svg>
+                <span>الذكاء الاصطناعي</span>
+            </div>
             <p style="font-size: 0.84rem; color: var(--muted); margin-bottom: 8px; line-height: 1.5;">
-                يتطلب مفتاح API من Google AI Studio:
+                يتطلب مفتاح API:
             </p>
             <a href="https://aistudio.google.com/apps" target="_blank" class="api-help-link">
                 https://aistudio.google.com/apps
@@ -675,12 +889,51 @@
     </aside>
 </div>
 
+<!-- شريط الجوال السفلي (إنشاء تغريدة + ذكاء اصطناعي + إعدادات) -->
+<nav class="mobile-bottom-bar" aria-label="شريط التنقل السفلي">
+    <button class="mobile-bar-btn" onclick="switchView('all', this)">
+        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-9.5z"/>
+        </svg>
+        <span>الرئيسية</span>
+    </button>
+
+    <button class="mobile-bar-btn primary" onclick="focusComposer()">
+        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M12 5v14M5 12h14"/>
+        </svg>
+        <span>تغريدة</span>
+    </button>
+
+    <button class="mobile-bar-btn" onclick="openAIModal()">
+        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9L12 3z"/>
+        </svg>
+        <span>AI</span>
+    </button>
+
+    <button class="mobile-bar-btn" onclick="openNexus()">
+        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        <span>محادثات</span>
+    </button>
+
+    <button class="mobile-bar-btn" onclick="openSettings()">
+        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+        <span>الإعدادات</span>
+    </button>
+</nav>
+
 <!-- نافذة Nexus Messenger -->
 <div class="modal-overlay" id="nexusModal">
     <div class="modal-box nexus-modal">
         <div class="nexus-header">
             <div style="display: flex; align-items: center; gap: 10px;">
-                <span style="font-weight: 800;"> Nexus Messenger</span>
+                <span style="font-weight: 800;">Nexus Messenger</span>
                 <a href="https://nexus-messenger-9536.onrender.com" target="_blank" class="api-help-link">فتح في نافذة جديدة ↗</a>
             </div>
             <button class="react-pill" onclick="closeModal('nexusModal')">✕ إغلاق</button>
@@ -693,14 +946,19 @@
 <div class="modal-overlay" id="aiModal">
     <div class="modal-box">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
-            <h3> الذكاء الاصطناعي</h3>
+            <h3 style="display:flex;align-items:center;gap:8px;">
+                <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9L12 3z"/>
+                </svg>
+                <span>الذكاء الاصطناعي</span>
+            </h3>
             <button class="react-pill" onclick="closeModal('aiModal')">✕</button>
         </div>
 
         <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 12px;">
-            <div style="font-size: 0.85rem; margin-bottom: 6px; font-weight: 700;">مفتاح API مطلوب:</div>
+            <div style="font-size: 0.85rem; margin-bottom: 6px; font-weight: 700;">مفتاح API:</div>
             <div style="font-size: 0.82rem; color: var(--muted); margin-bottom: 8px;">
-                ادخل إلى الرابط التالي ثم أنشئ API وألصقه هنا:
+                أنشئ مفتاح API من:
                 <a href="https://aistudio.google.com/apps" target="_blank" class="api-help-link">https://aistudio.google.com/apps</a>
             </div>
             <input type="password" id="aiModalKeyInput" class="input-clean" style="width: 100%;" placeholder="الصق مفتاح API هنا..." onchange="syncApiKeyFromModal()">
@@ -722,7 +980,13 @@
 <div class="modal-overlay" id="settingsModal">
     <div class="modal-box">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
-            <h3> الإعدادات</h3>
+            <h3 style="display:flex;align-items:center;gap:8px;">
+                <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                </svg>
+                <span>الإعدادات</span>
+            </h3>
             <button class="react-pill" onclick="closeModal('settingsModal')">✕</button>
         </div>
 
@@ -763,8 +1027,8 @@
                 <div style="font-weight: 700;">المظهر</div>
             </div>
             <select id="setTheme" class="select-clean" onchange="saveSettings()">
-                <option value="default">داكن</option>
-                <option value="midnight">أسود</option>
+                <option value="system">الافتراضي للنظام</option>
+                <option value="dark">داكن</option>
                 <option value="light">فاتح</option>
             </select>
         </div>
@@ -807,19 +1071,34 @@
     let currentCommunity = 'الكل';
     let currentView = 'all';
     let bookmarks = JSON.parse(localStorage.getItem('vloxy_bookmarks') || '[]');
+    let selectedMedia = null; // { type: 'image' | 'video', data: string }
 
     let userSettings = JSON.parse(localStorage.getItem('vloxy_settings') || JSON.stringify({
         author: 'مستخدم',
         handle: '@user',
         verified: false,
         apiKey: '',
-        theme: 'default',
+        theme: 'system',
         fontSize: '15px',
         bootSound: true,
         animations: true
     }));
 
-    // نغمة تشغيل ناعمة ومريحة مستوحاة من Windows 7 / 11
+    const systemMediaQuery = window.matchMedia('(prefers-color-scheme: light)');
+
+    function resolveTheme(themePref) {
+        if (themePref === 'system') {
+            return systemMediaQuery.matches ? 'light' : 'dark';
+        }
+        return themePref === 'light' ? 'light' : 'dark';
+    }
+
+    systemMediaQuery.addEventListener('change', () => {
+        if (userSettings.theme === 'system') {
+            document.documentElement.setAttribute('data-theme', resolveTheme('system'));
+        }
+    });
+
     function playBootChime(forcePlay = false) {
         if (!forcePlay && !userSettings.bootSound) return;
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -832,7 +1111,6 @@
             }
 
             const now = ctx.currentTime;
-            // نغمات هادئة متناغمة (C5, E5, G5, B5) بتدرج ناعم
             const notes = [
                 { freq: 523.25, start: 0.00, dur: 1.4, peak: 0.05 },
                 { freq: 659.25, start: 0.14, dur: 1.5, peak: 0.045 },
@@ -860,7 +1138,7 @@
     }
 
     function applySettings() {
-        document.documentElement.setAttribute('data-theme', userSettings.theme);
+        document.documentElement.setAttribute('data-theme', resolveTheme(userSettings.theme));
         document.documentElement.style.setProperty('--font-size-base', userSettings.fontSize);
 
         if (!userSettings.animations) {
@@ -874,7 +1152,7 @@
         document.getElementById('setVerified').checked = !!userSettings.verified;
         document.getElementById('setApiKey').value = userSettings.apiKey || '';
         document.getElementById('aiModalKeyInput').value = userSettings.apiKey || '';
-        document.getElementById('setTheme').value = userSettings.theme;
+        document.getElementById('setTheme').value = userSettings.theme || 'system';
         document.getElementById('setFontSize').value = userSettings.fontSize;
         document.getElementById('setBootSound').checked = userSettings.bootSound !== false;
         document.getElementById('setAnimations').checked = userSettings.animations !== false;
@@ -903,6 +1181,46 @@
         localStorage.setItem('vloxy_settings', JSON.stringify(userSettings));
     }
 
+    function focusComposer() {
+        const box = document.getElementById('composerBox');
+        const textarea = document.getElementById('postContent');
+        box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => textarea.focus(), 200);
+    }
+
+    function handleMediaFile(event, type) {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        if (file.size > 25 * 1024 * 1024) {
+            alert('حجم الملف كبير جداً. يرجى اختيار ملف أصغر من 25MB.');
+            event.target.value = '';
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = () => {
+            selectedMedia = { type, data: reader.result };
+            const preview = document.getElementById('mediaPreview');
+            const content = document.getElementById('mediaPreviewContent');
+            if (type === 'image') {
+                content.innerHTML = `<img src="${reader.result}" alt="معاينة الصورة">`;
+            } else {
+                content.innerHTML = `<video src="${reader.result}" controls></video>`;
+            }
+            preview.classList.add('active');
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function clearMedia() {
+        selectedMedia = null;
+        document.getElementById('imageFileInput').value = '';
+        document.getElementById('videoFileInput').value = '';
+        document.getElementById('mediaPreviewContent').innerHTML = '';
+        document.getElementById('mediaPreview').classList.remove('active');
+    }
+
     async function fetchPosts() {
         const res = await fetch('/api/posts');
         posts = await res.json();
@@ -912,7 +1230,7 @@
     function switchView(view, btn) {
         currentView = view;
         document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-        btn.classList.add('active');
+        if (btn && btn.classList.contains('nav-item')) btn.classList.add('active');
         const titles = { all: 'الرئيسية', trending: 'الأكثر تصويتاً', bookmarks: 'المحفوظات' };
         document.getElementById('viewTitle').textContent = titles[view];
         renderPosts();
@@ -944,8 +1262,8 @@
 
         if (query) {
             list = list.filter(p =>
-                p.content.toLowerCase().includes(query) ||
-                p.author.toLowerCase().includes(query)
+                (p.content || '').toLowerCase().includes(query) ||
+                (p.author || '').toLowerCase().includes(query)
             );
         }
 
@@ -958,6 +1276,13 @@
             const isBookmarked = bookmarks.includes(post.id);
             const r = post.reactions || { like: 0, love: 0, fire: 0, haha: 0 };
             const timeStr = new Date(post.timestamp).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+
+            let mediaHtml = '';
+            if (post.mediaType === 'image' && post.mediaData) {
+                mediaHtml = `<div class="post-media"><img src="${post.mediaData}" alt="صورة المنشور"></div>`;
+            } else if (post.mediaType === 'video' && post.mediaData) {
+                mediaHtml = `<div class="post-media"><video src="${post.mediaData}" controls></video></div>`;
+            }
 
             const commentsHtml = (post.comments || []).map(c => `
                 <div class="comment-bubble">
@@ -986,7 +1311,8 @@
                         <button class="vote-btn" onclick="deletePost(${post.id})" title="حذف"></button>
                     </div>
 
-                    <div class="post-text">${escapeHtml(post.content)}</div>
+                    ${post.content ? `<div class="post-text">${escapeHtml(post.content)}</div>` : ''}
+                    ${mediaHtml}
                     <div id="ai-box-${post.id}" class="ai-box" style="display:none;"></div>
 
                     <div class="post-actions">
@@ -1000,7 +1326,7 @@
                         <div class="reaction-group">
                             <button class="react-pill" onclick="toggleComments(${post.id})"> ${post.comments.length}</button>
                             <button class="react-pill" onclick="repost(${post.id})"> ${post.reposts || 0}</button>
-                            <button class="react-pill" onclick="summarizePost(${post.id})"> تلخيص</button>
+                            <button class="react-pill" onclick="summarizePost(${post.id})">AI تلخيص</button>
                             <button class="react-pill" onclick="toggleBookmark(${post.id})">${isBookmarked ? '' : ''}</button>
                         </div>
                     </div>
@@ -1021,7 +1347,7 @@
     async function publishPost() {
         const content = document.getElementById('postContent').value;
         const community = document.getElementById('postCommunity').value;
-        if (!content.trim()) return;
+        if (!content.trim() && !selectedMedia) return;
 
         await fetch('/api/posts', {
             method: 'POST',
@@ -1031,11 +1357,14 @@
                 handle: userSettings.handle,
                 verified: userSettings.verified,
                 community,
-                content
+                content,
+                mediaType: selectedMedia ? selectedMedia.type : null,
+                mediaData: selectedMedia ? selectedMedia.data : null
             })
         });
 
         document.getElementById('postContent').value = '';
+        clearMedia();
         fetchPosts();
     }
 
@@ -1132,7 +1461,7 @@
         box.style.display = 'block';
         box.textContent = 'جاري المعالجة...';
 
-        const res = await callAI('summarize', post.content);
+        const res = await callAI('summarize', post.content || 'منشور وسائط');
         const data = await res.json();
 
         if (!res.ok) {
