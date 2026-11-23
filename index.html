@@ -7,23 +7,24 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #080a0f;
-            --surface: #111520;
-            --surface-elevated: #171d2c;
-            --border: rgba(255, 255, 255, 0.08);
-            --text: #f3f6fb;
-            --muted: #8b95a7;
-            --accent: #3b82f6;
-            --accent-soft: rgba(59, 130, 246, 0.14);
+            --bg: #07090e;
+            --surface: #10141f;
+            --surface-elevated: #161c2c;
+            --border: rgba(255, 255, 255, 0.09);
+            --text: #f4f7fc;
+            --muted: #8a95a8;
+            --accent: #1d9bf0;
+            --accent-soft: rgba(29, 155, 240, 0.14);
+            --heart: #f91880;
             --upvote: #ff4500;
             --downvote: #6366f1;
             --font-size-base: 15px;
         }
 
         [data-theme="light"] {
-            --bg: #f4f6fa;
+            --bg: #f3f6fa;
             --surface: #ffffff;
-            --surface-elevated: #f9fafc;
+            --surface-elevated: #f8fafc;
             --border: rgba(15, 23, 42, 0.1);
             --text: #0f172a;
             --muted: #64748b;
@@ -44,19 +45,25 @@
             background-color: var(--bg);
             color: var(--text);
             min-height: 100vh;
-            transition: background-color 0.25s ease, color 0.25s ease;
+            transition: background-color 0.2s ease, color 0.2s ease;
             overflow-x: hidden;
         }
 
         @keyframes fadeSlideIn {
             from {
                 opacity: 0;
-                transform: translateY(10px);
+                transform: translateY(8px);
             }
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
+        }
+
+        @keyframes heartBurst {
+            0% { transform: scale(1); }
+            40% { transform: scale(1.32); }
+            100% { transform: scale(1); }
         }
 
         .no-anim * {
@@ -66,10 +73,10 @@
 
         .app-layout {
             display: grid;
-            grid-template-columns: 245px minmax(0, 680px) 310px;
+            grid-template-columns: 248px minmax(0, 680px) 315px;
             justify-content: center;
             gap: 20px;
-            max-width: 1300px;
+            max-width: 1310px;
             margin: 0 auto;
             padding: 0 14px;
         }
@@ -89,7 +96,7 @@
             align-items: center;
             gap: 12px;
             padding: 8px 14px;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .brand-logo {
@@ -122,7 +129,7 @@
             font-size: 0.98rem;
             font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.2s ease, border-color 0.2s ease;
+            transition: background-color 0.15s ease, border-color 0.15s ease;
             text-align: right;
         }
 
@@ -146,7 +153,7 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            transition: opacity 0.2s ease, transform 0.15s ease;
+            transition: opacity 0.15s ease, transform 0.15s ease;
         }
 
         .plus-desktop-btn:hover {
@@ -169,7 +176,7 @@
         .top-header {
             position: sticky;
             top: 0;
-            background: rgba(8, 10, 15, 0.82);
+            background: rgba(7, 9, 14, 0.84);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             padding: 12px 18px;
@@ -182,7 +189,7 @@
         }
 
         [data-theme="light"] .top-header {
-            background: rgba(244, 246, 250, 0.85);
+            background: rgba(243, 246, 250, 0.86);
         }
 
         .header-actions {
@@ -218,7 +225,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            width: 195px;
+            width: 190px;
         }
 
         .search-box input {
@@ -248,7 +255,7 @@
             font-weight: 600;
             cursor: pointer;
             white-space: nowrap;
-            transition: all 0.2s ease;
+            transition: all 0.15s ease;
         }
 
         .comm-pill.active, .comm-pill:hover {
@@ -263,15 +270,40 @@
             background: var(--surface);
         }
 
+        .composer-top {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .avatar-img, .avatar-fallback {
+            width: 44px;
+            height: 44px;
+            border-radius: 999px;
+            object-fit: cover;
+            flex-shrink: 0;
+            border: 1px solid var(--border);
+        }
+
+        .avatar-fallback {
+            background: linear-gradient(135deg, var(--accent), #6366f1);
+            color: #ffffff;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.05rem;
+        }
+
         .composer textarea {
-            width: 100%;
+            flex: 1;
             background: transparent;
             border: none;
             color: var(--text);
             font-size: 1.02rem;
             resize: none;
             outline: none;
-            min-height: 70px;
+            min-height: 68px;
             margin-bottom: 8px;
             line-height: 1.6;
         }
@@ -288,7 +320,7 @@
 
         .media-preview.active {
             display: block;
-            animation: fadeSlideIn 0.2s ease;
+            animation: fadeSlideIn 0.18s ease;
         }
 
         .media-preview img,
@@ -342,7 +374,7 @@
         .plus-trigger-btn {
             background: var(--accent-soft);
             color: var(--accent);
-            border: 1px solid rgba(59, 130, 246, 0.35);
+            border: 1px solid rgba(29, 155, 240, 0.35);
             width: 34px;
             height: 34px;
             border-radius: 999px;
@@ -363,7 +395,7 @@
         .ai-btn {
             background: var(--accent-soft);
             color: var(--accent);
-            border: 1px solid rgba(59, 130, 246, 0.3);
+            border: 1px solid rgba(29, 155, 240, 0.3);
             padding: 6px 11px;
             border-radius: 10px;
             font-size: 0.82rem;
@@ -384,7 +416,7 @@
             font-weight: 700;
             font-size: 0.88rem;
             cursor: pointer;
-            transition: transform 0.15s ease, opacity 0.15s ease;
+            transition: transform 0.12s ease, opacity 0.12s ease;
         }
 
         .btn-publish:hover {
@@ -398,8 +430,8 @@
             padding: 16px 18px;
             border-bottom: 1px solid var(--border);
             background: var(--bg);
-            transition: background-color 0.2s ease;
-            animation: fadeSlideIn 0.25s ease forwards;
+            transition: background-color 0.15s ease;
+            animation: fadeSlideIn 0.2s ease forwards;
         }
 
         .post-card:hover {
@@ -410,7 +442,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;
+            gap: 3px;
             background: var(--surface);
             padding: 6px;
             border-radius: 10px;
@@ -424,7 +456,7 @@
             color: var(--muted);
             cursor: pointer;
             font-size: 0.95rem;
-            transition: 0.15s ease;
+            transition: 0.12s ease;
         }
 
         .vote-btn.up:hover { color: var(--upvote); }
@@ -443,11 +475,34 @@
             margin-bottom: 6px;
         }
 
-        .author-info {
-            display: flex;
+        .author-trigger {
+            display: inline-flex;
             align-items: center;
-            gap: 6px;
-            flex-wrap: wrap;
+            gap: 8px;
+            background: none;
+            border: none;
+            color: var(--text);
+            cursor: pointer;
+            text-align: right;
+        }
+
+        .author-trigger:hover .author-name-text {
+            text-decoration: underline;
+            color: var(--accent);
+        }
+
+        .verified-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            border-radius: 999px;
+            background: #1d9bf0;
+            color: #ffffff;
+            font-size: 0.72rem;
+            font-weight: 800;
+            flex-shrink: 0;
         }
 
         .comm-tag {
@@ -520,11 +575,32 @@
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            transition: 0.15s ease;
+            transition: 0.12s ease;
         }
 
         .react-pill:hover {
             border-color: var(--accent);
+        }
+
+        .heart-pill {
+            background: rgba(249, 24, 128, 0.12);
+            border: 1px solid rgba(249, 24, 128, 0.35);
+            color: var(--heart);
+            padding: 4px 11px;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: 0.12s ease;
+        }
+
+        .heart-pill.active, .heart-pill:hover {
+            background: var(--heart);
+            color: #ffffff;
+            animation: heartBurst 0.25s ease;
         }
 
         .comments-box {
@@ -578,7 +654,7 @@
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.72);
+            background: rgba(0, 0, 0, 0.74);
             backdrop-filter: blur(8px);
             display: none;
             align-items: center;
@@ -594,11 +670,60 @@
             border: 1px solid var(--border);
             border-radius: 20px;
             width: 100%;
-            max-width: 560px;
+            max-width: 580px;
             max-height: 88vh;
             overflow-y: auto;
             padding: 22px;
-            animation: fadeSlideIn 0.2s ease;
+            animation: fadeSlideIn 0.18s ease;
+        }
+
+        .profile-banner {
+            height: 84px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--accent), #6366f1);
+            margin-bottom: -34px;
+        }
+
+        .profile-top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding: 0 12px;
+            margin-bottom: 12px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .profile-avatar-lg {
+            width: 68px;
+            height: 68px;
+            border-radius: 999px;
+            border: 3px solid var(--surface);
+            object-fit: cover;
+            background: var(--accent);
+            color: #ffffff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+
+        .follow-btn {
+            background: var(--accent);
+            color: #ffffff;
+            border: none;
+            padding: 7px 16px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        .follow-btn.following {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
         }
 
         .create-picker-grid {
@@ -713,7 +838,7 @@
         @media (max-width: 680px) {
             .app-layout { grid-template-columns: 1fr; padding: 0; }
             .sidebar-left { display: none; }
-            .search-box { width: 130px; }
+            .search-box { width: 125px; }
             .main-feed { padding-bottom: 76px; }
 
             .mobile-bottom-bar {
@@ -779,6 +904,13 @@
                 <path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-9.5z"/>
             </svg>
             <span class="nav-text">الرئيسية</span>
+        </button>
+
+        <button class="nav-item" onclick="openUserProfile(userSettings.handle)">
+            <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+            </svg>
+            <span class="nav-text">حسابي</span>
         </button>
 
         <button class="nav-item" onclick="switchView('trending', this)">
@@ -869,9 +1001,11 @@
             <button class="comm-pill" onclick="setCommunity('نقاشات', this)">r/نقاشات</button>
         </div>
 
-        <!-- صندوق كتابة التغريدة -->
         <div class="composer" id="composerBox">
-            <textarea id="postContent" placeholder="اكتب تغريدتك هنا..."></textarea>
+            <div class="composer-top">
+                <div id="composerAvatarSlot"></div>
+                <textarea id="postContent" placeholder="اكتب تغريدتك هنا..."></textarea>
+            </div>
 
             <div class="media-preview" id="mediaPreview">
                 <button class="remove-media-btn" onclick="clearMedia()">إزالة</button>
@@ -883,7 +1017,7 @@
 
             <div class="composer-tools">
                 <div class="tool-group">
-                    <button type="button" class="plus-trigger-btn" onclick="openCreatePicker()" title="إضافة تغريدة / صورة / فيديو">+</button>
+                    <button type="button" class="plus-trigger-btn" onclick="openCreatePicker()" title="تغريدة / صورة / فيديو">+</button>
 
                     <select id="postCommunity" class="select-clean">
                         <option value="عام">r/عام</option>
@@ -909,6 +1043,20 @@
     </main>
 
     <aside class="sidebar-right">
+        <div class="widget-card" style="cursor:pointer;" onclick="openUserProfile(userSettings.handle)">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+                <div id="sidebarAvatarSlot"></div>
+                <div style="min-width:0;">
+                    <div style="font-weight:800;display:flex;align-items:center;gap:5px;">
+                        <span id="sidebarNameDisplay"></span>
+                        <span id="sidebarVerifiedSlot"></span>
+                    </div>
+                    <div style="font-size:0.82rem;color:var(--muted);" id="sidebarHandleDisplay"></div>
+                </div>
+            </div>
+            <div style="font-size:0.82rem;color:var(--accent);" id="sidebarFollowersDisplay"></div>
+        </div>
+
         <div class="widget-card">
             <div class="widget-title">
                 <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -939,7 +1087,6 @@
     </aside>
 </div>
 
-<!-- شريط الجوال السفلي -->
 <nav class="mobile-bottom-bar" aria-label="شريط التنقل السفلي">
     <button class="mobile-bar-btn" onclick="switchView('all', this)">
         <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -957,11 +1104,11 @@
 
     <button class="mobile-plus-btn" onclick="openCreatePicker()" aria-label="إنشاء تغريدة أو صورة أو فيديو">+</button>
 
-    <button class="mobile-bar-btn" onclick="openNexus()">
+    <button class="mobile-bar-btn" onclick="openUserProfile(userSettings.handle)">
         <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
         </svg>
-        <span>محادثات</span>
+        <span>حسابي</span>
     </button>
 
     <button class="mobile-bar-btn" onclick="openSettings()">
@@ -973,7 +1120,12 @@
     </button>
 </nav>
 
-<!-- نافذة زر + (تغريدة / صورة / فيديو) -->
+<!-- نافذة الحساب الشخصي / حساب أي مستخدم -->
+<div class="modal-overlay" id="profileModal">
+    <div class="modal-box" id="profileModalContent"></div>
+</div>
+
+<!-- نافذة زر + -->
 <div class="modal-overlay" id="createPickerModal">
     <div class="modal-box" style="max-width: 420px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
@@ -1083,12 +1235,21 @@
 
         <div class="setting-row">
             <div>
-                <div style="font-weight: 700;">شارة التوثيق ✓</div>
+                <div style="font-weight: 700;">صورة الحساب</div>
             </div>
-            <label class="switch">
-                <input type="checkbox" id="setVerified" onchange="saveSettings()">
-                <span class="slider"></span>
-            </label>
+            <div style="display:flex;gap:6px;align-items:center;">
+                <input type="file" id="avatarFileInput" accept="image/*" style="display:none;" onchange="handleAvatarUpload(event)">
+                <button type="button" class="media-upload-btn" onclick="document.getElementById('avatarFileInput').click()">اختيار صورة</button>
+                <button type="button" class="media-upload-btn" onclick="clearAvatar()">إزالة</button>
+            </div>
+        </div>
+
+        <div class="setting-row">
+            <div>
+                <div style="font-weight: 700;">عدد متابعيني</div>
+                <div style="font-size:0.78rem;color:var(--muted);">الصح الأزرق يُمنح تلقائياً عند 3000 متابع</div>
+            </div>
+            <input type="number" id="setFollowers" min="0" class="input-clean" style="width:110px;" onchange="saveSettings()">
         </div>
 
         <div class="setting-row">
@@ -1148,18 +1309,45 @@
     let currentCommunity = 'الكل';
     let currentView = 'all';
     let bookmarks = JSON.parse(localStorage.getItem('vloxy_bookmarks') || '[]');
+    let heartedPosts = JSON.parse(localStorage.getItem('vloxy_hearted') || '[]');
+    let followedHandles = JSON.parse(localStorage.getItem('vloxy_followed') || '[]');
+    let notifiedHandles = JSON.parse(localStorage.getItem('vloxy_notified') || '[]');
     let selectedMedia = null;
 
     let userSettings = JSON.parse(localStorage.getItem('vloxy_settings') || JSON.stringify({
         author: 'مستخدم',
         handle: '@user',
-        verified: false,
+        avatar: '',
+        followers: 0,
         apiKey: '',
         theme: 'system',
         fontSize: '15px',
         bootSound: true,
         animations: true
     }));
+
+    function normalizeHandle(h) {
+        const clean = (h || '@user').trim();
+        if (!clean) return '@user';
+        return clean.startsWith('@') ? clean : '@' + clean;
+    }
+
+    function isVerifiedCount(followers) {
+        return (Number(followers) || 0) >= 3000;
+    }
+
+    function renderAvatar(name, avatarData, extraClass = '') {
+        if (avatarData) {
+            return `<img src="${avatarData}" alt="${escapeHtml(name)}" class="avatar-img ${extraClass}">`;
+        }
+        const initial = (name || 'م').trim().charAt(0).toUpperCase() || 'م';
+        return `<span class="avatar-fallback ${extraClass}">${escapeHtml(initial)}</span>`;
+    }
+
+    function renderVerifiedBadge(followers) {
+        if (!isVerifiedCount(followers)) return '';
+        return `<span class="verified-badge" title="حساب موثق (3000+ متابع)">✓</span>`;
+    }
 
     const systemMediaQuery = window.matchMedia('(prefers-color-scheme: light)');
 
@@ -1215,6 +1403,7 @@
     }
 
     function applySettings() {
+        userSettings.handle = normalizeHandle(userSettings.handle);
         document.documentElement.setAttribute('data-theme', resolveTheme(userSettings.theme));
         document.documentElement.style.setProperty('--font-size-base', userSettings.fontSize);
 
@@ -1224,9 +1413,16 @@
             document.body.classList.remove('no-anim');
         }
 
+        document.getElementById('composerAvatarSlot').innerHTML = renderAvatar(userSettings.author, userSettings.avatar);
+        document.getElementById('sidebarAvatarSlot').innerHTML = renderAvatar(userSettings.author, userSettings.avatar);
+        document.getElementById('sidebarNameDisplay').textContent = userSettings.author;
+        document.getElementById('sidebarVerifiedSlot').innerHTML = renderVerifiedBadge(userSettings.followers);
+        document.getElementById('sidebarHandleDisplay').textContent = userSettings.handle;
+        document.getElementById('sidebarFollowersDisplay').textContent = `${Number(userSettings.followers) || 0} متابع`;
+
         document.getElementById('setAuthor').value = userSettings.author;
         document.getElementById('setHandle').value = userSettings.handle;
-        document.getElementById('setVerified').checked = !!userSettings.verified;
+        document.getElementById('setFollowers').value = Number(userSettings.followers) || 0;
         document.getElementById('setApiKey').value = userSettings.apiKey || '';
         document.getElementById('aiModalKeyInput').value = userSettings.apiKey || '';
         document.getElementById('setTheme').value = userSettings.theme || 'system';
@@ -1235,12 +1431,10 @@
         document.getElementById('setAnimations').checked = userSettings.animations !== false;
     }
 
-    function saveSettings() {
+    async function saveSettings() {
         userSettings.author = document.getElementById('setAuthor').value || 'مستخدم';
-        let h = document.getElementById('setHandle').value || '@user';
-        if (!h.startsWith('@')) h = '@' + h;
-        userSettings.handle = h;
-        userSettings.verified = document.getElementById('setVerified').checked;
+        userSettings.handle = normalizeHandle(document.getElementById('setHandle').value);
+        userSettings.followers = Math.max(0, Number(document.getElementById('setFollowers').value) || 0);
         userSettings.apiKey = document.getElementById('setApiKey').value.trim();
         userSettings.theme = document.getElementById('setTheme').value;
         userSettings.fontSize = document.getElementById('setFontSize').value;
@@ -1249,6 +1443,43 @@
 
         localStorage.setItem('vloxy_settings', JSON.stringify(userSettings));
         applySettings();
+
+        try {
+            await fetch('/api/users/profile', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    handle: userSettings.handle,
+                    author: userSettings.author,
+                    avatar: userSettings.avatar
+                })
+            });
+            await fetchPosts(true);
+        } catch (e) {}
+    }
+
+    async function handleAvatarUpload(event) {
+        const file = event.target.files?.[0];
+        if (!file) return;
+        if (file.size > 5 * 1024 * 1024) {
+            alert('اختر صورة بحجم أقل من 5MB.');
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = () => {
+            userSettings.avatar = reader.result;
+            localStorage.setItem('vloxy_settings', JSON.stringify(userSettings));
+            applySettings();
+            saveSettings();
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function clearAvatar() {
+        userSettings.avatar = '';
+        localStorage.setItem('vloxy_settings', JSON.stringify(userSettings));
+        applySettings();
+        saveSettings();
     }
 
     function syncApiKeyFromModal() {
@@ -1268,7 +1499,7 @@
             const box = document.getElementById('composerBox');
             const textarea = document.getElementById('postContent');
             box.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            setTimeout(() => textarea.focus(), 180);
+            setTimeout(() => textarea.focus(), 140);
         } else if (type === 'image') {
             document.getElementById('imageFileInput').click();
         } else if (type === 'video') {
@@ -1310,10 +1541,14 @@
         document.getElementById('mediaPreview').classList.remove('active');
     }
 
-    async function fetchPosts() {
-        const res = await fetch('/api/posts');
-        posts = await res.json();
-        renderPosts();
+    async function fetchPosts(silent = false) {
+        try {
+            const res = await fetch('/api/posts');
+            if (!res.ok) return;
+            posts = await res.json();
+            if (!silent) renderPosts();
+            else renderPosts();
+        } catch (e) {}
     }
 
     function switchView(view, btn) {
@@ -1352,7 +1587,8 @@
         if (query) {
             list = list.filter(p =>
                 (p.content || '').toLowerCase().includes(query) ||
-                (p.author || '').toLowerCase().includes(query)
+                (p.author || '').toLowerCase().includes(query) ||
+                (p.handle || '').toLowerCase().includes(query)
             );
         }
 
@@ -1363,8 +1599,11 @@
 
         list.forEach(post => {
             const isBookmarked = bookmarks.includes(post.id);
-            const r = post.reactions || { like: 0, love: 0, fire: 0, haha: 0 };
+            const isHearted = heartedPosts.includes(post.id);
+            const r = post.reactions || { like: 0, fire: 0, haha: 0 };
             const timeStr = new Date(post.timestamp).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+            const postHandle = normalizeHandle(post.handle);
+            const followers = postHandle === userSettings.handle ? Number(userSettings.followers) || 0 : Number(post.followers) || 0;
 
             let mediaHtml = '';
             if (post.mediaType === 'image' && post.mediaData) {
@@ -1392,12 +1631,18 @@
                 <div class="post-main">
                     <div class="post-meta">
                         <div class="author-info">
-                            <strong>${escapeHtml(post.author)}</strong>
-                            ${post.verified ? '<span style="color:var(--accent);">✓</span>' : ''}
-                            <span style="color: var(--muted); font-size: 0.84rem;">${escapeHtml(post.handle)} · ${timeStr}</span>
+                            <button type="button" class="author-trigger" onclick="openUserProfile('${escapeHtml(postHandle)}')">
+                                ${renderAvatar(post.author, post.avatar)}
+                                <span style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
+                                    <strong class="author-name-text">${escapeHtml(post.author)}</strong>
+                                    ${renderVerifiedBadge(followers)}
+                                    <span style="color: var(--muted); font-size: 0.82rem;">${escapeHtml(postHandle)}</span>
+                                </span>
+                            </button>
+                            <span style="color: var(--muted); font-size: 0.82rem;">· ${timeStr}</span>
                             <span class="comm-tag">r/${escapeHtml(post.community)}</span>
                         </div>
-                        <button class="vote-btn" onclick="deletePost(${post.id})" title="حذف"></button>
+                        <button class="vote-btn" onclick="deletePost(${post.id})" title="حذف">✕</button>
                     </div>
 
                     ${post.content ? `<div class="post-text">${escapeHtml(post.content)}</div>` : ''}
@@ -1406,17 +1651,23 @@
 
                     <div class="post-actions">
                         <div class="reaction-group">
-                            <button class="react-pill" onclick="reactPost(${post.id}, 'like')"> ${r.like}</button>
-                            <button class="react-pill" onclick="reactPost(${post.id}, 'love')"> ${r.love}</button>
-                            <button class="react-pill" onclick="reactPost(${post.id}, 'fire')"> ${r.fire}</button>
-                            <button class="react-pill" onclick="reactPost(${post.id}, 'haha')"> ${r.haha}</button>
+                            <button type="button" class="heart-pill ${isHearted ? 'active' : ''}" onclick="heartPost(${post.id})" title="قلب">
+                                <svg style="width:14px;height:14px;" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                </svg>
+                                <span>${Number(post.hearts) || 0}</span>
+                            </button>
+
+                            <button type="button" class="react-pill" onclick="reactPost(${post.id}, 'like')"> ${r.like}</button>
+                            <button type="button" class="react-pill" onclick="reactPost(${post.id}, 'fire')"> ${r.fire}</button>
+                            <button type="button" class="react-pill" onclick="reactPost(${post.id}, 'haha')"> ${r.haha}</button>
                         </div>
 
                         <div class="reaction-group">
-                            <button class="react-pill" onclick="toggleComments(${post.id})"> ${post.comments.length}</button>
-                            <button class="react-pill" onclick="repost(${post.id})"> ${post.reposts || 0}</button>
-                            <button class="react-pill" onclick="summarizePost(${post.id})">AI تلخيص</button>
-                            <button class="react-pill" onclick="toggleBookmark(${post.id})">${isBookmarked ? '' : ''}</button>
+                            <button type="button" class="react-pill" onclick="toggleComments(${post.id})"> ${post.comments.length}</button>
+                            <button type="button" class="react-pill" onclick="repost(${post.id})"> ${post.reposts || 0}</button>
+                            <button type="button" class="react-pill" onclick="summarizePost(${post.id})">AI تلخيص</button>
+                            <button type="button" class="react-pill" onclick="toggleBookmark(${post.id})">${isBookmarked ? '' : ''}</button>
                         </div>
                     </div>
 
@@ -1424,7 +1675,7 @@
                         ${commentsHtml}
                         <div style="display:flex; gap:6px; margin-top:8px;">
                             <input type="text" id="c-input-${post.id}" class="input-clean" style="flex:1;" placeholder="اكتب تعليقاً...">
-                            <button class="btn-publish" style="padding: 6px 14px;" onclick="sendComment(${post.id})">إرسال</button>
+                            <button type="button" class="btn-publish" style="padding: 6px 14px;" onclick="sendComment(${post.id})">إرسال</button>
                         </div>
                     </div>
                 </div>
@@ -1434,55 +1685,122 @@
     }
 
     async function publishPost() {
-        const content = document.getElementById('postContent').value;
+        const textarea = document.getElementById('postContent');
+        const content = textarea.value;
         const community = document.getElementById('postCommunity').value;
         if (!content.trim() && !selectedMedia) return;
 
-        await fetch('/api/posts', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                author: userSettings.author,
-                handle: userSettings.handle,
-                verified: userSettings.verified,
-                community,
-                content,
-                mediaType: selectedMedia ? selectedMedia.type : null,
-                mediaData: selectedMedia ? selectedMedia.data : null
-            })
-        });
+        const tempId = Date.now();
+        const optimisticPost = {
+            id: tempId,
+            author: userSettings.author,
+            handle: userSettings.handle,
+            avatar: userSettings.avatar,
+            followers: Number(userSettings.followers) || 0,
+            verified: isVerifiedCount(userSettings.followers),
+            community,
+            content: content.trim(),
+            mediaType: selectedMedia ? selectedMedia.type : null,
+            mediaData: selectedMedia ? selectedMedia.data : null,
+            votes: 1,
+            hearts: 0,
+            reposts: 0,
+            reactions: { like: 0, fire: 0, haha: 0 },
+            comments: [],
+            timestamp: new Date().toISOString()
+        };
 
-        document.getElementById('postContent').value = '';
+        posts.unshift(optimisticPost);
+        textarea.value = '';
+        const payloadMedia = selectedMedia ? { ...selectedMedia } : null;
         clearMedia();
-        fetchPosts();
+        renderPosts();
+
+        try {
+            const res = await fetch('/api/posts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    author: optimisticPost.author,
+                    handle: optimisticPost.handle,
+                    avatar: optimisticPost.avatar,
+                    community,
+                    content: optimisticPost.content,
+                    mediaType: payloadMedia ? payloadMedia.type : null,
+                    mediaData: payloadMedia ? payloadMedia.data : null
+                })
+            });
+            if (res.ok) {
+                const saved = await res.json();
+                posts = posts.map(p => (p.id === tempId ? saved : p));
+                renderPosts();
+            }
+        } catch (e) {}
     }
 
     async function votePost(id, direction) {
-        await fetch(`/api/posts/${id}/vote`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ direction })
-        });
-        fetchPosts();
+        const target = posts.find(p => p.id === id);
+        if (target) {
+            target.votes += direction === 'up' ? 1 : -1;
+            renderPosts();
+        }
+        try {
+            await fetch(`/api/posts/${id}/vote`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ direction })
+            });
+        } catch (e) {}
+    }
+
+    async function heartPost(id) {
+        const target = posts.find(p => p.id === id);
+        if (target) {
+            target.hearts = (Number(target.hearts) || 0) + 1;
+            if (!heartedPosts.includes(id)) {
+                heartedPosts.push(id);
+                localStorage.setItem('vloxy_hearted', JSON.stringify(heartedPosts));
+            }
+            renderPosts();
+        }
+        try {
+            await fetch(`/api/posts/${id}/heart`, { method: 'POST' });
+        } catch (e) {}
     }
 
     async function reactPost(id, type) {
-        await fetch(`/api/posts/${id}/react`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ type })
-        });
-        fetchPosts();
+        const target = posts.find(p => p.id === id);
+        if (target) {
+            if (!target.reactions) target.reactions = { like: 0, fire: 0, haha: 0 };
+            target.reactions[type] = (Number(target.reactions[type]) || 0) + 1;
+            renderPosts();
+        }
+        try {
+            await fetch(`/api/posts/${id}/react`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ type })
+            });
+        } catch (e) {}
     }
 
     async function repost(id) {
-        await fetch(`/api/posts/${id}/repost`, { method: 'POST' });
-        fetchPosts();
+        const target = posts.find(p => p.id === id);
+        if (target) {
+            target.reposts = (Number(target.reposts) || 0) + 1;
+            renderPosts();
+        }
+        try {
+            await fetch(`/api/posts/${id}/repost`, { method: 'POST' });
+        } catch (e) {}
     }
 
     async function deletePost(id) {
-        await fetch(`/api/posts/${id}`, { method: 'DELETE' });
-        fetchPosts();
+        posts = posts.filter(p => p.id !== id);
+        renderPosts();
+        try {
+            await fetch(`/api/posts/${id}`, { method: 'DELETE' });
+        } catch (e) {}
     }
 
     function toggleComments(id) {
@@ -1491,16 +1809,29 @@
 
     async function sendComment(id) {
         const input = document.getElementById(`c-input-${id}`);
-        if (!input.value.trim()) return;
+        const text = input.value.trim();
+        if (!text) return;
 
-        await fetch(`/api/posts/${id}/comments`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ author: userSettings.author, text: input.value })
-        });
+        const target = posts.find(p => p.id === id);
+        if (target) {
+            target.comments.push({
+                id: Date.now(),
+                author: userSettings.author,
+                text,
+                timestamp: new Date().toISOString()
+            });
+            input.value = '';
+            renderPosts();
+            document.getElementById(`comments-${id}`).classList.add('open');
+        }
 
-        await fetchPosts();
-        document.getElementById(`comments-${id}`).classList.add('open');
+        try {
+            await fetch(`/api/posts/${id}/comments`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ author: userSettings.author, text })
+            });
+        } catch (e) {}
     }
 
     function toggleBookmark(id) {
@@ -1511,6 +1842,141 @@
         }
         localStorage.setItem('vloxy_bookmarks', JSON.stringify(bookmarks));
         renderPosts();
+    }
+
+    async function openUserProfile(rawHandle) {
+        const h = normalizeHandle(rawHandle);
+        const modal = document.getElementById('profileModal');
+        const container = document.getElementById('profileModalContent');
+        modal.classList.add('open');
+
+        let userInfo = {
+            handle: h,
+            author: h === userSettings.handle ? userSettings.author : 'مستخدم',
+            avatar: h === userSettings.handle ? userSettings.avatar : '',
+            followers: h === userSettings.handle ? Number(userSettings.followers) || 0 : 0
+        };
+        let userPosts = posts.filter(p => normalizeHandle(p.handle) === h);
+
+        try {
+            const res = await fetch(`/api/users/${encodeURIComponent(h)}`);
+            if (res.ok) {
+                const data = await res.json();
+                if (data.user) userInfo = data.user;
+                if (Array.isArray(data.posts)) userPosts = data.posts;
+            }
+        } catch (e) {}
+
+        const followersNum = h === userSettings.handle ? Number(userSettings.followers) || 0 : Number(userInfo.followers) || 0;
+        const isFollowing = followedHandles.includes(h);
+        const isNotified = notifiedHandles.includes(h);
+
+        const postsListHtml = userPosts.length
+            ? userPosts.map(p => `
+                <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:8px;">
+                    <div style="font-size:0.78rem;color:var(--muted);margin-bottom:4px;">r/${escapeHtml(p.community)} · ♥ ${Number(p.hearts) || 0}</div>
+                    <div style="font-size:0.92rem;line-height:1.55;white-space:pre-wrap;">${escapeHtml(p.content || 'منشور وسائط')}</div>
+                </div>
+            `).join('')
+            : `<div style="text-align:center;color:var(--muted);padding:20px;font-size:0.88rem;">لا توجد تغريدات لهذا الحساب بعد.</div>`;
+
+        container.innerHTML = `
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                <strong style="font-size:1rem;">الملف الشخصي</strong>
+                <button type="button" class="react-pill" onclick="closeModal('profileModal')">✕</button>
+            </div>
+
+            <div class="profile-banner"></div>
+
+            <div class="profile-top-row">
+                <div style="display:flex;align-items:flex-end;gap:10px;">
+                    ${renderAvatar(userInfo.author, userInfo.avatar, 'profile-avatar-lg')}
+                    <div style="margin-bottom:4px;">
+                        <div style="font-size:1.1rem;font-weight:800;display:flex;align-items:center;gap:5px;">
+                            <span>${escapeHtml(userInfo.author)}</span>
+                            ${renderVerifiedBadge(followersNum)}
+                        </div>
+                        <div style="font-size:0.84rem;color:var(--muted);">${escapeHtml(h)}</div>
+                    </div>
+                </div>
+
+                <div style="display:flex;gap:8px;align-items:center;">
+                    <button type="button" class="icon-btn" onclick="toggleProfileNotify('${escapeHtml(h)}')" title="الإشعارات" style="${isNotified ? 'border-color:var(--accent);color:var(--accent);' : ''}">
+                        <svg class="icon-svg" viewBox="0 0 24 24" fill="${isNotified ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                        </svg>
+                    </button>
+
+                    <button type="button" class="follow-btn ${isFollowing ? 'following' : ''}" onclick="toggleProfileFollow('${escapeHtml(h)}')">
+                        ${isFollowing ? 'متابَع' : 'متابعة'}
+                    </button>
+                </div>
+            </div>
+
+            <div style="display:flex;gap:14px;padding:0 12px 12px;border-bottom:1px solid var(--border);font-size:0.86rem;flex-wrap:wrap;">
+                <div><strong>${followersNum}</strong> <span style="color:var(--muted);">متابع</span></div>
+                <div><strong>${userPosts.length}</strong> <span style="color:var(--muted);">تغريدة</span></div>
+                <div style="color:${isVerifiedCount(followersNum) ? 'var(--accent)' : 'var(--muted)'};">
+                    ${isVerifiedCount(followersNum) ? 'حساب موثق (3000+ متابع)' : 'الصح الأزرق عند 3000 متابع'}
+                </div>
+            </div>
+
+            <div style="margin-top:14px;">
+                <div style="font-weight:800;font-size:0.92rem;margin-bottom:8px;">التغريدات</div>
+                ${postsListHtml}
+            </div>
+        `;
+    }
+
+    async function toggleProfileFollow(rawHandle) {
+        const h = normalizeHandle(rawHandle);
+        const already = followedHandles.includes(h);
+        const delta = already ? -1 : 1;
+
+        if (already) {
+            followedHandles = followedHandles.filter(x => x !== h);
+        } else {
+            followedHandles.push(h);
+        }
+        localStorage.setItem('vloxy_followed', JSON.stringify(followedHandles));
+
+        if (h === userSettings.handle) {
+            userSettings.followers = Math.max(0, (Number(userSettings.followers) || 0) + delta);
+            localStorage.setItem('vloxy_settings', JSON.stringify(userSettings));
+            applySettings();
+        }
+
+        try {
+            const res = await fetch(`/api/users/${encodeURIComponent(h)}/follow`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ delta })
+            });
+            if (res.ok) {
+                const data = await res.json();
+                posts.forEach(p => {
+                    if (normalizeHandle(p.handle) === h) {
+                        p.followers = data.user.followers;
+                        p.verified = data.verified;
+                    }
+                });
+                renderPosts();
+            }
+        } catch (e) {}
+
+        openUserProfile(h);
+    }
+
+    function toggleProfileNotify(rawHandle) {
+        const h = normalizeHandle(rawHandle);
+        if (notifiedHandles.includes(h)) {
+            notifiedHandles = notifiedHandles.filter(x => x !== h);
+        } else {
+            notifiedHandles.push(h);
+        }
+        localStorage.setItem('vloxy_notified', JSON.stringify(notifiedHandles));
+        openUserProfile(h);
     }
 
     async function callAI(action, text) {
