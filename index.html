@@ -132,6 +132,28 @@
             color: var(--accent);
         }
 
+        .plus-desktop-btn {
+            margin-top: 8px;
+            background: var(--accent);
+            color: #ffffff;
+            border: none;
+            padding: 11px 16px;
+            border-radius: 14px;
+            font-size: 1rem;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: opacity 0.2s ease, transform 0.15s ease;
+        }
+
+        .plus-desktop-btn:hover {
+            opacity: 0.92;
+            transform: translateY(-1px);
+        }
+
         .icon-svg {
             width: 20px;
             height: 20px;
@@ -196,7 +218,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            width: 200px;
+            width: 195px;
         }
 
         .search-box input {
@@ -317,24 +339,25 @@
             outline: none;
         }
 
-        .media-upload-btn {
-            background: var(--bg);
-            color: var(--text);
-            border: 1px solid var(--border);
-            padding: 6px 11px;
-            border-radius: 10px;
-            font-size: 0.82rem;
-            font-weight: 600;
-            cursor: pointer;
+        .plus-trigger-btn {
+            background: var(--accent-soft);
+            color: var(--accent);
+            border: 1px solid rgba(59, 130, 246, 0.35);
+            width: 34px;
+            height: 34px;
+            border-radius: 999px;
+            font-size: 1.25rem;
+            font-weight: 800;
             display: inline-flex;
             align-items: center;
-            gap: 5px;
+            justify-content: center;
+            cursor: pointer;
             transition: 0.15s ease;
         }
 
-        .media-upload-btn:hover {
-            border-color: var(--accent);
-            color: var(--accent);
+        .plus-trigger-btn:hover {
+            background: var(--accent);
+            color: #ffffff;
         }
 
         .ai-btn {
@@ -548,7 +571,6 @@
             gap: 8px;
         }
 
-        /* شريط الجوال السفلي */
         .mobile-bottom-bar {
             display: none;
         }
@@ -577,6 +599,35 @@
             overflow-y: auto;
             padding: 22px;
             animation: fadeSlideIn 0.2s ease;
+        }
+
+        .create-picker-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .picker-option-btn {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 14px;
+            padding: 16px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.15s ease;
+        }
+
+        .picker-option-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--accent-soft);
         }
 
         .nexus-modal {
@@ -662,7 +713,7 @@
         @media (max-width: 680px) {
             .app-layout { grid-template-columns: 1fr; padding: 0; }
             .sidebar-left { display: none; }
-            .search-box { width: 135px; }
+            .search-box { width: 130px; }
             .main-feed { padding-bottom: 76px; }
 
             .mobile-bottom-bar {
@@ -696,11 +747,20 @@
                 border-radius: 10px;
             }
 
-            .mobile-bar-btn.primary {
+            .mobile-plus-btn {
                 background: var(--accent);
                 color: #ffffff;
-                padding: 6px 14px;
+                border: none;
+                width: 44px;
+                height: 44px;
                 border-radius: 999px;
+                font-size: 1.6rem;
+                font-weight: 800;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                line-height: 1;
             }
         }
     </style>
@@ -708,7 +768,6 @@
 <body>
 
 <div class="app-layout">
-    <!-- الشريط الجانبي للشاشات الكبيرة -->
     <aside class="sidebar-left">
         <div class="brand">
             <div class="brand-logo">V</div>
@@ -758,9 +817,13 @@
             </svg>
             <span class="nav-text">الإعدادات</span>
         </button>
+
+        <button class="plus-desktop-btn" onclick="openCreatePicker()">
+            <span>+</span>
+            <span class="nav-text">إنشاء</span>
+        </button>
     </aside>
 
-    <!-- المحتوى الرئيسي -->
     <main class="main-feed">
         <div class="top-header">
             <div>
@@ -806,9 +869,9 @@
             <button class="comm-pill" onclick="setCommunity('نقاشات', this)">r/نقاشات</button>
         </div>
 
-        <!-- صندوق النشر -->
+        <!-- صندوق كتابة التغريدة -->
         <div class="composer" id="composerBox">
-            <textarea id="postContent" placeholder="اكتب تغريدتك أو منشورك..."></textarea>
+            <textarea id="postContent" placeholder="اكتب تغريدتك هنا..."></textarea>
 
             <div class="media-preview" id="mediaPreview">
                 <button class="remove-media-btn" onclick="clearMedia()">إزالة</button>
@@ -820,19 +883,7 @@
 
             <div class="composer-tools">
                 <div class="tool-group">
-                    <button type="button" class="media-upload-btn" onclick="document.getElementById('imageFileInput').click()">
-                        <svg class="icon-svg" style="width:16px;height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>
-                        </svg>
-                        صورة
-                    </button>
-
-                    <button type="button" class="media-upload-btn" onclick="document.getElementById('videoFileInput').click()">
-                        <svg class="icon-svg" style="width:16px;height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/>
-                        </svg>
-                        فيديو
-                    </button>
+                    <button type="button" class="plus-trigger-btn" onclick="openCreatePicker()" title="إضافة تغريدة / صورة / فيديو">+</button>
 
                     <select id="postCommunity" class="select-clean">
                         <option value="عام">r/عام</option>
@@ -857,7 +908,6 @@
         <div id="feedContainer"></div>
     </main>
 
-    <!-- الشريط الجانبي الأيسر -->
     <aside class="sidebar-right">
         <div class="widget-card">
             <div class="widget-title">
@@ -889,7 +939,7 @@
     </aside>
 </div>
 
-<!-- شريط الجوال السفلي (إنشاء تغريدة + ذكاء اصطناعي + إعدادات) -->
+<!-- شريط الجوال السفلي -->
 <nav class="mobile-bottom-bar" aria-label="شريط التنقل السفلي">
     <button class="mobile-bar-btn" onclick="switchView('all', this)">
         <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -898,19 +948,14 @@
         <span>الرئيسية</span>
     </button>
 
-    <button class="mobile-bar-btn primary" onclick="focusComposer()">
-        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-            <path d="M12 5v14M5 12h14"/>
-        </svg>
-        <span>تغريدة</span>
-    </button>
-
     <button class="mobile-bar-btn" onclick="openAIModal()">
         <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9L12 3z"/>
         </svg>
         <span>AI</span>
     </button>
+
+    <button class="mobile-plus-btn" onclick="openCreatePicker()" aria-label="إنشاء تغريدة أو صورة أو فيديو">+</button>
 
     <button class="mobile-bar-btn" onclick="openNexus()">
         <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -927,6 +972,38 @@
         <span>الإعدادات</span>
     </button>
 </nav>
+
+<!-- نافذة زر + (تغريدة / صورة / فيديو) -->
+<div class="modal-overlay" id="createPickerModal">
+    <div class="modal-box" style="max-width: 420px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h3 style="font-weight: 800;">إنشاء جديد</h3>
+            <button class="react-pill" onclick="closeModal('createPickerModal')">✕</button>
+        </div>
+        <div class="create-picker-grid">
+            <button class="picker-option-btn" onclick="chooseCreateType('tweet')">
+                <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                </svg>
+                <span>تغريدة</span>
+            </button>
+
+            <button class="picker-option-btn" onclick="chooseCreateType('image')">
+                <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>
+                </svg>
+                <span>صورة</span>
+            </button>
+
+            <button class="picker-option-btn" onclick="chooseCreateType('video')">
+                <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/>
+                </svg>
+                <span>فيديو</span>
+            </button>
+        </div>
+    </div>
+</div>
 
 <!-- نافذة Nexus Messenger -->
 <div class="modal-overlay" id="nexusModal">
@@ -1071,7 +1148,7 @@
     let currentCommunity = 'الكل';
     let currentView = 'all';
     let bookmarks = JSON.parse(localStorage.getItem('vloxy_bookmarks') || '[]');
-    let selectedMedia = null; // { type: 'image' | 'video', data: string }
+    let selectedMedia = null;
 
     let userSettings = JSON.parse(localStorage.getItem('vloxy_settings') || JSON.stringify({
         author: 'مستخدم',
@@ -1181,11 +1258,22 @@
         localStorage.setItem('vloxy_settings', JSON.stringify(userSettings));
     }
 
-    function focusComposer() {
-        const box = document.getElementById('composerBox');
-        const textarea = document.getElementById('postContent');
-        box.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        setTimeout(() => textarea.focus(), 200);
+    function openCreatePicker() {
+        document.getElementById('createPickerModal').classList.add('open');
+    }
+
+    function chooseCreateType(type) {
+        closeModal('createPickerModal');
+        if (type === 'tweet') {
+            const box = document.getElementById('composerBox');
+            const textarea = document.getElementById('postContent');
+            box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(() => textarea.focus(), 180);
+        } else if (type === 'image') {
+            document.getElementById('imageFileInput').click();
+        } else if (type === 'video') {
+            document.getElementById('videoFileInput').click();
+        }
     }
 
     function handleMediaFile(event, type) {
@@ -1204,11 +1292,12 @@
             const preview = document.getElementById('mediaPreview');
             const content = document.getElementById('mediaPreviewContent');
             if (type === 'image') {
-                content.innerHTML = `<img src="${reader.result}" alt="معاينة الصورة">`;
+                content.innerHTML = `<img src="${reader.result}" alt="صورة">`;
             } else {
                 content.innerHTML = `<video src="${reader.result}" controls></video>`;
             }
             preview.classList.add('active');
+            document.getElementById('postContent').focus();
         };
         reader.readAsDataURL(file);
     }
