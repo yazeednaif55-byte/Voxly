@@ -12,30 +12,7 @@ app.use(express.json());
 app.use(express.static(__dirname));
 
 if (!fs.existsSync(DB_FILE)) {
-    const initialData = {
-        posts: [
-            {
-                id: 1700000000001,
-                author: "فريق Vloxy",
-                handle: "@vloxy",
-                verified: true,
-                community: "عام",
-                content: "أهلاً بك في Vloxy! منصة تواصل اجتماعي شاملة تجمع بين تغريدات X، تصويت ومجتمعات Reddit، وتفاعلات Facebook في واجهة واحدة سريعة.\n\nجرب الذكاء الاصطناعي المدمج أو افتح محادثات Nexus Messenger من القائمة!",
-                votes: 42,
-                reposts: 7,
-                reactions: { like: 15, love: 9, fire: 12, haha: 2 },
-                comments: [
-                    {
-                        id: 1700000000002,
-                        author: "يزيد",
-                        text: "تصميم رهيب وسريع جداً!",
-                        timestamp: new Date().toISOString()
-                    }
-                ],
-                timestamp: new Date().toISOString()
-            }
-        ]
-    };
+    const initialData = { posts: [] };
     fs.writeFileSync(DB_FILE, JSON.stringify(initialData, null, 2));
 }
 
@@ -51,13 +28,11 @@ function writeDB(data) {
     fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
 }
 
-// جلب المنشورات
 app.get('/api/posts', (req, res) => {
     const db = readDB();
-    res.json(db.posts.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)));
+    res.json((db.posts || []).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)));
 });
 
-// نشر منشور جديد
 app.post('/api/posts', (req, res) => {
     const { author, handle, community, content, verified } = req.body;
     if (!content || !content.trim()) {
@@ -67,7 +42,7 @@ app.post('/api/posts', (req, res) => {
     const db = readDB();
     const newPost = {
         id: Date.now(),
-        author: author || 'مستخدم Vloxy',
+        author: author || 'مستخدم',
         handle: handle || '@user',
         verified: !!verified,
         community: community || 'عام',
@@ -84,7 +59,6 @@ app.post('/api/posts', (req, res) => {
     res.status(201).json(newPost);
 });
 
-// التصويت (Reddit Style)
 app.post('/api/posts/:id/vote', (req, res) => {
     const { direction } = req.body;
     const db = readDB();
@@ -98,9 +72,8 @@ app.post('/api/posts/:id/vote', (req, res) => {
     res.json(post);
 });
 
-// التفاعلات المتعددة (Facebook Style)
 app.post('/api/posts/:id/react', (req, res) => {
-    const { type } = req.body; // like, love, fire, haha
+    const { type } = req.body;
     const db = readDB();
     const post = db.posts.find(p => p.id == req.params.id);
     if (!post) return res.status(404).json({ error: 'غير موجود' });
@@ -114,7 +87,6 @@ app.post('/api/posts/:id/react', (req, res) => {
     res.json(post);
 });
 
-// إعادة النشر (X Style)
 app.post('/api/posts/:id/repost', (req, res) => {
     const db = readDB();
     const post = db.posts.find(p => p.id == req.params.id);
@@ -125,7 +97,6 @@ app.post('/api/posts/:id/repost', (req, res) => {
     res.json(post);
 });
 
-// التعليقات
 app.post('/api/posts/:id/comments', (req, res) => {
     const { author, text } = req.body;
     if (!text || !text.trim()) return res.status(400).json({ error: 'التعليق فارغ' });
@@ -145,7 +116,6 @@ app.post('/api/posts/:id/comments', (req, res) => {
     res.status(201).json(post);
 });
 
-// حذف منشور
 app.delete('/api/posts/:id', (req, res) => {
     const db = readDB();
     db.posts = db.posts.filter(p => p.id != req.params.id);
@@ -153,29 +123,61 @@ app.delete('/api/posts/:id', (req, res) => {
     res.json({ success: true });
 });
 
-// مساعد Vloxy AI الذكي (معالجة النصوص، التحسين، التلخيص)
-app.post('/api/ai', (req, res) => {
-    const { action, text } = req.body;
+app.post('/api/ai', async (req, res) => {
+    const { action, text, apiKey } = req.body;
+    const key = (apiKey && apiKey.trim()) || process.env.GEMINI_API_KEY;
+
+    if (!key) {
+        return res.status(400).json({
+            requiresApiKey: true,
+            error: 'الذكاء الاصطناعي يتطلب مفتاح API. ادخل إلى https://aistudio.google.com/apps ثم أنشئ API وأدخله في الإعدادات أو نافذة الذكاء الاصطناعي.'
+        });
+    }
+
     if (!text || !text.trim()) {
-        return res.json({ result: "اكتب نصاً أولاً لكي أتمكن من مساعدتك!" });
+        return res.status(400).json({ error: 'اكتب نصاً أولاً.' });
     }
 
-    const clean = text.trim();
-    let result = "";
-
-    if (action === 'enhance') {
-        result = ` نسخة محسّنة:\n"${clean}"\n\n شاركونا آراءكم في التعليقات! #Vloxy #نقاش`;
-    } else if (action === 'summarize') {
-        const words = clean.split(/\s+/);
-        const summary = words.length > 15 ? words.slice(0, 15).join(' ') + '...' : clean;
-        result = ` ملخص Vloxy AI:\nالفكرة الأساسية تدور حول: "${summary}" — منشور يستحق التفاعل والنقاش.`;
+    let promptInstruction = 'حسّن صياغة النص التالي واجعله واضحاً وجذاباً بنفس اللغة:';
+    if (action === 'summarize') {
+        promptInstruction = 'لخّص النص التالي باختصار ووضوح:';
     } else if (action === 'reply') {
-        result = `طرح جميل ومثير للاهتمام! أتفق معك تماماً في هذه النقطة، وبانتظار تفاصيل أكثر `;
-    } else {
-        result = ` اقتراح ذكي: يمكنك إضافة سؤال في نهاية منشورك لزيادة التفاعل بنسبة أكبر.`;
+        promptInstruction = 'اقترح رداً مناسباً ومفيداً على النص التالي:';
     }
 
-    res.json({ result });
+    try {
+        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(key)}`;
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [
+                    {
+                        parts: [
+                            { text: `${promptInstruction}\n\n${text.trim()}` }
+                        ]
+                    }
+                ]
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            return res.status(response.status).json({
+                error: data.error?.message || 'تعذر الاتصال بخدمة الذكاء الاصطناعي، تأكد من صحة مفتاح API.'
+            });
+        }
+
+        const outputText = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+        if (!outputText) {
+            return res.status(500).json({ error: 'لم يتم استلام رد نصي من النموذج.' });
+        }
+
+        res.json({ result: outputText });
+    } catch (err) {
+        res.status(500).json({ error: 'حدث خطأ أثناء الاتصال بواجهة الذكاء الاصطناعي.' });
+    }
 });
 
 app.get('/', (req, res) => {
